@@ -1,16 +1,168 @@
+/* ==========================================================================
+   AME & VIE — THÈME CENTRALISÉ
+   --------------------------------------------------------------------------
+   👉 C'est le SEUL endroit où définir les couleurs du site.
+   Aucune couleur n'est codée en dur dans les composants : tout dérive des
+   variables ci-dessous (nuances, bordures, ombres, survols via color-mix()).
+   Les valeurs actives sont des neutres provisoires (noir / gris / blanc).
+   Une palette d'exemple chaleureuse est proposée juste en dessous.
+   ========================================================================== */
 @import "tailwindcss";
 
+:root {
+  /* ─────────────── À REMPLIR ─────────────── */
+  --couleur-principale: #1f1f1f;      /* boutons, liens actifs, éléments forts      */
+  --couleur-secondaire: #3d3d3d;      /* fonds sombres (bandeaux, carte Premium)    */
+  --couleur-accent: #8f8f8f;          /* Premium, couronne, détails                 */
+  --couleur-fond: #ffffff;            /* fond général des pages                     */
+  --couleur-texte: #171717;           /* texte principal                            */
+  --couleur-sur-principale: #ffffff;  /* texte posé SUR la couleur principale       */
+  --couleur-whatsapp: #1f8f4e;        /* bouton « Faire mon abonnement »            */
+  --couleur-succes: #15803d;          /* messages de succès, statut « Actif »       */
+  --couleur-erreur: #b91c1c;          /* messages d'erreur, statut « Expiré »       */
+  /* ───────────────────────────────────────── */
+
+  /* Exemple de palette chaleureuse (copiez ces valeurs au-dessus pour l'essayer) :
+     --couleur-principale: #7a3a22;  --couleur-secondaire: #2a1c14;
+     --couleur-accent: #c9973f;      --couleur-fond: #fbf7f0;
+     --couleur-texte: #241b15;       --couleur-sur-principale: #fff8ee; */
+
+  /* Dérivées automatiques (ne pas modifier sauf besoin) */
+  --couleur-surface: color-mix(in oklab, var(--couleur-fond) 94%, var(--couleur-texte));
+  --couleur-ligne: color-mix(in oklab, var(--couleur-fond) 88%, var(--couleur-texte));
+  --couleur-ombre: color-mix(in oklab, var(--couleur-texte) 14%, transparent);
+  --couleur-nuit: color-mix(in oklab, var(--couleur-secondaire) 82%, black);   /* voiles sur photos */
+
+  --hauteur-entete: 64px;
+  --hauteur-barre-bas: 72px;
+}
+
+/* Tailwind : expose les variables sous forme de classes
+   (bg-primary, text-accent, bg-fond, text-ink, border-ligne…) */
+@theme inline {
+  --color-primary: var(--couleur-principale);
+  --color-accent: var(--couleur-accent);
+  --color-fond: var(--couleur-fond);
+  --color-ink: var(--couleur-texte);
+  --color-on-primary: var(--couleur-sur-principale);
+  --color-secondary: var(--couleur-secondaire);
+  --color-nuit: var(--couleur-nuit);
+  --color-whatsapp: var(--couleur-whatsapp);
+  --color-surface: var(--couleur-surface);
+  --color-ligne: var(--couleur-ligne);
+
+  --font-serif: "Fraunces Variable", "Fraunces", Georgia, "Times New Roman", serif;
+  --font-sans: "Manrope Variable", "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Fraunces Variable", "Fraunces", Georgia, serif;
+  --font-script: "Caveat Variable", "Caveat", "Segoe Script", cursive;
+
+  --shadow-doux: 0 1px 2px var(--couleur-ombre), 0 12px 32px -12px var(--couleur-ombre);
+  --shadow-haut: 0 2px 6px var(--couleur-ombre), 0 30px 60px -24px var(--couleur-ombre);
+
+  --animate-defilement: defilement 40s linear infinite;
+  --animate-defilement-inverse: defilement-inverse 48s linear infinite;
+  --animate-reflet: reflet 3.2s ease-in-out infinite;
+}
+
+/* Téléphone en paysage : hauteur faible + orientation paysage */
+@custom-variant paysage (@media (orientation: landscape) and (max-height: 540px));
+
+@keyframes defilement {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+@keyframes defilement-inverse {
+  from { transform: translate3d(-50%, 0, 0); }
+  to { transform: translate3d(0, 0, 0); }
+}
+@keyframes reflet {
+  0%, 55% { transform: translateX(-120%) skewX(-20deg); }
+  100% { transform: translateX(260%) skewX(-20deg); }
+}
+
 @layer base {
-  body {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
   }
+  html, body {
+    overflow-x: clip; /* aucune barre de défilement horizontale */
+  }
+  body {
+    background: var(--couleur-fond);
+    color: var(--couleur-texte);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    line-height: 1.12;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  p { text-wrap: pretty; }
+  ::selection {
+    background: color-mix(in oklab, var(--couleur-accent) 35%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--couleur-principale);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  button { cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+  img { user-select: none; -webkit-user-drag: none; }
 }
 
-.font-serif-title {
-  font-family: 'Playfair Display', Georgia, serif;
+@layer utilities {
+  /* Marges de sécurité (encoches) */
+  .pt-safe { padding-top: env(safe-area-inset-top); }
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+  .pl-safe { padding-left: env(safe-area-inset-left); }
+  .pr-safe { padding-right: env(safe-area-inset-right); }
+  /* Marges latérales de page qui respectent aussi les encoches */
+  .gutter {
+    padding-left: max(1.25rem, env(safe-area-inset-left));
+    padding-right: max(1.25rem, env(safe-area-inset-right));
+    @media (min-width: 640px) {
+      padding-left: max(2rem, env(safe-area-inset-left));
+      padding-right: max(2rem, env(safe-area-inset-right));
+    }
+  }
+
+  /* Taille minimum du texte : 11 px */
+  .text-mini { font-size: 11px; line-height: 1.4; }
+
+  /* Petites capitales espacées (sur-titres) */
+  .surtitre {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .no-scrollbar { scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+
+  /* Masque de fondu sur les bords (bandes défilantes) */
+  .masque-bords {
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+
+  .pause-anim { animation-play-state: paused !important; }
 }
 
-/* Smooth transitions */
-* {
-  scroll-behavior: smooth;
+/* Réduire les animations : on coupe aussi les animations CSS */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

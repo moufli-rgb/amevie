@@ -1,140 +1,93 @@
-import React from 'react';
-import { useApp } from '../context/AppContext';
-import {
-  Sparkles,
-  Heart,
-  Shield,
-  Users,
-  Compass,
-  ArrowRight,
-  BookOpen,
-} from 'lucide-react';
+import { useEffect } from 'react';
+import { motion } from 'motion/react';
+import { BookOpen, Compass, HandHeart, Heart, ShieldCheck, Users } from 'lucide-react';
+import { PublicHeader } from '@/components/public/PublicHeader';
+import { PublicFooter } from '@/components/public/PublicFooter';
+import { Img } from '@/components/Img';
+import { WhatsAppButton } from '@/components/Premium';
+import { Reveal, SectionTitle } from '@/components/ui/Reveal';
+import { SITE } from '@/config/site';
+import { hrefOf } from '@/lib/router';
 
-export const AboutPage: React.FC = () => {
-  const { setCurrentPage } = useApp();
+const VALEURS = [
+  { icon: BookOpen, titre: 'La Parole au centre', texte: 'Chaque contenu s’enracine dans les Écritures.' },
+  { icon: Heart, titre: 'La bienveillance', texte: 'Un lieu sûr, accueillant pour les jeunes comme pour les aînés.' },
+  { icon: Users, titre: 'La communauté', texte: 'Des pasteurs et des fidèles qui avancent ensemble.' },
+  { icon: ShieldCheck, titre: 'La confiance', texte: 'Des données protégées et des pasteurs vérifiés par l’administration.' },
+];
 
-  const valuesList = [
-    { title: 'Foi', desc: 'Une confiance inébranlable en la grâce transcendante et la puissance de la parole de vérité.' },
-    { title: 'Amour', desc: 'L\'amour universel et inconditionnel manifesté dans chacune de nos interactions et prières.' },
-    { title: 'Respect', desc: 'L\'accueil bienveillant de chacun, dans le respect de son cheminement et de sa tradition spirituelle.' },
-    { title: 'Partage', desc: 'La mise en commun de témoignages, de ressources et d\'encouragements pour édifier la communauté.' },
-    { title: 'Service', desc: 'Le dévouement désintéressé pour soutenir les plus vulnérables et fortifier les fidèles.' },
-    { title: 'Bienveillance', desc: 'Une attitude d\'écoute fraternelle, de douceur et d\'espérance communicative.' },
-  ];
-
+export function AboutPage() {
+  useEffect(() => { window.scrollTo({ top: 0 }); }, []);
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-16">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
-        
-        {/* Header matching mockup */}
-        <div className="text-center space-y-4 max-w-3xl mx-auto">
-          <div className="w-12 h-12 mx-auto rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-bold shadow-md shadow-amber-500/20">
-            <Sparkles className="w-6 h-6" />
+    <>
+      <PublicHeader actif="/#apropos" />
+      <main>
+        <section className="relative overflow-hidden bg-nuit pb-20 pt-32 text-white sm:pb-28 sm:pt-40">
+          <motion.div className="absolute inset-0 opacity-40" initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 2 }}>
+            <Img name="daily_prayer_verse" className="h-full w-full" decorative priority />
+          </motion.div>
+          <div className="absolute inset-0 bg-gradient-to-t from-nuit via-nuit/70 to-nuit/40" />
+          <div className="gutter relative mx-auto max-w-4xl text-center">
+            <Reveal>
+              <p className="surtitre text-accent">À propos</p>
+              <h1 className="mt-3 text-[clamp(2.3rem,6vw,4.4rem)] text-white">{SITE.nom}, <em className="italic">une maison pour l’âme</em></h1>
+              <p className="mx-auto mt-5 max-w-2xl text-[16px] text-white/80 sm:text-lg">{SITE.description}</p>
+              <p className="mt-6 font-script text-3xl text-accent">« {SITE.slogan} »</p>
+            </Reveal>
           </div>
-          <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest block">
-            Notre Identité & Vocation
-          </span>
-          <h1 className="font-serif-title text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
-            À propos de Âme & Vie
-          </h1>
-          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl mx-auto">
-            Notre mission est d'aider chacun à développer une vie spirituelle féconde, nourrir son âme et grandir dans la foi, la sérénité et la paix grâce à la prière, à la méditation, à l'enseignement et à la communauté.
-          </p>
-        </div>
+        </section>
 
-        {/* 3 Core Pillars: Vision, Mission, Valeurs */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          
-          {/* 1. Notre vision */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-amber-400/10 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-4">
-              <Compass className="w-6 h-6" />
+        <section className="gutter mx-auto grid max-w-6xl items-center gap-12 py-20 sm:py-28 md:grid-cols-2">
+          <div>
+            <SectionTitle surtitre="Notre mission" titre="Rendre la Parole accessible, chaque jour" />
+            <Reveal delay={0.1}>
+              <p className="mt-5 text-[15.5px] text-ink/70">
+                Ame & Vie rassemble en un seul lieu des Paroles de Dieu, des enseignements, des méditations et des documents
+                publiés par des pasteurs. Chacun peut y trouver de quoi nourrir sa foi, où qu’il soit, sur téléphone comme sur ordinateur.
+              </p>
+              <p className="mt-4 text-[15.5px] text-ink/70">
+                L’essentiel est gratuit. L’abonnement Premium permet d’aller plus loin et de soutenir la plateforme et ceux qui la font vivre.
+              </p>
+            </Reveal>
+          </div>
+          <Reveal delay={0.1}><Img name="community_fellowship" className="aspect-[4/3] rounded-[28px] shadow-haut" sizes="(min-width:768px) 50vw, 100vw" /></Reveal>
+        </section>
+
+        <section className="bg-surface/70 py-20 sm:py-28">
+          <div className="gutter mx-auto max-w-6xl">
+            <SectionTitle centre surtitre="Nos valeurs" titre="Ce qui nous guide" />
+            <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {VALEURS.map((v, i) => (
+                <Reveal key={v.titre} delay={i * 0.08} className="rounded-3xl bg-fond p-6 shadow-doux ring-1 ring-ligne">
+                  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-primary/10 text-primary"><v.icon className="h-5 w-5" /></span>
+                  <h3 className="mt-5 text-xl">{v.titre}</h3>
+                  <p className="mt-2 text-[14.5px] text-ink/65">{v.texte}</p>
+                </Reveal>
+              ))}
             </div>
-            <h3 className="font-serif-title text-xl font-bold text-slate-900 dark:text-white">
-              Notre vision
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              Voir chaque âme, à travers la richesse de sa tradition spirituelle et de son cheminement intérieur, connectée au Créateur et soutenue par une communauté priante, fraternelle et éclairée.
-            </p>
           </div>
+        </section>
 
-          {/* 2. Notre mission */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-amber-400/10 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-4">
-              <BookOpen className="w-6 h-6" />
-            </div>
-            <h3 className="font-serif-title text-xl font-bold text-slate-900 dark:text-white">
-              Notre mission
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              Sous l'accompagnement de Guide Jean (Fondateur & Responsable de la communauté) et de l'équipe des guides spirituels, diffuser des prières et méditations quotidiennes, des audios apaisants et bâtir un sanctuaire d'intercession et d'élévation.
-            </p>
-          </div>
-
-          {/* 3. Nos valeurs */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-amber-400/10 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-4">
-              <Heart className="w-6 h-6" />
-            </div>
-            <h3 className="font-serif-title text-xl font-bold text-slate-900 dark:text-white">
-              Nos valeurs
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              Foi, amour, respect, partage, service et bienveillance. Ces six piliers guident notre gouvernance et l'ensemble de nos publications.
-            </p>
-          </div>
-
-        </div>
-
-        {/* Biblical Verse Callout matching mockup */}
-        <div className="bg-slate-900 text-white rounded-3xl p-8 sm:p-12 border border-slate-800 text-center space-y-4 shadow-xl">
-          <blockquote className="font-serif-title italic text-xl sm:text-2xl text-amber-200 max-w-2xl mx-auto leading-relaxed">
-            « Car là où deux ou trois sont assemblés en mon nom, je suis au milieu d'eux. »
-          </blockquote>
-          <p className="text-xs font-bold text-amber-400 tracking-widest uppercase">
-            Matthieu 18:20
-          </p>
-        </div>
-
-        {/* Detailed Values Grid */}
-        <div className="space-y-6">
-          <div className="text-center">
-            <h3 className="font-serif-title text-2xl font-bold text-slate-900 dark:text-white">
-              Nos 6 valeurs fondamentales
-            </h3>
-            <p className="text-xs text-slate-500 mt-1">
-              Ce qui anime notre coeur et nos actions au quotidien
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {valuesList.map((val) => (
-              <div
-                key={val.title}
-                className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1.5"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-amber-400" />
-                  <h4 className="font-bold text-sm text-slate-900 dark:text-white">{val.title}</h4>
-                </div>
-                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{val.desc}</p>
-              </div>
+        <section className="gutter mx-auto max-w-6xl py-20 sm:py-28">
+          <SectionTitle centre surtitre="Trois espaces" titre="Une plateforme, trois rôles" />
+          <div className="mt-12 grid gap-5 md:grid-cols-3">
+            {[
+              { icon: Compass, titre: 'Visiteurs', texte: 'Lisent, téléchargent, demandent une prière. Premium pour tout débloquer.', href: hrefOf('inscription'), cta: 'Créer un compte' },
+              { icon: BookOpen, titre: 'Pasteurs', texte: 'Publient Paroles, enseignements et documents depuis leur espace.', href: hrefOf('pasteur'), cta: 'Espace pasteur' },
+              { icon: HandHeart, titre: 'Administration', texte: 'Valide les pasteurs, gère les abonnements et veille sur la plateforme.', href: '', cta: '' },
+            ].map((e, i) => (
+              <Reveal key={e.titre} delay={i * 0.1} className="flex flex-col rounded-3xl bg-fond p-7 shadow-doux ring-1 ring-ligne">
+                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-primary text-on-primary"><e.icon className="h-5 w-5" /></span>
+                <h3 className="mt-5 text-xl">{e.titre}</h3>
+                <p className="mt-2 flex-1 text-[14.5px] text-ink/65">{e.texte}</p>
+                {e.href && <a href={e.href} className="mt-5 text-[14px] font-semibold text-primary hover:underline">{e.cta} →</a>}
+              </Reveal>
             ))}
           </div>
-        </div>
-
-        {/* Join CTA */}
-        <div className="text-center pt-4">
-          <button
-            onClick={() => setCurrentPage('community')}
-            className="px-8 py-3.5 rounded-xl font-bold text-xs bg-amber-400 hover:bg-amber-300 text-slate-950 transition-colors shadow-md shadow-amber-500/20 inline-flex items-center gap-2 cursor-pointer"
-          >
-            <span>Rejoindre notre communauté fraternelle</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-
-      </div>
-    </div>
+          <Reveal className="mt-14 text-center"><WhatsAppButton size="lg" /></Reveal>
+        </section>
+      </main>
+      <PublicFooter />
+    </>
   );
-};
+}
