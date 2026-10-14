@@ -127,6 +127,23 @@ La page **Administration → Base de données** montre l'état de chaque table e
 
 ---
 
+## Contenus d'exemple (documents à télécharger compris)
+
+Une fois connecté à l'administration (`/#admin`), cliquez sur **Ajouter les contenus d'exemple**. Le bouton se trouve sur le tableau de bord quand la bibliothèque est vide, et dans **Base de données**.
+L'import ajoute 26 publications au nom du pasteur « Équipe Ame & Vie » :
+- 8 Paroles de Dieu ;
+- 5 enseignements ;
+- 7 contenus spirituels ;
+- 6 documents PDF (plan de lecture de la Bible en un an, premiers pas dans la foi, carnet de méditation, guide de prière 21 jours, étude des Béatitudes, 30 versets à mémoriser).
+
+Une partie est Gratuite, une partie est Premium. Vous pouvez relancer l'import sans risque de doublon, puis modifier ou supprimer chaque contenu dans **Contenus**.
+Les fichiers sources se trouvent dans `seed/` ; les scripts qui les génèrent sont `scripts/exemples_*.py`.
+
+## Images
+
+Les photos sont listées dans `src/config/images.json`. Avant chaque build, `scripts/download-images.mjs` télécharge celles d'Unsplash dans `public/images/site/`. Sans réseau, le site les charge directement depuis Unsplash.
+Pour utiliser vos propres photos : enregistrez-les en WebP sous `public/images/site/<nom>-640.webp` et `<nom>-1376.webp`, puis retirez la ligne `"unsplash"` correspondante.
+
 ## Développement en local
 
 ```bash
@@ -146,7 +163,7 @@ vercel dev                      # front-end + fonctions /api sur http://localhos
 
 | Quoi | Où |
 |---|---|
-| **Couleurs** (principale, secondaire, accent, fond, texte, WhatsApp, succès, erreur) | `src/index.css`, bloc « À REMPLIR » en haut du fichier (une palette chaleureuse d'exemple y est proposée) |
+| **Couleurs** (principale, secondaire, accent, fond, texte, WhatsApp, couleur de chaque type de contenu) | `src/index.css`, bloc « À REMPLIR » en haut du fichier (palette chaleureuse active, version neutre proposée juste en dessous) |
 | Nom, slogan, numéro WhatsApp, message automatique | `src/config/site.ts` |
 | Types d'abonnement proposés à l'administrateur | `api/_lib/abonnement.ts` → `TYPES_ABONNEMENT` |
 | Images du site | `public/images/site/` : remplacez les fichiers WebP en gardant le même nom |

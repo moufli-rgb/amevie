@@ -11,21 +11,28 @@
 
 :root {
   /* ─────────────── À REMPLIR ─────────────── */
-  --couleur-principale: #1f1f1f;      /* boutons, liens actifs, éléments forts      */
-  --couleur-secondaire: #3d3d3d;      /* fonds sombres (bandeaux, carte Premium)    */
-  --couleur-accent: #8f8f8f;          /* Premium, couronne, détails                 */
-  --couleur-fond: #ffffff;            /* fond général des pages                     */
-  --couleur-texte: #171717;           /* texte principal                            */
-  --couleur-sur-principale: #ffffff;  /* texte posé SUR la couleur principale       */
-  --couleur-whatsapp: #1f8f4e;        /* bouton « Faire mon abonnement »            */
-  --couleur-succes: #15803d;          /* messages de succès, statut « Actif »       */
-  --couleur-erreur: #b91c1c;          /* messages d'erreur, statut « Expiré »       */
+  /* Palette chaleureuse : terre cuite, or, ivoire (modifiable librement) */
+  --couleur-principale: #9a3f1f;      /* terre cuite : boutons, liens actifs        */
+  --couleur-secondaire: #2b1c15;      /* brun nuit : bandeaux sombres, carte Premium */
+  --couleur-accent: #d9a23d;          /* or : Premium, couronnes, détails            */
+  --couleur-fond: #fdf8f1;            /* ivoire : fond général                       */
+  --couleur-texte: #2a1d16;           /* brun profond : texte                        */
+  --couleur-sur-principale: #fffaf3;  /* texte posé SUR la couleur principale        */
+  --couleur-whatsapp: #1f8f4e;        /* bouton « Faire mon abonnement »             */
+  --couleur-succes: #15803d;          /* messages de succès, statut « Actif »        */
+  --couleur-erreur: #b91c1c;          /* messages d'erreur, statut « Expiré »        */
+
+  /* Couleur de chaque type de contenu (pastilles, bandeaux des cartes) */
+  --couleur-parole: #c2410c;          /* Paroles de Dieu : orange cuivré             */
+  --couleur-enseignement: #7c2d5b;    /* Enseignements : prune                       */
+  --couleur-document: #0f6b6b;        /* Documents : bleu-vert                       */
+  --couleur-contenu: #b7791f;         /* Contenus spirituels : ambre                 */
   /* ───────────────────────────────────────── */
 
-  /* Exemple de palette chaleureuse (copiez ces valeurs au-dessus pour l'essayer) :
-     --couleur-principale: #7a3a22;  --couleur-secondaire: #2a1c14;
-     --couleur-accent: #c9973f;      --couleur-fond: #fbf7f0;
-     --couleur-texte: #241b15;       --couleur-sur-principale: #fff8ee; */
+  /* Version neutre (noir / gris / blanc) si vous préférez :
+     --couleur-principale: #1f1f1f;  --couleur-secondaire: #3d3d3d;
+     --couleur-accent: #8f8f8f;      --couleur-fond: #ffffff;
+     --couleur-texte: #171717;       --couleur-sur-principale: #ffffff; */
 
   /* Dérivées automatiques (ne pas modifier sauf besoin) */
   --couleur-surface: color-mix(in oklab, var(--couleur-fond) 94%, var(--couleur-texte));
@@ -50,6 +57,10 @@
   --color-whatsapp: var(--couleur-whatsapp);
   --color-surface: var(--couleur-surface);
   --color-ligne: var(--couleur-ligne);
+  --color-parole: var(--couleur-parole);
+  --color-enseignement: var(--couleur-enseignement);
+  --color-document: var(--couleur-document);
+  --color-contenu: var(--couleur-contenu);
 
   --font-serif: "Fraunces Variable", "Fraunces", Georgia, "Times New Roman", serif;
   --font-sans: "Manrope Variable", "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;

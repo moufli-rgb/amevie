@@ -88,7 +88,7 @@ function Accueil({ user }: { user: SessionUser }) {
   const publier = (t: TypeContenu) => go('pasteur', 'nouveau', t);
   return (
     <div className="space-y-6">
-      <WelcomeBanner photo="spiritual_bible_study" surtitre="Espace pasteur" titre={<>Bienvenue, Pst {user.prenom ?? user.name}</>}
+      <WelcomeBanner photo="chorale" surtitre="Espace pasteur" titre={<>Bienvenue, Pst {user.prenom ?? user.name}</>}
         texte="Partagez la Parole : vos publications sont visibles par les visiteurs selon l’accès choisi (Gratuit ou Premium)." />
       <StatGrid cols="sm:grid-cols-4" stats={[
         { label: 'Paroles de Dieu', value: loading && !data ? null : n('parole'), icon: BookOpen, onClick: () => go('pasteur', 'publications') },

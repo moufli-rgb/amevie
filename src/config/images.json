@@ -1,0 +1,65 @@
+{
+  "_aide": "Images du site. Celles qui ont un identifiant « unsplash » sont téléchargées automatiquement avant chaque build (public/images/site). Pour utiliser votre propre photo : déposez-la en WebP sous public/images/site/<nom>-640.webp et <nom>-1376.webp, puis retirez la ligne « unsplash ».",
+  "images": {
+    "hero_prayer_light": {
+      "alt": "Mains jointes en prière à la lumière des bougies"
+    },
+    "daily_prayer_verse": {
+      "alt": "Une Bible ouverte sur une table, au soleil du matin"
+    },
+    "community_fellowship": {
+      "alt": "Des amis réunis dans la joie, Bible à la main"
+    },
+    "spiritual_bible_study": {
+      "alt": "Bible, carnet de notes et bougie pour un temps d’étude"
+    },
+    "croix_aube": {
+      "alt": "Une croix en silhouette sous un ciel orangé",
+      "unsplash": "photo-1450558415837-1f5e21a17709"
+    },
+    "croix_colline": {
+      "alt": "Une croix sur une colline à l’heure dorée",
+      "unsplash": "photo-1528825539566-2bcb5882445c"
+    },
+    "bible_mains": {
+      "alt": "Des mains tenant une Bible",
+      "unsplash": "photo-1600019246742-3b66977db044"
+    },
+    "bible_cafe": {
+      "alt": "Lecture de la Bible avec une tasse de café",
+      "unsplash": "photo-1604882737206-8a000c03d8fe"
+    },
+    "bible_nature": {
+      "alt": "Un livre ouvert au bord de l’eau",
+      "unsplash": "photo-1533000971552-6a962ff0b9f9"
+    },
+    "louange": {
+      "alt": "Une assemblée en louange, les mains levées",
+      "unsplash": "photo-1756136836696-0e3374ebfbac"
+    },
+    "chorale": {
+      "alt": "Une chorale chante ensemble",
+      "unsplash": "photo-1752300761305-e9fb356f6e3c"
+    },
+    "priere_femme": {
+      "alt": "Une femme en prière, les mains jointes",
+      "unsplash": "photo-1756367260219-b60e3cb90fa5"
+    },
+    "lumiere": {
+      "alt": "Les bras levés vers la lumière",
+      "unsplash": "photo-1637615739656-ca10c4285c88"
+    },
+    "celebration": {
+      "alt": "Un groupe dans la joie",
+      "unsplash": "photo-1515657241610-a6b33f0f6c5a"
+    },
+    "enfant_bible": {
+      "alt": "Un enfant lit la Bible",
+      "unsplash": "photo-1442115597578-2d0fb2413734"
+    },
+    "coucher_soleil": {
+      "alt": "Silhouette d’un enfant au coucher du soleil",
+      "unsplash": "photo-1491841550275-ad7854e35ca6"
+    }
+  }
+}

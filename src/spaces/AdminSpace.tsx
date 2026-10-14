@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   Activity, AlertTriangle, BookOpen, Church, CreditCard, Crown, Database, FileText, GraduationCap, HandHeart, KeyRound, LayoutDashboard,
-  Eye, Library, Mail, Settings, ShieldCheck, UserCheck, Users,
+  Eye, Library, Mail, Settings, ShieldCheck, Sparkles, UserCheck, Users,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { go } from '@/lib/router';
@@ -9,7 +9,7 @@ import type { SessionUser } from '@/lib/session';
 import { depuis, formatDate, formatNombre } from '@/lib/format';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { Field } from '@/components/ui/Field';
-import type { AlertMsg } from '@/components/ui/Alert';
+import { Alert, type AlertMsg } from '@/components/ui/Alert';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Empty';
@@ -83,11 +83,13 @@ function TableauDeBord({ user, data, error, reload }: { user: SessionUser; data:
   const s = data?.stats ?? {};
   return (
     <div className="space-y-6">
-      <WelcomeBanner photo="hero_prayer_light" surtitre="Administration" titre={<>Bonjour, {user.name}</>} texte="Vue globale de la plateforme Ame & Vie.">
+      <WelcomeBanner photo="croix_aube" surtitre="Administration" titre={<>Bonjour, {user.name}</>} texte="Vue globale de la plateforme Ame & Vie.">
         {!!s.pasteurs_en_attente && <button onClick={() => go('admin', 'pasteurs')} className="rounded-full bg-white px-4 py-2 text-[13px] font-semibold text-ink">{s.pasteurs_en_attente} pasteur(s) à valider →</button>}
         {!!data?.alertes.length && <button onClick={() => go('admin', 'abonnements')} className="rounded-full bg-white/15 px-4 py-2 text-[13px] font-semibold text-white ring-1 ring-white/30">{data.alertes.length} abonnement(s) expirent bientôt</button>}
       </WelcomeBanner>
       {error && <LoadError message={error} onRetry={reload} />}
+      {/* Bibliothèque vide : proposer les contenus d'exemple */}
+      {data && !s.contenus_publies && <ImportExemples onDone={reload} />}
       <StatGrid cols="sm:grid-cols-4" stats={[
         { label: 'Visiteurs du site', value: s.visiteurs_total, icon: Eye, hint: s.visiteurs_30j != null ? `${s.visiteurs_30j} sur 30 jours` : undefined },
         { label: 'Utilisateurs inscrits', value: s.inscrits, icon: Users, hint: s.comptes_actifs != null ? `${s.comptes_actifs} actifs` : undefined, onClick: () => go('admin', 'visiteurs') },
@@ -133,6 +135,37 @@ function Activites() {
   );
 }
 
+/** Bouton d'import des contenus et documents d'exemple (ré-exécutable sans doublon). */
+export function ImportExemples({ onDone }: { onDone?: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<AlertMsg | null>(null);
+  async function lancer() {
+    setBusy(true); setMsg(null);
+    try {
+      const r = await api<{ ajoutes: number; ignores: number; pasteur: string }>('admin?action=exemples', { method: 'POST', role: 'admin' });
+      setMsg({ kind: 'success', text: r.ajoutes
+        ? `${r.ajoutes} contenu(s) ajouté(s) au nom de « ${r.pasteur} »${r.ignores ? `, ${r.ignores} déjà présent(s)` : ''}.`
+        : 'Les contenus d’exemple sont déjà tous présents.' });
+      onDone?.();
+    } catch (e) { setMsg({ kind: 'error', text: e instanceof Error ? e.message : 'Erreur.' }); }
+    finally { setBusy(false); }
+  }
+  return (
+    <Card title="Contenus d’exemple">
+      <p className="text-[14px] text-ink/70">
+        Ajoute 26 publications prêtes à l’emploi : 8 Paroles de Dieu, 5 enseignements, 7 contenus spirituels et
+        <strong> 6 documents PDF à télécharger</strong> (plan de lecture de la Bible, guide de prière 21 jours, étude des Béatitudes…),
+        en Gratuit et en Premium. Elles sont publiées au nom du pasteur « Équipe Ame & Vie » ; vous pourrez les modifier ou les supprimer dans « Contenus ».
+      </p>
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <Button icon={<Sparkles className="h-4 w-4" />} loading={busy} onClick={lancer} shine>Ajouter les contenus d’exemple</Button>
+        <span className="text-mini text-ink/50">Sans risque de doublon : peut être relancé.</span>
+      </div>
+      <div className="mt-4"><Alert msg={msg} /></div>
+    </Card>
+  );
+}
+
 function BaseDeDonnees() {
   const { data, error, loading, reload } = useData<{ tables: { table: string; lignes: number | null; existe: boolean }[]; stockage: boolean; stockage_public: boolean | null }>('admin?scope=database', 'admin');
   const manquantes = data?.tables.filter((t) => !t.existe) ?? [];
@@ -164,6 +197,7 @@ function BaseDeDonnees() {
           </div>
         )}
       </div>
+      <div className="mt-6"><ImportExemples onDone={reload} /></div>
       <Card className="mt-6" title="Sécurité">
         <ul className="space-y-2 text-[14px] text-ink/70">
           {['Row Level Security activée sur toutes les tables, sans accès public.', 'Clé service_role utilisée uniquement dans les fonctions serveur Vercel.',

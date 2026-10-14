@@ -1,0 +1,232 @@
+{
+  "_aide": "Contenus d'exemple importés depuis l'administration (Base de données → Ajouter les contenus d'exemple). Textes bibliques : Louis Segond 1910 (domaine public).",
+  "pasteur": {
+    "prenom": "Équipe",
+    "nom": "Ame & Vie",
+    "email": "equipe@ameetvie.org",
+    "eglise": "Ame & Vie",
+    "bio": "Contenus proposés par l'équipe Ame & Vie pour bien démarrer."
+  },
+  "contenus": [
+    {
+      "type": "parole",
+      "title": "Le Seigneur est mon berger",
+      "bible_ref": "Psaume 23:1-3",
+      "content": "L'Éternel est mon berger : je ne manquerai de rien. Il me fait reposer dans de verts pâturages, Il me dirige près des eaux paisibles. Il restaure mon âme, Il me conduit dans les sentiers de la justice, à cause de son nom.",
+      "description": "Aujourd'hui, laissez-vous conduire. Le berger connaît le chemin, la source et le repos dont vous avez besoin.",
+      "access": "gratuit"
+    },
+    {
+      "type": "parole",
+      "title": "Tant aimé",
+      "bible_ref": "Jean 3:16",
+      "content": "Car Dieu a tant aimé le monde qu'il a donné son Fils unique, afin que quiconque croit en lui ne périsse point, mais qu'il ait la vie éternelle.",
+      "description": "Le cœur de l'Évangile en une phrase : vous êtes aimé, et cet amour a un nom, Jésus.",
+      "access": "gratuit"
+    },
+    {
+      "type": "parole",
+      "title": "La paix qui surpasse tout",
+      "bible_ref": "Philippiens 4:6-7",
+      "content": "Ne vous inquiétez de rien ; mais en toute chose faites connaître vos besoins à Dieu par des prières et des supplications, avec des actions de grâces. Et la paix de Dieu, qui surpasse toute intelligence, gardera vos cœurs et vos pensées en Jésus-Christ.",
+      "description": "Échangez vos inquiétudes contre sa paix : nommez chaque souci dans la prière, puis remerciez.",
+      "access": "gratuit"
+    },
+    {
+      "type": "parole",
+      "title": "Ne crains rien",
+      "bible_ref": "Ésaïe 41:10",
+      "content": "Ne crains rien, car je suis avec toi ; ne promène pas des regards inquiets, car je suis ton Dieu ; je te fortifie, je viens à ton secours, je te soutiens de ma droite triomphante.",
+      "description": "Quatre promesses pour une seule journée : sa présence, sa force, son secours, son soutien.",
+      "access": "gratuit"
+    },
+    {
+      "type": "parole",
+      "title": "Venez à moi",
+      "bible_ref": "Matthieu 11:28",
+      "content": "Venez à moi, vous tous qui êtes fatigués et chargés, et je vous donnerai du repos.",
+      "description": "Le repos n'est pas d'abord un lieu, c'est une personne. Approchez-vous de lui aujourd'hui.",
+      "access": "gratuit"
+    },
+    {
+      "type": "parole",
+      "title": "Des projets de paix",
+      "bible_ref": "Jérémie 29:11",
+      "content": "Car je connais les projets que j'ai formés sur vous, dit l'Éternel, projets de paix et non de malheur, afin de vous donner un avenir et de l'espérance.",
+      "description": "Même dans l'attente, Dieu prépare un avenir. Confiez-lui ce que vous ne voyez pas encore.",
+      "access": "premium"
+    },
+    {
+      "type": "parole",
+      "title": "Fortifie-toi et prends courage",
+      "bible_ref": "Josué 1:9",
+      "content": "Ne t'ai-je pas donné cet ordre : Fortifie-toi et prends courage ? Ne t'effraie point et ne t'épouvante point, car l'Éternel, ton Dieu, est avec toi dans tout ce que tu entreprendras.",
+      "description": "Le courage n'est pas l'absence de peur : c'est avancer en sachant qui marche avec vous.",
+      "access": "premium"
+    },
+    {
+      "type": "parole",
+      "title": "Tout concourt au bien",
+      "bible_ref": "Romains 8:28",
+      "content": "Nous savons, du reste, que toutes choses concourent au bien de ceux qui aiment Dieu, de ceux qui sont appelés selon son dessein.",
+      "description": "Rien n'est perdu entre les mains de Dieu, pas même les jours difficiles.",
+      "access": "premium"
+    },
+    {
+      "type": "enseignement",
+      "title": "Bâtir sa maison sur le roc",
+      "description": "Une parabole de Jésus pour construire une vie solide, capable de traverser les tempêtes.",
+      "content": "« C'est pourquoi, quiconque entend ces paroles que je dis et les met en pratique, sera semblable à un homme prudent qui a bâti sa maison sur le roc. » (Matthieu 7:24)\n\n1. Deux maisons qui se ressemblent\nVues de l'extérieur, les deux maisons de la parabole sont identiques. La différence ne se voit pas : elle est dans les fondations. Il en va de même de nos vies. Deux personnes peuvent aller à l'église, chanter les mêmes cantiques, connaître les mêmes versets. Ce qui les distingue apparaît le jour de la tempête.\n\n2. Entendre ne suffit pas\nLes deux bâtisseurs ont entendu la même parole. Le prudent l'a mise en pratique. La foi n'est pas seulement un savoir, c'est une obéissance de chaque jour : pardonner, servir, dire la vérité, prier quand on n'en a pas envie.\n\n3. La tempête vient pour tous\nJésus ne promet pas une vie sans pluie, sans torrents ni vents. Il promet une maison qui reste debout. La question n'est donc pas « Est-ce que la tempête viendra ? » mais « Sur quoi suis-je construit quand elle viendra ? »\n\nÀ mettre en pratique cette semaine\n• Choisissez une parole de Jésus lue récemment et notez une action concrète pour l'appliquer.\n• Identifiez une « fondation de sable » dans votre vie (peur, orgueil, dépendance) et confiez-la à Dieu dans la prière.\n• Partagez cette parabole avec une personne de votre entourage.",
+      "access": "gratuit",
+      "category": "Étude biblique",
+      "bible_ref": "Matthieu 7:24-27"
+    },
+    {
+      "type": "enseignement",
+      "title": "La puissance du pardon",
+      "description": "Pardonner ne veut pas dire oublier ni excuser : c'est libérer son cœur. Un enseignement pratique.",
+      "content": "« Supportez-vous les uns les autres, et, si l'un a sujet de se plaindre de l'autre, pardonnez-vous réciproquement. De même que Christ vous a pardonné, pardonnez-vous aussi. » (Colossiens 3:13)\n\nCe que le pardon n'est pas\nPardonner, ce n'est pas dire que le mal n'était pas grave. Ce n'est pas non plus faire comme si rien ne s'était passé, ni se remettre forcément en danger. Le pardon reconnaît la blessure ; il refuse seulement qu'elle gouverne notre cœur.\n\nPourquoi pardonner ?\nParce que nous avons été pardonnés les premiers. Celui qui mesure la grâce reçue trouve la force de la transmettre. Et parce que la rancune enferme surtout celui qui la porte.\n\nUn chemin, pas un instant\nLe pardon commence souvent par une décision, puis se poursuit dans le temps. Il peut falloir pardonner plusieurs fois pour la même offense, à mesure que le souvenir revient. C'est normal.\n\nQuatre pas pour avancer\n1. Nommer devant Dieu ce qui vous a blessé, honnêtement.\n2. Remettre à Dieu le droit de juger et de rendre justice.\n3. Bénir la personne dans la prière, même en quelques mots.\n4. Chercher de l'aide (pasteur, ami de confiance) si la blessure est profonde.",
+      "access": "gratuit",
+      "category": "Étude biblique",
+      "bible_ref": null
+    },
+    {
+      "type": "enseignement",
+      "title": "Marcher par la foi, non par la vue",
+      "description": "Comment avancer quand on ne voit pas encore la réponse ? Un enseignement en trois parties.",
+      "content": "« Car nous marchons par la foi et non par la vue. » (2 Corinthiens 5:7)\n\nPartie 1 — Abraham, l'homme qui partit sans savoir\nAbraham quitta son pays « sans savoir où il allait » (Hébreux 11:8). Sa foi ne reposait pas sur une carte, mais sur Celui qui l'appelait. La foi commence souvent par un premier pas dont on ne voit pas la suite.\n\nPartie 2 — Quand la vue contredit la promesse\nPierre marcha sur les eaux tant qu'il regarda Jésus. Quand il regarda le vent, il commença à enfoncer. Nos circonstances sont réelles, mais elles ne sont pas la réalité tout entière. Fixer les yeux sur Jésus, c'est laisser sa parole avoir le dernier mot.\n\nPartie 3 — La foi qui agit\nUne foi vivante se traduit par des actes : prier avec persévérance, rester fidèle dans les petites choses, continuer à servir dans l'attente. Dieu honore la foi qui avance.\n\nQuestions pour méditer\n• Quelle promesse de Dieu vous semble aujourd'hui contredite par ce que vous voyez ?\n• Quel « premier pas » Dieu vous demande-t-il de faire cette semaine ?\n• Qui pouvez-vous encourager à garder la foi ?",
+      "access": "premium",
+      "category": "Exhortation",
+      "bible_ref": "2 Corinthiens 5:7"
+    },
+    {
+      "type": "enseignement",
+      "title": "Prier sans cesse",
+      "description": "La prière au quotidien : des repères simples pour une vie de communion avec Dieu.",
+      "content": "« Priez sans cesse. Rendez grâces en toutes choses, car c'est à votre égard la volonté de Dieu en Jésus-Christ. » (1 Thessaloniciens 5:17-18)\n\nPrier sans cesse : est-ce possible ?\nIl ne s'agit pas de rester à genoux toute la journée, mais de vivre la journée avec Dieu. La prière devient une conversation continue : un merci au réveil, un appel au secours au travail, une intercession dans les transports.\n\nTrois moments pour structurer la journée\n• Le matin : confier la journée, lire un verset, demander la direction de Dieu.\n• Dans la journée : des prières courtes (« Seigneur, aide-moi », « Merci »).\n• Le soir : relire la journée avec Dieu, remercier, demander pardon, remettre ses soucis.\n\nLe modèle de Jésus\nLe « Notre Père » (Matthieu 6:9-13) donne un chemin : adorer, désirer sa volonté, demander le pain du jour, pardonner et être pardonné, être gardé du mal.\n\nDéfi de 7 jours\nChaque jour, notez un sujet de prière et une raison de remercier. Au bout d'une semaine, relisez : vous verrez la fidélité de Dieu.",
+      "access": "premium",
+      "category": "Prière",
+      "bible_ref": "1 Thessaloniciens 5:17"
+    },
+    {
+      "type": "enseignement",
+      "title": "Vaincre l'anxiété par la Parole",
+      "description": "Ce que la Bible dit de l'inquiétude, et des gestes concrets pour retrouver la paix.",
+      "content": "« Déchargez-vous sur lui de tous vos soucis, car lui-même prend soin de vous. » (1 Pierre 5:7)\n\nL'anxiété n'est pas un manque de foi\nDe grands serviteurs de Dieu ont connu l'angoisse : David dans les Psaumes, Élie dans le désert, Jésus lui-même à Gethsémané. Dieu ne nous reproche pas nos peurs ; il nous invite à les lui apporter.\n\nCe que dit la Parole\n• Dieu prend soin de vous personnellement (1 Pierre 5:7).\n• Il connaît vos besoins avant que vous les exprimiez (Matthieu 6:8).\n• Sa paix garde le cœur de ceux qui prient (Philippiens 4:6-7).\n\nDes gestes concrets\n1. Écrire ses inquiétudes, puis les transformer une à une en prières.\n2. Méditer chaque matin un verset de confiance et le garder sur soi.\n3. Prendre soin de son corps : sommeil, marche, repas réguliers.\n4. Parler à quelqu'un : un pasteur, un ami, et si besoin un professionnel de santé. Demander de l'aide est aussi un acte de foi.",
+      "access": "premium",
+      "category": "Exhortation",
+      "bible_ref": null
+    },
+    {
+      "type": "contenu",
+      "title": "Prière du matin",
+      "category": "Prière",
+      "description": "Commencer la journée en confiant tout à Dieu.",
+      "content": "Seigneur, merci pour ce nouveau jour.\nMerci pour le souffle de vie, pour le repos de la nuit, pour ceux que j'aime.\n\nJe te confie cette journée : mes rendez-vous, mon travail, mes déplacements, mes décisions.\nDonne-moi la sagesse quand je ne sais pas quoi faire, la patience quand tout va trop vite, et la douceur dans mes paroles.\n\nGarde ma famille et mes proches. Bénis ceux que je rencontrerai aujourd'hui, et fais de moi une lumière là où je serai.\n\nQue ta paix garde mon cœur et mes pensées.\nAu nom de Jésus. Amen.",
+      "access": "gratuit",
+      "bible_ref": null
+    },
+    {
+      "type": "contenu",
+      "title": "Prière du soir",
+      "category": "Prière",
+      "description": "Remettre sa journée à Dieu et s'endormir en paix.",
+      "content": "Seigneur, au terme de cette journée, je viens à toi.\n\nMerci pour tout ce que tu m'as donné aujourd'hui, même ce que je n'ai pas remarqué.\nPardonne-moi pour les paroles et les gestes qui ne t'ont pas honoré. Aide-moi aussi à pardonner à ceux qui m'ont blessé.\n\nJe dépose devant toi ce qui m'inquiète pour demain.\n« Je me couche et je m'endors en paix, car toi seul, ô Éternel, tu me donnes la sécurité dans ma demeure. » (Psaume 4:9)\n\nVeille sur moi et sur les miens cette nuit.\nAmen.",
+      "access": "gratuit",
+      "bible_ref": "Psaume 4:9"
+    },
+    {
+      "type": "contenu",
+      "title": "Prière pour la famille",
+      "category": "Famille",
+      "description": "Une prière à dire ensemble, parents et enfants.",
+      "content": "Père céleste, merci pour notre famille.\n\nBénis chacun de nous : ceux qui sont présents et ceux qui sont loin.\nMets dans notre maison ta paix, ta joie et ton amour.\nApprends-nous à nous écouter, à nous pardonner vite et à nous encourager.\n\nProtège nos enfants à l'école, sur les routes et dans leurs amitiés.\nDonne du travail et de la sagesse aux parents, de la force aux anciens.\n\n« Moi et ma maison, nous servirons l'Éternel. » (Josué 24:15)\nAmen.",
+      "access": "gratuit",
+      "bible_ref": "Josué 24:15"
+    },
+    {
+      "type": "contenu",
+      "title": "Rendre grâce en toute chose",
+      "category": "Louange",
+      "description": "Une louange pour les jours ordinaires comme pour les jours difficiles.",
+      "content": "« Rendez grâces en toutes choses, car c'est à votre égard la volonté de Dieu en Jésus-Christ. » (1 Thessaloniciens 5:18)\n\nJe te loue, Seigneur, pour ta fidélité qui se renouvelle chaque matin.\nJe te loue pour le pain sur la table, pour l'eau qui désaltère, pour le toit qui m'abrite.\nJe te loue pour les visages qui m'entourent et pour les mains qui m'ont aidé.\n\nJe te loue aussi pour les jours difficiles, car tu ne m'y as jamais laissé seul.\nTu es bon, et ta bonté dure à toujours.\n\nExercice : écrivez aujourd'hui dix raisons de dire merci. Relisez-les ce soir à voix haute.",
+      "access": "gratuit",
+      "bible_ref": "1 Thessaloniciens 5:18"
+    },
+    {
+      "type": "contenu",
+      "title": "Le Seigneur est mon berger — méditation guidée",
+      "category": "Méditation",
+      "description": "Une méditation lente du Psaume 23, verset par verset.",
+      "content": "Installez-vous dans un endroit calme. Respirez lentement. Lisez chaque phrase deux fois, puis laissez un temps de silence.\n\n« L'Éternel est mon berger » — Il ne s'agit pas d'un berger, mais de MON berger. Il me connaît par mon nom.\n\n« Je ne manquerai de rien » — De quoi ai-je peur de manquer aujourd'hui ? Je le lui dis.\n\n« Il me fait reposer dans de verts pâturages » — Où sont mes verts pâturages ? Quand me suis-je vraiment reposé pour la dernière fois ?\n\n« Il restaure mon âme » — Quelle partie de moi est fatiguée, blessée ? Je la lui présente.\n\n« Quand je marche dans la vallée de l'ombre de la mort, je ne crains aucun mal, car tu es avec moi » — Dans la vallée, le psalmiste ne parle plus de Dieu : il lui parle. La difficulté rapproche.\n\nTerminez en remerciant le berger pour un soin précis de cette semaine.",
+      "access": "premium",
+      "bible_ref": "Psaume 23"
+    },
+    {
+      "type": "contenu",
+      "title": "Jeunes : ta valeur aux yeux de Dieu",
+      "category": "Jeunesse",
+      "description": "Une exhortation pour les jeunes qui doutent d'eux-mêmes.",
+      "content": "« Je te loue de ce que je suis une créature si merveilleuse. Tes œuvres sont admirables, et mon âme le reconnaît bien. » (Psaume 139:14)\n\nLes réseaux sociaux te comparent sans cesse aux autres. Les notes, les likes, les regards te disent ce que tu vaux. Mais ta valeur n'est pas un score.\n\nDieu t'a formé avec soin. Il connaît tes forces et tes faiblesses, et il t'aime déjà. Tu n'as pas à mériter son amour : tu peux seulement le recevoir.\n\nTrois rappels pour cette semaine :\n1. Avant de te comparer, remercie Dieu pour une qualité qu'il t'a donnée.\n2. Choisis tes influences : ce que tu regardes façonne ce que tu penses.\n3. Entoure-toi de personnes qui t'aident à grandir, pas à douter.\n\nTu as de la valeur. Tu as un appel. Avance.",
+      "access": "premium",
+      "bible_ref": "Psaume 139:14"
+    },
+    {
+      "type": "contenu",
+      "title": "Témoignage : de l'inquiétude à la paix",
+      "category": "Témoignage",
+      "description": "Une sœur raconte comment la prière a changé sa façon de vivre une épreuve.",
+      "content": "« Pendant des mois, je me réveillais chaque nuit avec la même angoisse : mon travail allait s'arrêter et je ne voyais pas comment nourrir mes enfants.\n\nUn dimanche, une sœur m'a donné Philippiens 4:6-7 écrit sur un petit papier. Je l'ai collé sur mon miroir. Chaque matin, au lieu de ruminer, j'ai commencé à écrire mes soucis et à les transformer en prières, puis à noter une raison de dire merci.\n\nLa situation n'a pas changé tout de suite. Mais moi, j'ai changé : j'ai retrouvé le sommeil, et une paix que je ne savais pas expliquer.\n\nTrois mois plus tard, une porte s'est ouverte dans un autre service. Aujourd'hui je garde ce petit papier dans ma Bible, pour me souvenir que Dieu était là avant la réponse. »\n\nTémoignage partagé avec l'accord de son auteure (prénom non publié).",
+      "access": "gratuit",
+      "bible_ref": null
+    },
+    {
+      "type": "document",
+      "title": "Plan de lecture de la Bible en un an",
+      "file": "plan-de-lecture-bible-1-an.pdf",
+      "description": "Toute la Bible en 365 jours, de la Genèse à l'Apocalypse, avec une case à cocher par jour. À imprimer.",
+      "access": "gratuit",
+      "category": "Étude biblique"
+    },
+    {
+      "type": "document",
+      "title": "Premiers pas dans la foi",
+      "file": "premiers-pas-dans-la-foi.pdf",
+      "description": "Un livret simple pour les nouveaux croyants : prière, lecture de la Bible, église, baptême.",
+      "access": "gratuit",
+      "category": "Jeunesse"
+    },
+    {
+      "type": "document",
+      "title": "Carnet de méditation hebdomadaire",
+      "file": "carnet-de-meditation.pdf",
+      "description": "Des pages à imprimer pour noter vos lectures, prières et sujets de reconnaissance chaque semaine.",
+      "access": "gratuit",
+      "category": "Méditation"
+    },
+    {
+      "type": "document",
+      "title": "Guide de prière : 21 jours",
+      "file": "guide-de-priere-21-jours.pdf",
+      "description": "Trois semaines pour approfondir votre vie de prière : un thème, un verset et une prière par jour.",
+      "access": "premium",
+      "category": "Prière"
+    },
+    {
+      "type": "document",
+      "title": "Étude biblique : les Béatitudes",
+      "file": "etude-biblique-beatitudes.pdf",
+      "description": "Huit leçons sur Matthieu 5:1-12, avec questions de discussion pour l'étude personnelle ou en groupe.",
+      "access": "premium",
+      "category": "Étude biblique"
+    },
+    {
+      "type": "document",
+      "title": "30 versets à mémoriser",
+      "file": "30-versets-a-memoriser.pdf",
+      "description": "Des cartes à découper, classées par thème : confiance, paix, pardon, force, espérance.",
+      "access": "premium",
+      "category": "Méditation"
+    }
+  ]
+}

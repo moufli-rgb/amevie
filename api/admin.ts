@@ -3,10 +3,14 @@
  *  overview  : statistiques générales, alertes d'expiration, activité récente.
  *  activites : journal complet (filtres : role, limit).
  *  database  : état des tables et du stockage Supabase.
+ *
+ * POST /api/admin?action=exemples : ajoute les contenus et documents d'exemple (ré-exécutable).
  */
 import { route, query } from './_lib/http.js';
 import { ApiError } from './_lib/errors.js';
 import { requireRole } from './_lib/auth.js';
+import { importerExemples } from './_lib/exemples.js';
+import { logActivite } from './_lib/activity.js';
 import { db, check, isMissingTable } from './_lib/supabase.js';
 import { marquerExpires, statutReel, joursRestants, type SubscriptionRow } from './_lib/abonnement.js';
 
@@ -85,5 +89,13 @@ export default route({
     }
 
     throw new ApiError(400, 'Paramètre « scope » invalide.');
+  },
+
+  async POST(req) {
+    const admin = await requireRole(req, 'admin');
+    if (query(req, 'action') !== 'exemples') throw new ApiError(400, 'Action inconnue.');
+    const r = await importerExemples();
+    await logActivite({ role: 'admin', user_id: admin.id, nom: admin.name, action: 'import_exemples', details: r });
+    return r;
   },
 });

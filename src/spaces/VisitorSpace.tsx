@@ -38,7 +38,7 @@ function Accueil({ user }: { user: SessionUser }) {
   ];
   return (
     <div className="space-y-6">
-      <WelcomeBanner photo="daily_prayer_verse" surtitre="Mon espace" titre={<>Bonjour, {user.prenom ?? user.name}</>}
+      <WelcomeBanner photo="bible_mains" surtitre="Mon espace" titre={<>Bonjour, {user.prenom ?? user.name}</>}
         texte={data?.parole ? <>« {data.parole.content.slice(0, 160)}{data.parole.content.length > 160 ? '…' : ''} » — <strong>{data.parole.bible_ref}</strong></> : SITE.slogan} />
       <SubscriptionStatus a={user.abonnement} />
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

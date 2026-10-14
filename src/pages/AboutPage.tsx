@@ -23,8 +23,8 @@ export function AboutPage() {
       <PublicHeader actif="/#apropos" />
       <main>
         <section className="relative overflow-hidden bg-nuit pb-20 pt-32 text-white sm:pb-28 sm:pt-40">
-          <motion.div className="absolute inset-0 opacity-40" initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 2 }}>
-            <Img name="daily_prayer_verse" className="h-full w-full" decorative priority />
+          <motion.div className="absolute inset-0 opacity-60" initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 2 }}>
+            <Img name="croix_colline" className="h-full w-full" decorative priority />
           </motion.div>
           <div className="absolute inset-0 bg-gradient-to-t from-nuit via-nuit/70 to-nuit/40" />
           <div className="gutter relative mx-auto max-w-4xl text-center">
@@ -50,7 +50,11 @@ export function AboutPage() {
               </p>
             </Reveal>
           </div>
-          <Reveal delay={0.1}><Img name="community_fellowship" className="aspect-[4/3] rounded-[28px] shadow-haut" sizes="(min-width:768px) 50vw, 100vw" /></Reveal>
+          <Reveal delay={0.1} className="relative pb-10 pr-10">
+            <Img name="community_fellowship" className="aspect-[4/3] rounded-[28px] shadow-haut" sizes="(min-width:768px) 50vw, 100vw" />
+            <Img name="louange" className="absolute bottom-0 right-0 aspect-square w-[42%] rounded-3xl shadow-haut ring-8 ring-fond" sizes="(min-width:768px) 22vw, 45vw" />
+            <span className="absolute -left-3 top-6 rotate-[-6deg] rounded-2xl bg-accent px-4 py-2 font-script text-2xl text-secondary shadow-doux">Une seule famille</span>
+          </Reveal>
         </section>
 
         <section className="bg-surface/70 py-20 sm:py-28">

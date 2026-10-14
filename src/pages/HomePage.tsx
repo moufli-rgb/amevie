@@ -6,6 +6,7 @@ import {
 import { PublicHeader } from '@/components/public/PublicHeader';
 import { PublicFooter } from '@/components/public/PublicFooter';
 import { Img } from '@/components/Img';
+import { HeroSlides, Mosaique, Thematiques } from '@/components/public/HomeExtras';
 import { ContentCard } from '@/components/ContentCard';
 import { WhatsAppButton } from '@/components/Premium';
 import { Reveal, SectionTitle } from '@/components/ui/Reveal';
@@ -69,9 +70,7 @@ export function HomePage({ ancre }: { ancre: string }) {
         {/* ====================== Héros ====================== */}
         <section ref={hero} className="relative flex min-h-[92svh] items-end overflow-hidden bg-nuit paysage:min-h-[100svh]">
           <motion.div className="absolute inset-0" style={{ y }}>
-            <motion.div className="absolute inset-0" initial={{ scale: 1.12 }} animate={{ scale: 1 }} transition={{ duration: 2.4, ease: [0.22, 1, 0.36, 1] }}>
-              <Img name="hero_prayer_light" className="h-full w-full" priority />
-            </motion.div>
+            <HeroSlides />
           </motion.div>
           <div className="absolute inset-0 bg-gradient-to-t from-nuit via-nuit/55 to-nuit/25" />
           <div className="absolute inset-0 bg-gradient-to-r from-nuit/80 via-transparent to-transparent" />
@@ -128,6 +127,9 @@ export function HomePage({ ancre }: { ancre: string }) {
             </div>
           </Reveal>
         </section>
+
+        {/* ====================== Thématiques illustrées ====================== */}
+        <Thematiques />
 
         {/* ====================== Gratuit / Premium ====================== */}
         <section id="offres" className="gutter mx-auto max-w-6xl scroll-mt-20 py-20 sm:py-28">
@@ -269,6 +271,9 @@ export function HomePage({ ancre }: { ancre: string }) {
             </div>
           </section>
         )}
+
+        {/* ====================== Mosaïque de photos ====================== */}
+        <Mosaique />
 
         {/* ====================== Appel final ====================== */}
         <section className="gutter mx-auto max-w-7xl pb-20 sm:pb-28">

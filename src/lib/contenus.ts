@@ -8,6 +8,22 @@ export const TYPES: Record<TypeContenu, { label: string; pluriel: string; icon: 
   document: { label: 'Document', pluriel: 'Documents', icon: FileText, description: 'PDF, livret, audio, présentation…' },
   contenu: { label: 'Contenu spirituel', pluriel: 'Contenus spirituels', icon: Sparkles, description: 'Méditation, prière, louange, témoignage' },
 };
+/** Couleurs par type (définies dans src/index.css : --couleur-parole, etc.). Classes écrites en entier pour Tailwind. */
+export const TYPE_COULEURS: Record<TypeContenu, { bg: string; text: string; soft: string; ring: string }> = {
+  parole: { bg: 'bg-parole', text: 'text-parole', soft: 'bg-parole/12', ring: 'ring-parole/30' },
+  enseignement: { bg: 'bg-enseignement', text: 'text-enseignement', soft: 'bg-enseignement/12', ring: 'ring-enseignement/30' },
+  document: { bg: 'bg-document', text: 'text-document', soft: 'bg-document/12', ring: 'ring-document/30' },
+  contenu: { bg: 'bg-contenu', text: 'text-contenu', soft: 'bg-contenu/12', ring: 'ring-contenu/30' },
+};
+
+/** Images d'illustration par type (voir src/config/images.json). */
+export const TYPE_IMAGES = {
+  parole: ['croix_aube', 'bible_mains', 'croix_colline', 'daily_prayer_verse', 'coucher_soleil'],
+  enseignement: ['bible_cafe', 'chorale', 'spiritual_bible_study', 'louange', 'celebration'],
+  document: ['bible_nature', 'spiritual_bible_study', 'bible_cafe', 'enfant_bible'],
+  contenu: ['priere_femme', 'lumiere', 'hero_prayer_light', 'louange', 'community_fellowship'],
+} as const;
+
 export const CATEGORIES = ['Méditation', 'Prière', 'Louange', 'Témoignage', 'Exhortation', 'Étude biblique', 'Famille', 'Jeunesse', 'Autre'];
 
 /** Publication telle que renvoyée par /api/contents. */

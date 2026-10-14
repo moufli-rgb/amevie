@@ -3,6 +3,7 @@ import { ArrowRight, Church, Users } from 'lucide-react';
 import { PublicHeader } from '@/components/public/PublicHeader';
 import { PublicFooter } from '@/components/public/PublicFooter';
 import { Reveal } from '@/components/ui/Reveal';
+import { PageBanner } from '@/components/public/PageBanner';
 import { EmptyState, Skeleton } from '@/components/ui/Empty';
 import { useData } from '@/dashboard/useData';
 import { hrefOf } from '@/lib/router';
@@ -16,13 +17,10 @@ export function PastorsPage() {
   const liste = data?.pastors ?? [];
   return (
     <>
-      <PublicHeader actif="/#pasteurs" />
-      <main className="gutter mx-auto min-h-[70svh] max-w-6xl pb-24 pt-28 sm:pt-32">
-        <Reveal>
-          <p className="surtitre text-accent">Pasteurs</p>
-          <h1 className="mt-2 text-[clamp(2rem,5vw,3.4rem)]">Ceux qui partagent la Parole</h1>
-          <p className="mt-3 max-w-2xl text-[15px] text-ink/65">Chaque pasteur est vérifié par l’administration avant de pouvoir publier.</p>
-        </Reveal>
+      <PublicHeader actif="/#pasteurs" transparent />
+      <PageBanner image="chorale" surtitre="Pasteurs" titre="Ceux qui partagent la Parole" teinte="bg-enseignement"
+        texte="Chaque pasteur est vérifié par l’administration avant de pouvoir publier." />
+      <main className="gutter mx-auto min-h-[50svh] max-w-6xl pb-24 pt-10">
         <div className="mt-10">
           {loading && !data ? (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-48" />)}</div>

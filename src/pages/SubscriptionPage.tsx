@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { BadgeCheck, Check, Crown, MessageCircle, UserPlus, Wallet } from 'lucide-react';
+import { PageBanner } from '@/components/public/PageBanner';
 import { PublicHeader } from '@/components/public/PublicHeader';
 import { PublicFooter } from '@/components/public/PublicFooter';
 import { WhatsAppButton } from '@/components/Premium';
@@ -21,14 +22,12 @@ export function SubscriptionPage() {
   useEffect(() => { window.scrollTo({ top: 0 }); }, []);
   return (
     <>
-      <PublicHeader actif="/#abonnement" />
-      <main className="pb-24 pt-28 sm:pt-32">
+      <PublicHeader actif="/#abonnement" transparent />
+      <PageBanner image="lumiere" surtitre="Abonnement Premium" teinte="bg-accent"
+        titre={<>Tout Ame & Vie, <em className="italic text-accent">sans limite</em></>}
+        texte={<>Un abonnement de {SITE.dureeAbonnement}, activé à la main par l’administrateur après votre paiement sur WhatsApp ({SITE.whatsappAffiche}).</>} />
+      <main className="pb-24 pt-10">
         <div className="gutter mx-auto max-w-5xl">
-          <Reveal className="text-center">
-            <p className="surtitre text-accent">Abonnement Premium</p>
-            <h1 className="mx-auto mt-2 max-w-3xl text-[clamp(2.1rem,5vw,3.6rem)]">Tout Ame & Vie, <em className="italic text-primary">sans limite</em></h1>
-            <p className="mx-auto mt-4 max-w-2xl text-[15.5px] text-ink/65">Un abonnement de {SITE.dureeAbonnement}, activé à la main par l’administrateur après votre paiement sur WhatsApp ({SITE.whatsappAffiche}).</p>
-          </Reveal>
 
           {user && <div className="mt-10"><SubscriptionStatus a={user.abonnement} /></div>}
 
