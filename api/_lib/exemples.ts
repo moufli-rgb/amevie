@@ -74,3 +74,30 @@ export async function importerExemples(): Promise<{ ajoutes: number; ignores: nu
   }
   return { ajoutes, ignores, pasteur: `${p.prenom} ${p.nom}` };
 }
+
+/**
+ * Import automatique : au premier affichage de la bibliothèque, si les tables existent
+ * et que l'équipe Ame & Vie n'a encore jamais été créée, les contenus d'exemple sont ajoutés.
+ * Si l'administrateur les supprime ensuite, ils ne reviennent pas (le pasteur « Équipe » sert de repère).
+ * Ne fait jamais échouer la page : en cas de problème, on réessaiera à la prochaine visite.
+ */
+let dejaVerifie = false;
+let enCours: Promise<void> | null = null;
+export async function importerSiPremiereFois(): Promise<void> {
+  if (dejaVerifie) return;
+  if (!enCours) {
+    enCours = (async () => {
+      try {
+        const { data, error } = await db().from('pastors').select('id').eq('email', 'equipe@ameetvie.org').maybeSingle();
+        if (error) return;            // tables pas encore créées : on réessaiera
+        if (!data) await importerExemples();
+        dejaVerifie = true;
+      } catch (e) {
+        console.error('[exemples] import automatique impossible :', e instanceof Error ? e.message : e);
+      } finally {
+        enCours = null;
+      }
+    })();
+  }
+  await enCours;
+}

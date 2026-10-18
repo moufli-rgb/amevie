@@ -127,16 +127,16 @@ La page **Administration → Base de données** montre l'état de chaque table e
 
 ---
 
-## Contenus d'exemple (documents à télécharger compris)
+## Livres et contenus déjà fournis (automatique)
 
-Une fois connecté à l'administration (`/#admin`), cliquez sur **Ajouter les contenus d'exemple**. Le bouton se trouve sur le tableau de bord quand la bibliothèque est vide, et dans **Base de données**.
-L'import ajoute 26 publications au nom du pasteur « Équipe Ame & Vie » :
+Vous n'avez **rien à faire** : dès que les tables existent (`supabase/schema.sql`), la première personne qui ouvre le site déclenche l'ajout de 26 publications au nom du pasteur « Équipe Ame & Vie ». Cela prend quelques secondes, une seule fois.
 - 8 Paroles de Dieu ;
 - 5 enseignements ;
 - 7 contenus spirituels ;
-- 6 documents PDF (plan de lecture de la Bible en un an, premiers pas dans la foi, carnet de méditation, guide de prière 21 jours, étude des Béatitudes, 30 versets à mémoriser).
+- 6 livres et documents PDF à télécharger : plan de lecture de la Bible en un an, premiers pas dans la foi, carnet de méditation, guide de prière 21 jours, étude des Béatitudes, 30 versets à mémoriser.
 
-Une partie est Gratuite, une partie est Premium. Vous pouvez relancer l'import sans risque de doublon, puis modifier ou supprimer chaque contenu dans **Contenus**.
+Une partie est Gratuite, une partie est Premium. Les pasteurs ajoutent ensuite leurs propres publications à côté.
+Vous pouvez modifier ou supprimer chaque contenu dans **Administration → Contenus**. S'ils sont supprimés, ils ne reviennent pas tout seuls ; le bouton **Ajouter les contenus d'exemple** (Base de données) permet de les remettre.
 Les fichiers sources se trouvent dans `seed/` ; les scripts qui les génèrent sont `scripts/exemples_*.py`.
 
 ## Images

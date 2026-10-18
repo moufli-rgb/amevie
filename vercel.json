@@ -7,6 +7,10 @@
     "api/admin.ts": {
       "maxDuration": 60,
       "includeFiles": "seed/**"
+    },
+    "api/contents.ts": {
+      "maxDuration": 60,
+      "includeFiles": "seed/**"
     }
   },
   "headers": [

@@ -15,6 +15,7 @@ import { body, requireUuid, oneOf } from './_lib/validate.js';
 import { db, check, isMissingTable } from './_lib/supabase.js';
 import { optionalActor, requireRole, type Actor } from './_lib/auth.js';
 import { logActivite } from './_lib/activity.js';
+import { importerSiPremiereFois } from './_lib/exemples.js';
 import { COLONNES_LISTE, TYPES, proteger, valider, verifierType, type ContentRow, type TypeContenu } from './_lib/contenus.js';
 
 const LIBELLES: Record<TypeContenu, string> = { parole: 'Parole de Dieu', enseignement: 'Enseignement', document: 'Document', contenu: 'Contenu spirituel' };
@@ -32,6 +33,8 @@ export default route({
     const actor = await optionalActor(req);
     const id = query(req, 'id');
     const scope = query(req, 'scope');
+    // Livres et contenus d'exemple ajoutés automatiquement la toute première fois
+    if (!id && scope !== 'mine') await importerSiPremiereFois();
 
     // ---- Détail ---------------------------------------------------------------
     if (id) {
