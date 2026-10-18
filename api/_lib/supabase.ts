@@ -50,5 +50,19 @@ export function check(error: PostgrestError | null, table?: string): void {
     throw new ApiError(409, 'Cet enregistrement existe déjà.', 'DOUBLON');
   }
   console.error('[supabase]', error.code, error.message);
-  throw new ApiError(500, 'Une erreur est survenue avec la base de données.');
+  const msg = `${error.message ?? ''} ${(error as { details?: string }).details ?? ''} ${(error as { hint?: string }).hint ?? ''}`;
+  // Diagnostics de configuration (aucune donnée sensible n'est renvoyée)
+  if (error.code === '42501' || /permission denied/i.test(msg)) {
+    throw new ApiError(503, "Accès refusé par Supabase : la variable SUPABASE_SERVICE_ROLE_KEY ne contient pas la clé « service_role » (secret). Corrigez-la dans Vercel puis redéployez.", 'CLE_SERVICE');
+  }
+  if (/invalid api key|jwt|unauthorized|no api key|invalid.*key/i.test(msg) || error.code === 'PGRST301' || error.code === 'PGRST302') {
+    throw new ApiError(503, "Supabase refuse la clé : SUPABASE_SERVICE_ROLE_KEY est invalide ou ne vient pas du même projet que SUPABASE_URL. Corrigez-la dans Vercel puis redéployez.", 'CLE_INVALIDE');
+  }
+  if (/fetch failed|enotfound|getaddrinfo|econnrefused|network/i.test(msg)) {
+    throw new ApiError(503, "Impossible de joindre Supabase : vérifiez SUPABASE_URL (https://xxxx.supabase.co) et que le projet Supabase n'est pas en pause.", 'URL_SUPABASE');
+  }
+  if (error.code === '42883' || error.code === '42703' || error.code === 'PGRST202' || error.code === 'PGRST204') {
+    throw new ApiError(503, "La base Supabase n'est pas à jour : exécutez à nouveau tout le script supabase/schema.sql dans le SQL Editor.", 'SCHEMA');
+  }
+  throw new ApiError(500, `Une erreur est survenue avec la base de données (code ${error.code || 'inconnu'}).`);
 }
