@@ -1,14 +1,15 @@
 import { useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import {
-  ArrowRight, BadgeCheck, BookOpen, Check, Crown, Download, HandHeart, Lock, MessageCircle, Sparkles, UserPlus, Wallet,
+  ArrowRight, BadgeCheck, BookOpen, Check, Crown, Download, HandHeart, Lock, Bitcoin, Sparkles, UserPlus, Wallet,
 } from 'lucide-react';
 import { PublicHeader } from '@/components/public/PublicHeader';
 import { PublicFooter } from '@/components/public/PublicFooter';
 import { Img } from '@/components/Img';
-import { HeroSlides, Mosaique, Thematiques } from '@/components/public/HomeExtras';
+import { HeroSlides, Mosaique, Thematiques, Traditions } from '@/components/public/HomeExtras';
+import { BandeVersets, Compteurs, Lucioles, MotTournant } from '@/components/public/Dynamique';
 import { ContentCard } from '@/components/ContentCard';
-import { WhatsAppButton } from '@/components/Premium';
+import { CryptosAcceptees, PayButton } from '@/components/Premium';
 import { Reveal, SectionTitle } from '@/components/ui/Reveal';
 import { Skeleton } from '@/components/ui/Empty';
 import { useData } from '@/dashboard/useData';
@@ -22,6 +23,7 @@ interface Accueil {
   derniers: Contenu[];
   documents: Contenu[];
   total: number;
+  total_documents?: number;
 }
 interface PasteurPublic { id: string; prenom: string; nom: string; eglise: string | null; publications: number }
 
@@ -29,7 +31,7 @@ const GRATUIT = [
   'La Parole du jour et les Paroles de Dieu gratuites',
   'Les enseignements et contenus marqués « Gratuit »',
   'Les documents gratuits à télécharger',
-  'Vos demandes de prière, lues par les pasteurs',
+  'Vos demandes de prière, lues par les guides spirituels',
 ];
 const PREMIUM = [
   'Tous les enseignements et contenus Premium',
@@ -40,9 +42,9 @@ const PREMIUM = [
 
 const ETAPES = [
   { icon: UserPlus, titre: 'Créez votre compte', texte: 'Gratuit, en une minute.' },
-  { icon: MessageCircle, titre: 'Écrivez sur WhatsApp', texte: 'Bouton « Faire mon abonnement ».' },
-  { icon: Wallet, titre: 'Réglez votre abonnement', texte: 'Directement avec l’administrateur.' },
-  { icon: BadgeCheck, titre: 'Accès activé', texte: `Premium pendant ${SITE.dureeAbonnement}.` },
+  { icon: Bitcoin, titre: 'Choisissez votre crypto', texte: 'Bitcoin, USDT, Ethereum… celle que vous voulez.' },
+  { icon: Wallet, titre: 'Payez en quelques clics', texte: 'Page de paiement sécurisée, montant calculé pour vous.' },
+  { icon: BadgeCheck, titre: 'Accès activé tout seul', texte: `Premium pendant ${SITE.dureeAbonnement}, sans attendre.` },
 ];
 
 export function HomePage({ ancre }: { ancre: string }) {
@@ -74,6 +76,7 @@ export function HomePage({ ancre }: { ancre: string }) {
           </motion.div>
           <div className="absolute inset-0 bg-gradient-to-t from-nuit via-nuit/55 to-nuit/25" />
           <div className="absolute inset-0 bg-gradient-to-r from-nuit/80 via-transparent to-transparent" />
+          <Lucioles />
 
           <motion.div style={{ opacity: fade }} className="gutter relative mx-auto w-full max-w-7xl pb-16 pt-32 sm:pb-24 paysage:pb-8 paysage:pt-20">
             <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
@@ -91,6 +94,10 @@ export function HomePage({ ancre }: { ancre: string }) {
             <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}
               className="mt-5 max-w-xl text-[16px] text-white/80 sm:text-lg paysage:mt-3 paysage:text-sm">
               {SITE.description} Commencez gratuitement, passez Premium quand vous le souhaitez.
+            </motion.p>
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1 }}
+              className="mt-4 flex flex-wrap items-baseline gap-x-2 font-serif text-[clamp(1.25rem,2.6vw,1.75rem)] text-white/90 paysage:hidden">
+              Une Parole pour <MotTournant className="italic text-accent" mots={['votre foi', 'votre famille', 'vos prières', 'chaque matin', 'les jours difficiles']} />
             </motion.p>
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.95 }}
               className="mt-8 flex flex-col gap-3 sm:flex-row paysage:mt-4">
@@ -121,7 +128,7 @@ export function HomePage({ ancre }: { ancre: string }) {
             <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
               <p className="text-[14px] font-bold tracking-wide text-primary">
                 {parole?.bible_ref ?? SITE.versetSecours.reference}
-                {parole?.pastors && <span className="font-normal text-ink/55"> · partagé par Pst {parole.pastors.prenom} {parole.pastors.nom}</span>}
+                {parole?.pastors && <span className="font-normal text-ink/55"> · partagé par {`${parole.pastors.prenom} ${parole.pastors.nom}`.trim()}</span>}
               </p>
               {parole && <a href={hrefOf('contenu', parole.id)} className="inline-flex items-center gap-1.5 text-[14px] font-semibold text-primary hover:underline">Méditer <ArrowRight className="h-4 w-4" /></a>}
             </div>
@@ -129,7 +136,13 @@ export function HomePage({ ancre }: { ancre: string }) {
         </section>
 
         {/* ====================== Thématiques illustrées ====================== */}
+        <Compteurs contenus={data?.total ?? 0} documents={data?.total_documents ?? 0} guides={pasteurs.length || 1} />
+
+        <Traditions />
+
         <Thematiques />
+
+        <BandeVersets />
 
         {/* ====================== Gratuit / Premium ====================== */}
         <section id="offres" className="gutter mx-auto max-w-6xl scroll-mt-20 py-20 sm:py-28">
@@ -162,7 +175,7 @@ export function HomePage({ ancre }: { ancre: string }) {
                 ))}
               </ul>
               <div className="relative mt-8 flex flex-wrap items-center gap-3">
-                <WhatsAppButton />
+                <PayButton />
                 <a href={hrefOf('abonnement')} className="text-[13.5px] font-semibold text-white/80 underline-offset-4 hover:underline">Comment ça marche ?</a>
               </div>
             </Reveal>
@@ -173,7 +186,7 @@ export function HomePage({ ancre }: { ancre: string }) {
         <section className="bg-surface/70 py-20 sm:py-28">
           <div className="gutter mx-auto max-w-7xl">
             <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
-              <SectionTitle surtitre="Bibliothèque" titre="Publié récemment par nos pasteurs" />
+              <SectionTitle surtitre="Bibliothèque" titre="Publié récemment par nos guides spirituels" />
               <Reveal><a href={hrefOf('bibliotheque')} className="inline-flex items-center gap-2 text-[14px] font-semibold text-primary hover:underline">Tout voir <ArrowRight className="h-4 w-4" /></a></Reveal>
             </div>
             <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -199,7 +212,7 @@ export function HomePage({ ancre }: { ancre: string }) {
         {!!data?.documents.length && (
           <section className="gutter mx-auto max-w-6xl pt-20 sm:pt-28">
             <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
-              <SectionTitle surtitre="Documents" titre="À lire, à écouter, à garder" texte="Livrets, études, audios : téléchargez les documents partagés par les pasteurs." />
+              <SectionTitle surtitre="Documents" titre="À lire, à écouter, à garder" texte="Livrets, études, audios : téléchargez les documents partagés par les guides spirituels." />
               <Reveal><a href={hrefOf('bibliotheque', 'document')} className="inline-flex items-center gap-2 text-[14px] font-semibold text-primary hover:underline">Tous les documents <ArrowRight className="h-4 w-4" /></a></Reveal>
             </div>
             <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -208,7 +221,7 @@ export function HomePage({ ancre }: { ancre: string }) {
           </section>
         )}
 
-        {/* ====================== Espace pasteur ====================== */}
+        {/* ====================== Espace guide spirituel ====================== */}
         <section className="gutter mx-auto max-w-6xl py-20 sm:py-28">
           <div className="grid items-center gap-10 md:grid-cols-2 md:gap-16">
             <Reveal className="relative">
@@ -218,14 +231,14 @@ export function HomePage({ ancre }: { ancre: string }) {
               </div>
             </Reveal>
             <div>
-              <SectionTitle surtitre="Espace pasteur" titre="Un espace simple pour publier" texte="Les pasteurs disposent de leur propre tableau de bord pour nourrir la communauté." />
+              <SectionTitle surtitre="Espace guide spirituel" titre="Un espace simple pour publier" texte="Les guides spirituels disposent de leur propre tableau de bord pour nourrir la communauté." />
               <ul className="mt-6 space-y-3">
                 {['Publier une Parole de Dieu en quelques secondes', 'Partager enseignements, méditations et prières', 'Ajouter des documents (PDF, audio, présentations…)', 'Choisir pour chaque publication : Gratuit ou Premium'].map((t) => (
                   <li key={t} className="flex gap-3 text-[14.5px]"><span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-primary/10 text-primary"><Check className="h-3 w-3" strokeWidth={3} /></span>{t}</li>
                 ))}
               </ul>
               <a href={hrefOf('pasteur')} className="mt-8 inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-semibold ring-1 ring-ligne hover:bg-surface">
-                Accéder à l’espace pasteur <ArrowRight className="h-4 w-4" />
+                Accéder à l’espace guide spirituel <ArrowRight className="h-4 w-4" />
               </a>
             </div>
           </div>
@@ -233,7 +246,7 @@ export function HomePage({ ancre }: { ancre: string }) {
 
         {/* ====================== Comment s'abonner ====================== */}
         <section className="bg-surface/70 py-20 sm:py-28"><div className="gutter mx-auto max-w-6xl">
-          <SectionTitle centre surtitre="Abonnement" titre="Devenir Premium en 4 étapes" texte="Pas de paiement en ligne : tout se fait simplement avec l’administrateur sur WhatsApp." />
+          <SectionTitle centre surtitre="Abonnement" titre="Devenir Premium en 4 étapes" texte="Payez dans la cryptomonnaie de votre choix : votre accès Premium s’active automatiquement dès la confirmation." />
           <ol className="relative mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             <motion.div aria-hidden className="absolute left-[12%] right-[12%] top-7 hidden h-px origin-left bg-ligne lg:block"
               initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }} transition={{ duration: 1.2 }} />
@@ -251,19 +264,19 @@ export function HomePage({ ancre }: { ancre: string }) {
               );
             })}
           </ol>
-          <Reveal className="mt-12 text-center"><WhatsAppButton size="lg" /></Reveal>
+          <Reveal className="mt-12 flex flex-col items-center gap-5"><PayButton size="lg" /><CryptosAcceptees /></Reveal>
         </div></section>
 
         {/* ====================== Pasteurs ====================== */}
         {!!pasteurs.length && (
           <section className="gutter mx-auto max-w-6xl py-20">
-            <SectionTitle centre surtitre="Nos pasteurs" titre="Ils partagent la Parole" />
+            <SectionTitle centre surtitre="Nos guides spirituels" titre="Ils partagent la Parole" />
             <div className="mt-10 flex flex-wrap justify-center gap-4">
               {pasteurs.slice(0, 8).map((p, i) => (
                 <Reveal key={p.id} delay={i * 0.05} className="flex items-center gap-3 rounded-2xl bg-fond px-4 py-3 shadow-doux ring-1 ring-ligne">
                   <span className="grid h-11 w-11 place-items-center rounded-full bg-primary/10 font-serif text-primary">{p.prenom[0]}{p.nom[0]}</span>
                   <span>
-                    <a href={hrefOf('bibliotheque', 'pasteur', p.id)} className="block text-[14px] font-bold">Pst {p.prenom} {p.nom}</a>
+                    <a href={hrefOf('bibliotheque', 'pasteur', p.id)} className="block text-[14px] font-bold">{`${p.prenom} ${p.nom}`.trim()}</a>
                     <span className="block text-mini text-ink/55">{[p.eglise, `${p.publications} publication${p.publications > 1 ? 's' : ''}`].filter(Boolean).join(' · ')}</span>
                   </span>
                 </Reveal>
@@ -283,7 +296,7 @@ export function HomePage({ ancre }: { ancre: string }) {
             <div className="relative max-w-xl p-8 text-white sm:p-14">
               <p className="surtitre text-accent">Une communauté de foi</p>
               <h2 className="mt-3 text-[clamp(1.8rem,4vw,2.8rem)] text-white">Vous n’êtes pas seul sur le chemin</h2>
-              <p className="mt-3 text-[15px] text-white/80">Déposez une demande de prière : nos pasteurs la portent avec vous. C’est gratuit.</p>
+              <p className="mt-3 text-[15px] text-white/80">Déposez une demande de prière : nos guides spirituels la portent avec vous. C’est gratuit.</p>
               <div className="mt-7 flex flex-wrap gap-3">
                 <a href={user ? hrefOf('espace', 'prieres') : hrefOf('inscription')} className="inline-flex h-12 items-center gap-2 rounded-xl bg-white px-6 text-sm font-semibold text-ink">
                   <HandHeart className="h-4 w-4" /> Demander une prière

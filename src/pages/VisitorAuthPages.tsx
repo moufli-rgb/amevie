@@ -30,7 +30,7 @@ export function LoginPage() {
   return (
     <AuthLayout photo="daily_prayer_verse" surtitre="Bon retour" titre="Connexion" texte="Accédez à votre espace, à vos favoris et à votre abonnement."
       msg={msg} loading={loading} submitLabel="Se connecter" onSubmit={submit}
-      footer={<>Pas encore de compte ? <a className="font-semibold text-primary" href={hrefOf('inscription')}>Créer un compte</a> · Vous êtes pasteur ? <a className="font-semibold text-primary" href={hrefOf('pasteur')}>Espace pasteur</a></>}>
+      footer={<>Pas encore de compte ? <a className="font-semibold text-primary" href={hrefOf('inscription')}>Créer un compte</a> · Vous êtes pasteur ? <a className="font-semibold text-primary" href={hrefOf('pasteur')}>Espace guide spirituel</a></>}>
       <Field label="Email" icon={<Mail className="h-4 w-4" />} type="email" autoComplete="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} maxLength={160} />
       <Field label="Mot de passe" icon={<KeyRound className="h-4 w-4" />} type="password" autoComplete="current-password" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} maxLength={128} />
     </AuthLayout>

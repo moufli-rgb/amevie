@@ -18,10 +18,10 @@ export default route({
   async POST(req) {
     const actor = await requireRole(req, 'pasteur', 'admin');
     const b = body(req.body);
-    const pastorId = actor.role === 'admin' ? requireUuid(b.pastor_id, 'Pasteur') : actor.id;
+    const pastorId = actor.role === 'admin' ? requireUuid(b.pastor_id, 'Guide spirituel') : actor.id;
     const nom = requiredText(b.name, 'Nom du fichier', { max: 200 });
     const type = typeof b.type === 'string' ? b.type : '';
-    if (!MIME_AUTORISES.includes(type)) throw new ApiError(400, 'Type de fichier non accepté (PDF, Word, PowerPoint, audio, vidéo MP4, image ou texte).');
+    if (!MIME_AUTORISES.includes(type)) throw new ApiError(400, 'Type de fichier non accepté (PDF, EPUB, Word, PowerPoint, audio, vidéo MP4, image ou texte).');
     const taille = typeof b.size === 'number' ? b.size : 0;
     if (taille <= 0 || taille > TAILLE_MAX) throw new ApiError(400, 'Le fichier doit faire moins de 50 Mo.');
 

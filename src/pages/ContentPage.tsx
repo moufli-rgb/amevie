@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/Empty';
 import { LoadError } from '@/dashboard/Widgets';
 import { useData } from '@/dashboard/useData';
 import { api, ApiError } from '@/lib/api';
-import { TYPES, TYPE_COULEURS, TYPE_IMAGES, auteur, tailleFichier, videoEmbed, type Contenu } from '@/lib/contenus';
+import { RELIGIONS, RELIGION_IMAGES, TYPES, TYPE_COULEURS, TYPE_IMAGES, auteur, tailleFichier, videoEmbed, type Contenu } from '@/lib/contenus';
 import { Img, imagePour, type ImgName } from '@/components/Img';
 import { formatDate } from '@/lib/format';
 import { go, hrefOf } from '@/lib/router';
@@ -61,13 +61,18 @@ export function ContentPage({ id }: { id: string }) {
           <motion.article initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
             {/* Illustration teintée à la couleur du type */}
             <div className="relative mb-8 aspect-[16/7] overflow-hidden rounded-[28px] shadow-doux">
-              <Img name={imagePour(c.id, TYPE_IMAGES[c.type] as unknown as ImgName[])} className="h-full w-full" sizes="(min-width:768px) 768px, 100vw" priority decorative />
+              <Img name={imagePour(c.id, (c.religion && c.religion !== 'chretien' ? RELIGION_IMAGES[c.religion] : TYPE_IMAGES[c.type]) as unknown as ImgName[])} className="h-full w-full" sizes="(min-width:768px) 768px, 100vw" priority decorative />
               <div className={`absolute inset-0 ${TYPE_COULEURS[c.type].bg} opacity-40 mix-blend-multiply`} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-bold ${TYPE_COULEURS[c.type].soft} ${TYPE_COULEURS[c.type].text}`}><T.icon className="h-3.5 w-3.5" />{c.category ?? T.label}</span>
               {c.access === 'premium' ? <PremiumBadge verrouille={c.locked} /> : <GratuitBadge />}
+              {c.religion && (
+                <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-bold ${RELIGIONS[c.religion].soft} ${RELIGIONS[c.religion].text}`}>
+                  <span aria-hidden>{RELIGIONS[c.religion].symbole}</span>{RELIGIONS[c.religion].label}
+                </span>
+              )}
             </div>
             <h1 className="mt-4 text-[clamp(2rem,5vw,3rem)]">{c.title}</h1>
             {c.bible_ref && <p className={`mt-2 font-serif text-xl italic ${TYPE_COULEURS[c.type].text}`}>{c.bible_ref}</p>}

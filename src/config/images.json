@@ -60,6 +60,18 @@
     "coucher_soleil": {
       "alt": "Silhouette d’un enfant au coucher du soleil",
       "unsplash": "photo-1491841550275-ad7854e35ca6"
+    },
+    "islam_motif": {
+      "alt": "Motif géométrique islamique doré sur fond émeraude"
+    },
+    "islam_nuit": {
+      "alt": "Silhouette d’une mosquée sous un croissant de lune"
+    },
+    "universel_aube": {
+      "alt": "Un soleil qui se lève sur des collines"
+    },
+    "universel_mandala": {
+      "alt": "Un mandala lumineux sur fond indigo"
     }
   }
 }

@@ -44,7 +44,7 @@ export default route({
         db().from('activity_logs').select('id, action, target_title, created_at').eq('user_id', pid).order('created_at', { ascending: false }).limit(100),
       ]);
       check(p.error, 'pastors'); check(c.error, 'contents'); check(a.error, 'activity_logs');
-      if (!p.data) throw new ApiError(404, 'Pasteur introuvable.');
+      if (!p.data) throw new ApiError(404, 'Guide spirituel introuvable.');
       const contents = (c.data ?? []).map(({ file_url, ...rest }) => ({ ...rest, has_file: !!file_url, locked: false }));
       return { pastor: p.data, contents, activites: a.data ?? [] };
     }
@@ -79,7 +79,7 @@ export default route({
     const admin = await requireRole(req, 'admin');
     const b = body(req.body);
     const row = {
-      nom: requiredText(b.nom, 'Nom', { min: 1, max: 60 }),
+      nom: text(b.nom, 'Nom', { max: 60 }) ?? '',
       prenom: requiredText(b.prenom, 'Prénom', { min: 1, max: 60 }),
       email: email(b.email),
       telephone: phone(b.telephone),
@@ -89,9 +89,9 @@ export default route({
       is_active: true, created_by_admin: true, reviewed_at: new Date().toISOString(),
     };
     const { data, error } = await db().from('pastors').insert(row).select(COLS).single();
-    if (error?.code === '23505') throw new ApiError(409, 'Un pasteur utilise déjà cet email.', 'DOUBLON');
+    if (error?.code === '23505') throw new ApiError(409, 'Un guide spirituel utilise déjà cet email.', 'DOUBLON');
     check(error, 'pastors');
-    await logActivite({ role: 'admin', user_id: admin.id, nom: admin.name, action: 'ajout_pasteur', cible_type: 'pasteur', cible_id: data!.id, cible_titre: `${row.prenom} ${row.nom}` });
+    await logActivite({ role: 'admin', user_id: admin.id, nom: admin.name, action: 'ajout_pasteur', cible_type: 'pasteur', cible_id: data!.id, cible_titre: `${row.prenom} ${row.nom}`.trim() });
     send(res, 201, { pastor: data });
   },
 
@@ -101,7 +101,7 @@ export default route({
     const b = body(req.body);
     const maj: Record<string, unknown> = {};
     if ('is_active' in b) { maj.is_active = bool(b.is_active, 'Statut'); maj.reviewed_at = new Date().toISOString(); }
-    if ('nom' in b) maj.nom = text(b.nom, 'Nom', { min: 1, max: 60, required: true });
+    if ('nom' in b) maj.nom = text(b.nom, 'Nom', { max: 60 }) ?? '';
     if ('prenom' in b) maj.prenom = text(b.prenom, 'Prénom', { min: 1, max: 60, required: true });
     if ('email' in b) maj.email = email(b.email);
     if ('telephone' in b) maj.telephone = phone(b.telephone);
@@ -111,9 +111,9 @@ export default route({
     if (!Object.keys(maj).length) throw new ApiError(400, 'Aucune modification à enregistrer.');
     maj.updated_at = new Date().toISOString();
     const { data, error } = await db().from('pastors').update(maj).eq('id', id).select(COLS).maybeSingle();
-    if (error?.code === '23505') throw new ApiError(409, 'Un pasteur utilise déjà cet email.');
+    if (error?.code === '23505') throw new ApiError(409, 'Un guide spirituel utilise déjà cet email.');
     check(error, 'pastors');
-    if (!data) throw new ApiError(404, 'Pasteur introuvable.');
+    if (!data) throw new ApiError(404, 'Guide spirituel introuvable.');
     await logActivite({
       role: 'admin', user_id: admin.id, nom: admin.name,
       action: 'is_active' in maj ? (maj.is_active ? 'activation_pasteur' : 'desactivation_pasteur') : 'modification_pasteur',
@@ -130,7 +130,7 @@ export default route({
     if (paths.length) await db().storage.from('documents').remove(paths);
     const { data, error } = await db().from('pastors').delete().eq('id', id).select('nom, prenom').maybeSingle();
     check(error, 'pastors');
-    if (!data) throw new ApiError(404, 'Pasteur introuvable.');
+    if (!data) throw new ApiError(404, 'Guide spirituel introuvable.');
     await logActivite({ role: 'admin', user_id: admin.id, nom: admin.name, action: 'suppression_pasteur', cible_type: 'pasteur', cible_titre: `${data.prenom} ${data.nom}` });
     return { ok: true };
   },

@@ -76,7 +76,7 @@ export function ContentsManager({ role, onEdit, onNew }: {
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <Tabs id={`cs-${role}`} value={statut} onChange={setStatut} options={[{ value: 'tous', label: 'Tous' }, { value: 'publie', label: 'Publiés' }, { value: 'brouillon', label: 'Non publiés' }]} />
-          <SearchInput value={q} onChange={setQ} placeholder={role === 'admin' ? 'Titre, pasteur…' : 'Rechercher…'} />
+          <SearchInput value={q} onChange={setQ} placeholder={role === 'admin' ? 'Titre, guide…' : 'Rechercher…'} />
         </div>
       </div>
       <div className="mb-4"><Alert msg={flash} /></div>

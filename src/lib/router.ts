@@ -4,14 +4,14 @@ import { useEffect, useState } from 'react';
  * Routage par ancre d'URL (liens directs partageables) :
  *   /                     accueil
  *   /#apropos             à propos
- *   /#pasteurs            nos pasteurs
+ *   /#guides              nos guides spirituels (ancien : #pasteurs)
  *   /#bibliotheque        contenus (filtre : /#bibliotheque/parole, /#bibliotheque/document)
  *   /#contenu/<id>        un contenu
  *   /#abonnement          abonnement
  *   /#connexion           connexion visiteur
  *   /#inscription         création de compte visiteur
  *   /#espace/...          espace visiteur
- *   /#pasteur/...         espace pasteur
+ *   /#guide/...           espace guide spirituel (ancien : #pasteur)
  *   /#admin/...           espace administrateur (non affiché publiquement)
  */
 export type Espace = 'accueil' | 'apropos' | 'pasteurs' | 'bibliotheque' | 'contenu' | 'abonnement' | 'connexion' | 'inscription' | 'espace' | 'pasteur' | 'admin';
@@ -19,8 +19,13 @@ const ESPACES: Espace[] = ['apropos', 'pasteurs', 'bibliotheque', 'contenu', 'ab
 
 export interface Route { espace: Espace; page: string; id: string }
 
+/** Adresses affichées : #guides et #guide (les anciennes #pasteurs et #pasteur restent valables). */
+const ALIAS: Record<string, Espace> = { guides: 'pasteurs', guide: 'pasteur' };
+const AFFICHE: Partial<Record<Espace, string>> = { pasteurs: 'guides', pasteur: 'guide' };
+
 export function parseHash(hash: string): Route {
-  const [a = '', b = '', c = ''] = decodeURIComponent(hash.replace(/^#\/?/, '')).split('/');
+  const [a0 = '', b = '', c = ''] = decodeURIComponent(hash.replace(/^#\/?/, '')).split('/');
+  const a = ALIAS[a0] ?? a0;
   if ((ESPACES as string[]).includes(a)) return { espace: a as Espace, page: b, id: c };
   return { espace: 'accueil', page: a, id: '' };
 }
@@ -37,7 +42,7 @@ export function useRoute(): Route {
 
 export function hrefOf(espace: Espace, page = '', id = '') {
   if (espace === 'accueil') return page ? `/#${page}` : '/';
-  return `/#${[espace, page, id].filter(Boolean).join('/')}`;
+  return `/#${[AFFICHE[espace] ?? espace, page, id].filter(Boolean).join('/')}`;
 }
 
 export function go(espace: Espace, page = '', id = '') {

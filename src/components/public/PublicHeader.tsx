@@ -1,3 +1,4 @@
+import { ProgressionLecture } from './Dynamique';
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'motion/react';
 import { Crown, LogIn, Menu, X } from 'lucide-react';
@@ -13,7 +14,7 @@ const LIENS = [
   { label: 'Contenus', href: '/#bibliotheque' },
   { label: 'Paroles de Dieu', href: '/#bibliotheque/parole' },
   { label: 'Documents', href: '/#bibliotheque/document' },
-  { label: 'Pasteurs', href: '/#pasteurs' },
+  { label: 'Guides spirituels', href: '/#guides' },
 ];
 
 /**
@@ -30,6 +31,8 @@ export function PublicHeader({ actif, transparent = false }: { actif: string; tr
   const clair = transparent && !defile && !ouvert;
 
   return (
+    <>
+    <ProgressionLecture />
     <>
       <header className={`fixed inset-x-0 top-0 z-50 pt-safe transition-[background-color,box-shadow] duration-500 ${clair ? 'bg-transparent' : 'bg-fond/85 shadow-[0_1px_0_var(--couleur-ligne)] backdrop-blur-xl backdrop-saturate-150'}`}>
         <div className="gutter mx-auto flex h-[70px] max-w-7xl items-center justify-between gap-4 paysage:h-14">
@@ -54,8 +57,8 @@ export function PublicHeader({ actif, transparent = false }: { actif: string; tr
                 <a href={hrefOf('connexion')} className={`hidden h-10 items-center gap-2 rounded-full px-4 text-[13px] font-semibold transition sm:inline-flex ${clair ? 'text-white ring-1 ring-white/40 hover:bg-white/10' : 'text-ink ring-1 ring-ligne hover:bg-surface'}`}>
                   <LogIn className="h-4 w-4" /> Connexion
                 </a>
-                <a href={hrefOf('inscription')} className={`inline-flex h-10 items-center rounded-full px-4 text-[13px] font-semibold transition ${clair ? 'bg-white text-ink hover:bg-white/90' : 'bg-primary text-on-primary hover:brightness-110'}`}>
-                  Créer un compte
+                <a href={hrefOf('inscription')} className={`inline-flex h-10 items-center whitespace-nowrap rounded-full px-3.5 text-[13px] font-semibold transition sm:px-4 ${clair ? 'bg-white text-ink hover:bg-white/90' : 'bg-primary text-on-primary hover:brightness-110'}`}>
+                  <span className="sm:hidden">S’inscrire</span><span className="hidden sm:inline">Créer un compte</span>
                 </a>
               </>
             )}
@@ -85,6 +88,7 @@ export function PublicHeader({ actif, transparent = false }: { actif: string; tr
           </motion.div>
         )}
       </AnimatePresence>
+    </>
     </>
   );
 }

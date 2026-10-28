@@ -27,6 +27,8 @@ export interface SessionUser {
   bio?: string | null;
   premium?: boolean;
   abonnement?: Abonnement;
+  /** Espace d'un guide ouvert par l'administration : nom de l'administrateur */
+  via_admin?: string;
   /** compatibilité avec la coque des tableaux de bord */
   site_name?: string;
 }

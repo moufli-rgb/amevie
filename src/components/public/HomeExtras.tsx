@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { ArrowUpRight } from 'lucide-react';
 import { Img, type ImgName } from '../Img';
 import { Reveal, SectionTitle } from '../ui/Reveal';
-import { TYPES, TYPE_COULEURS, type TypeContenu } from '@/lib/contenus';
+import { RELIGIONS, TYPES, TYPE_COULEURS, type TypeContenu } from '@/lib/contenus';
 import { hrefOf } from '@/lib/router';
 
 /** Fond du héros : fondu enchaîné entre plusieurs photos, avec zoom lent. */
@@ -89,6 +89,39 @@ export function Mosaique() {
             <span className="absolute bottom-3 left-4 font-script text-2xl text-white drop-shadow sm:text-3xl">{m.legende}</span>
           </Reveal>
         ))}
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ Trois traditions */
+const TRADITIONS = [
+  { r: 'chretien', image: 'croix_aube', texte: 'La Bible, les Évangiles, la prière et la louange.' },
+  { r: 'musulman', image: 'islam_nuit', texte: 'Le Coran, les beaux noms d’Allah, la prière et le jeûne.' },
+  { r: 'universel', image: 'universel_aube', texte: 'Sagesses du monde, méditation, gratitude et paix intérieure.' },
+] as const;
+export function Traditions() {
+  return (
+    <section className="gutter mx-auto max-w-7xl py-16 sm:py-24">
+      <SectionTitle centre surtitre="Trois chemins" titre={<>Une plateforme <em className="italic text-primary">pour chacun</em></>}
+        texte="Choisissez votre tradition : la bibliothèque n’affiche que ses contenus et ses livres. Vous pouvez aussi tout parcourir." />
+      <div className="mt-12 grid gap-5 md:grid-cols-3">
+        {TRADITIONS.map((t, i) => {
+          const R = RELIGIONS[t.r];
+          return (
+            <motion.a key={t.r} href={hrefOf('bibliotheque', t.r)} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-40px' }}
+              transition={{ delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }} whileHover={{ y: -6 }}
+              className="group relative flex min-h-[19rem] flex-col justify-end overflow-hidden rounded-[28px] p-6 text-white shadow-haut">
+              <div className="absolute inset-0"><Img name={t.image} className="h-full w-full transition-transform duration-700 group-hover:scale-105" sizes="(min-width:768px) 33vw, 100vw" decorative /></div>
+              <div className={`absolute inset-0 ${R.bg} opacity-35 mix-blend-multiply`} />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+              <span className={`relative grid h-12 w-12 place-items-center rounded-2xl ${R.bg} text-xl shadow-doux`}>{R.symbole}</span>
+              <h3 className="relative mt-4 text-2xl text-white">{R.label}</h3>
+              <p className="relative mt-1 text-[14.5px] text-white/80">{t.texte}</p>
+              <span className="relative mt-4 inline-flex items-center gap-1.5 text-[14px] font-semibold text-white">Explorer <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span></span>
+            </motion.a>
+          );
+        })}
       </div>
     </section>
   );

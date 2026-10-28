@@ -4,7 +4,10 @@ import type { Actor } from './auth.js';
 
 export const TYPES = ['parole', 'enseignement', 'document', 'contenu'] as const;
 export type TypeContenu = (typeof TYPES)[number];
-export const CATEGORIES = ['Méditation', 'Prière', 'Louange', 'Témoignage', 'Exhortation', 'Étude biblique', 'Famille', 'Jeunesse', 'Autre'] as const;
+export const CATEGORIES = ['Méditation', 'Prière', 'Louange', 'Témoignage', 'Exhortation', 'Étude biblique', 'Étude coranique', 'Sagesse', 'Pleine conscience', 'Famille', 'Jeunesse', 'Autre'] as const;
+/** Religion / tradition de chaque publication (filtre de la bibliothèque). */
+export const RELIGIONS = ['chretien', 'musulman', 'universel'] as const;
+export type Religion = (typeof RELIGIONS)[number];
 
 /** Types de fichiers acceptés (mêmes que le bucket Supabase). */
 export const MIME_AUTORISES = [
@@ -13,13 +16,13 @@ export const MIME_AUTORISES = [
   'application/vnd.ms-powerpoint',
   'application/vnd.openxmlformats-officedocument.presentationml.presentation',
   'audio/mpeg', 'audio/mp4', 'audio/x-m4a', 'audio/wav', 'video/mp4',
-  'image/jpeg', 'image/png', 'image/webp', 'text/plain',
+  'image/jpeg', 'image/png', 'image/webp', 'text/plain', 'application/epub+zip',
 ];
 export const TAILLE_MAX = 50 * 1024 * 1024;
 
 /** Colonnes d'une liste (sans le texte complet). */
 export const COLONNES_LISTE =
-  'id, pastor_id, type, category, title, description, bible_ref, access, is_published, views, file_name, file_type, file_size, file_url, video_url, created_at, updated_at, pastors(prenom, nom, eglise)';
+  'id, pastor_id, type, religion, category, title, description, bible_ref, access, is_published, views, file_name, file_type, file_size, file_url, video_url, created_at, updated_at, pastors(prenom, nom, eglise)';
 
 export interface ContentRow {
   id: string; pastor_id: string; type: TypeContenu; title: string; access: 'gratuit' | 'premium'; is_published: boolean;
@@ -54,8 +57,9 @@ export function valider(b: Record<string, unknown>, opts: { partiel: boolean; ty
   if (has('title')) out.title = v.requiredText(b.title, 'Titre', { min: 2, max: 160 });
   if (has('description')) out.description = v.text(b.description, 'Description', { max: 500, multiline: true });
   if (has('content')) out.content = v.text(b.content, 'Texte', { max: 50000, multiline: true });
-  if (has('bible_ref')) out.bible_ref = v.text(b.bible_ref, 'Référence biblique', { max: 120 });
+  if (has('bible_ref')) out.bible_ref = v.text(b.bible_ref, 'Référence', { max: 120 });
   if (has('category')) out.category = v.oneOf(b.category, 'Catégorie', CATEGORIES);
+  if (has('religion')) out.religion = v.oneOf(b.religion ?? 'chretien', 'Religion', RELIGIONS, true);
   if (has('access')) out.access = v.oneOf(b.access, 'Accès', ['gratuit', 'premium'] as const, true);
   if (has('is_published')) out.is_published = b.is_published === undefined ? true : v.bool(b.is_published, 'Publication');
   if (has('video_url')) {

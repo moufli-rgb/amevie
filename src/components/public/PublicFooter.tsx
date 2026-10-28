@@ -1,6 +1,6 @@
-import { MessageCircle } from 'lucide-react';
+import { Bitcoin } from 'lucide-react';
 import { Logo } from '../Logo';
-import { SITE, lienWhatsApp } from '@/config/site';
+import { SITE } from '@/config/site';
 
 export function PublicFooter() {
   return (
@@ -9,8 +9,8 @@ export function PublicFooter() {
         <div>
           <Logo />
           <p className="mt-4 max-w-sm text-[14px] text-ink/65">{SITE.description}</p>
-          <a href={lienWhatsApp()} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex items-center gap-2 text-[14px] font-semibold text-primary hover:underline">
-            <MessageCircle className="h-4 w-4" /> {SITE.whatsappAffiche}
+          <a href="/#abonnement" className="mt-5 inline-flex items-center gap-2 text-[14px] font-semibold text-primary hover:underline">
+            <Bitcoin className="h-4 w-4" /> Abonnement payable en cryptomonnaie
           </a>
         </div>
         <div>
@@ -28,7 +28,7 @@ export function PublicFooter() {
             <li><a className="text-ink/75 hover:text-primary" href="/#inscription">Créer un compte</a></li>
             <li><a className="text-ink/75 hover:text-primary" href="/#connexion">Connexion</a></li>
             <li><a className="text-ink/75 hover:text-primary" href="/#abonnement">Abonnement Premium</a></li>
-            <li><a className="text-ink/75 hover:text-primary" href="/#pasteur">Espace pasteur</a></li>
+            <li><a className="text-ink/75 hover:text-primary" href="/#guide">Espace guide spirituel</a></li>
           </ul>
         </div>
       </div>

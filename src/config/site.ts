@@ -2,20 +2,12 @@
 export const SITE = {
   nom: 'Ame & Vie',
   slogan: 'Nourrir l’âme, éclairer la vie',
-  description: 'Paroles de Dieu, enseignements, documents et accompagnement spirituel, publiés par des pasteurs.',
-  /** Numéro WhatsApp des abonnements (format international, sans + ni espaces) */
-  whatsapp: '2250759399566',
-  whatsappAffiche: '+225 07 59 39 95 66',
-  messageAbonnement: 'Bonjour, je souhaite faire mon abonnement sur la plateforme Ame & Vie.',
+  description: 'Paroles sacrées, enseignements, livres et accompagnement spirituel : chrétiens, musulmans et sagesses universelles, publiés par nos guides spirituels.',
+  /** Paiement de l'abonnement : cryptomonnaie (NOWPayments). Le prix se règle dans Vercel (PRIX_ABONNEMENT). */
+  paiement: 'cryptomonnaie',
   dureeAbonnement: '1 mois',
   versetSecours: {
     texte: 'Ta parole est une lampe à mes pieds, et une lumière sur mon sentier.',
     reference: 'Psaume 119:105',
   },
 } as const;
-
-/** Lien WhatsApp avec message automatique (et l'email du compte s'il est connu). */
-export function lienWhatsApp(email?: string | null) {
-  const msg = email ? `${SITE.messageAbonnement}\nMon compte : ${email}` : SITE.messageAbonnement;
-  return `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(msg)}`;
-}

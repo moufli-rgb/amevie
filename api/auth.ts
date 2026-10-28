@@ -6,6 +6,7 @@
  *  POST ?action=connexion            : { email, password, role: 'visiteur' | 'pasteur' }
  *  POST ?action=connexion-admin      : { email, password } via Supabase Auth (comptes de admin_users uniquement)
  *  POST ?action=visite               : compte une visite anonyme (1 par visiteur et par jour, sans donnée personnelle)
+ *  POST ?action=acces-guide          : administrateur → { pastor_id } → session du guide spirituel (8 h), journalisée
  */
 import { createHash } from 'node:crypto';
 import { route, clientIp, query, send, type Req } from './_lib/http.js';
@@ -15,7 +16,8 @@ import { db, authClient, check } from './_lib/supabase.js';
 import { env } from './_lib/env.js';
 import { hashPassword, verifyPassword, dummyVerify, signSession } from './_lib/crypto.js';
 import { assertNotLimited, registerFailure, resetName, loginKeys } from './_lib/rateLimit.js';
-import { getActor, publicUser } from './_lib/auth.js';
+import { getActor, publicUser, requireRole } from './_lib/auth.js';
+import { requireUuid } from './_lib/validate.js';
 import { logActivite } from './_lib/activity.js';
 
 
@@ -49,7 +51,7 @@ async function inscription(req: Req, role: 'visiteur' | 'pasteur') {
   await logActivite({ role, user_id: data!.id, nom: `${prenom} ${nom}`, action: role === 'visiteur' ? 'inscription_visiteur' : 'inscription_pasteur' });
 
   if (role === 'pasteur') {
-    return { status: 'pending', message: "Votre compte pasteur a été créé. Il sera actif dès sa validation par l'administration." };
+    return { status: 'pending', message: "Votre compte de guide spirituel a été créé. Il sera actif dès sa validation par l'administration." };
   }
   // Le visiteur est connecté directement après son inscription
   const token = signSession({ sub: data!.id, role: 'visiteur', name: `${prenom} ${nom}` });
@@ -81,7 +83,7 @@ async function connexion(req: Req) {
     throw new ApiError(401, MSG_IDENTIFIANTS, 'IDENTIFIANTS');
   }
   if (!row.is_active) {
-    if (role === 'pasteur' && !row.reviewed_at) throw new ApiError(403, 'Votre compte pasteur attend la validation de l’administration.', 'EN_ATTENTE');
+    if (role === 'pasteur' && !row.reviewed_at) throw new ApiError(403, 'Votre compte de guide spirituel attend la validation de l’administration.', 'EN_ATTENTE');
     throw new ApiError(403, 'Votre compte est désactivé. Contactez l’administration.', 'DESACTIVE');
   }
 
@@ -118,6 +120,20 @@ async function connexionAdmin(req: Req) {
   };
 }
 
+/** L'administration ouvre l'espace d'un guide spirituel (sans son mot de passe). */
+async function accesGuide(req: Req) {
+  const admin = await requireRole(req, 'admin');
+  const id = requireUuid(body(req.body).pastor_id, 'Guide spirituel');
+  const { data, error } = await db().from('pastors').select('id, nom, prenom').eq('id', id).maybeSingle();
+  check(error, 'pastors');
+  if (!data) throw new ApiError(404, 'Guide spirituel introuvable.');
+  const name = `${data.prenom} ${data.nom}`.trim();
+  await logActivite({ role: 'admin', user_id: admin.id, nom: admin.name, action: 'acces_espace_guide', cible_type: 'pasteur', cible_id: data.id, cible_titre: name });
+  const token = signSession({ sub: data.id, role: 'pasteur', name, adm: admin.id }, 8 * 3600);
+  req.headers.authorization = `Bearer ${token}`;
+  return { token, user: publicUser(await getActor(req)) };
+}
+
 /** Visite anonyme : empreinte SHA-256 (IP + navigateur + jour + secret), jamais réversible. */
 async function visite(req: Req) {
   const jour = new Date().toISOString().slice(0, 10);
@@ -139,6 +155,7 @@ export default route({
       case 'inscription-pasteur': return send(res, 201, await inscription(req, 'pasteur'));
       case 'connexion': return connexion(req);
       case 'connexion-admin': return connexionAdmin(req);
+      case 'acces-guide': return accesGuide(req);
       default: throw new ApiError(400, 'Action inconnue.');
     }
   },

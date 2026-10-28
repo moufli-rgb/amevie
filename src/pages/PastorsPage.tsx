@@ -17,9 +17,9 @@ export function PastorsPage() {
   const liste = data?.pastors ?? [];
   return (
     <>
-      <PublicHeader actif="/#pasteurs" transparent />
-      <PageBanner image="chorale" surtitre="Pasteurs" titre="Ceux qui partagent la Parole" teinte="bg-enseignement"
-        texte="Chaque pasteur est vérifié par l’administration avant de pouvoir publier." />
+      <PublicHeader actif="/#guides" transparent />
+      <PageBanner image="chorale" surtitre="Guides spirituels" titre="Ceux qui partagent la Parole" teinte="bg-enseignement"
+        texte="Chaque guide spirituel est vérifié par l’administration avant de pouvoir publier." />
       <main className="gutter mx-auto min-h-[50svh] max-w-6xl pb-24 pt-10">
         <div className="mt-10">
           {loading && !data ? (
@@ -33,7 +33,7 @@ export function PastorsPage() {
                   <div className="flex items-center gap-4">
                     <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-primary font-serif text-lg text-on-primary">{p.prenom[0]}{p.nom[0]}</span>
                     <div className="min-w-0">
-                      <h2 className="truncate text-xl">Pst {p.prenom} {p.nom}</h2>
+                      <h2 className="truncate text-xl">{`${p.prenom} ${p.nom}`.trim()}</h2>
                       {p.eglise && <p className="flex items-center gap-1.5 truncate text-[13px] text-ink/55"><Church className="h-3.5 w-3.5" />{p.eglise}</p>}
                     </div>
                   </div>

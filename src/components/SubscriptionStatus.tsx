@@ -1,7 +1,7 @@
 import { CalendarClock, Crown, Lock } from 'lucide-react';
 import type { Abonnement } from '@/lib/session';
 import { formatDate } from '@/lib/format';
-import { WhatsAppButton } from './Premium';
+import { PayButton } from './Premium';
 
 const LIBELLE = { actif: 'Actif', expire: 'Expiré', desactive: 'Désactivé', aucun: 'Aucun abonnement' } as const;
 
@@ -29,14 +29,14 @@ export function SubscriptionStatus({ a }: { a?: Abonnement }) {
             ) : statut === 'expire' ? (
               <p className="mt-1 text-[14px] text-ink/65">Votre accès Premium a expiré le {formatDate(a?.date_expiration)}. Les fonctionnalités gratuites restent disponibles.</p>
             ) : statut === 'desactive' ? (
-              <p className="mt-1 text-[14px] text-ink/65">Votre accès Premium a été désactivé. Contactez l’administrateur sur WhatsApp.</p>
+              <p className="mt-1 text-[14px] text-ink/65">Votre accès Premium a été désactivé par l’administration. Vous pouvez payer un nouveau mois pour le réactiver.</p>
             ) : (
               <p className="mt-1 text-[14px] text-ink/65">Vous profitez des fonctionnalités gratuites. Passez Premium pour tout débloquer.</p>
             )}
           </div>
         </div>
-        {!actif && <WhatsAppButton label={statut === 'expire' ? 'Renouveler mon abonnement' : 'Faire mon abonnement'} />}
-        {actif && (a?.jours_restants ?? 99) <= 5 && <WhatsAppButton label="Prolonger mon abonnement" />}
+        {!actif && <PayButton label={statut === 'expire' ? 'Renouveler en crypto' : 'Payer en crypto'} />}
+        {actif && (a?.jours_restants ?? 99) <= 5 && <PayButton label="Prolonger d’un mois" />}
       </div>
     </div>
   );

@@ -226,7 +226,7 @@ Témoignage partagé avec l'accord de son auteure (prénom non publié)."""),
 os.makedirs(OUT, exist_ok=True)
 json.dump({
   "_aide": "Contenus d'exemple importés depuis l'administration (Base de données → Ajouter les contenus d'exemple). Textes bibliques : Louis Segond 1910 (domaine public).",
-  "pasteur": {"prenom": "Équipe", "nom": "Ame & Vie", "email": "equipe@ameetvie.org", "eglise": "Ame & Vie",
+  "pasteur": {"prenom": "Jean", "nom": "", "email": "equipe@ameetvie.org", "eglise": "Ame & Vie",
               "bio": "Contenus proposés par l'équipe Ame & Vie pour bien démarrer."},
   "contenus": contenus,
 }, open(os.path.join(OUT, 'contenus.json'), 'w'), ensure_ascii=False, indent=2)

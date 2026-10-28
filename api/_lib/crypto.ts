@@ -52,6 +52,8 @@ export interface SessionPayload {
   name: string;
   iat: number;   // émis à (secondes)
   exp: number;   // expire à (secondes)
+  /** Accès de l'administration à l'espace d'un guide : id de l'administrateur */
+  adm?: string;
 }
 
 export const SESSION_DUREE_S = 7 * 24 * 60 * 60;
@@ -59,9 +61,9 @@ export const SESSION_DUREE_S = 7 * 24 * 60 * 60;
 const b64url = (b: Buffer) => b.toString('base64url');
 const sign = (data: string) => createHmac('sha256', env().PDG_AUTH_SECRET).update(data).digest();
 
-export function signSession(p: Omit<SessionPayload, 'iat' | 'exp'>): string {
+export function signSession(p: Omit<SessionPayload, 'iat' | 'exp'>, dureeS = SESSION_DUREE_S): string {
   const now = Math.floor(Date.now() / 1000);
-  const payload: SessionPayload = { ...p, iat: now, exp: now + SESSION_DUREE_S };
+  const payload: SessionPayload = { ...p, iat: now, exp: now + dureeS };
   const body = `v1.${b64url(Buffer.from(JSON.stringify(payload)))}`;
   return `${body}.${b64url(sign(body))}`;
 }

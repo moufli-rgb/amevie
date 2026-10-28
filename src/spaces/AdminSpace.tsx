@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   Activity, AlertTriangle, BookOpen, Church, CreditCard, Crown, Database, FileText, GraduationCap, HandHeart, KeyRound, LayoutDashboard,
-  Eye, Library, Mail, Settings, ShieldCheck, Sparkles, UserCheck, Users,
+  Bitcoin, Eye, Library, Mail, Settings, ShieldCheck, Sparkles, UserCheck, Users,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { go } from '@/lib/router';
@@ -24,7 +24,8 @@ import { PrayersBoard } from '@/dashboard/PrayersBoard';
 import { PasswordCard, ProfileHeader, SimpleFieldsCard } from '@/dashboard/ProfileForms';
 import { VisitorsAdmin } from './admin/VisitorsAdmin';
 import { SubscriptionsAdmin } from './admin/SubscriptionsAdmin';
-import { PastorsAdmin, PastorDetail } from './admin/PastorsAdmin';
+import { PastorsAdmin, PastorDetail, AjouterLivre } from './admin/PastorsAdmin';
+import { PaymentsAdmin } from './admin/PaymentsAdmin';
 import { libelleAction, type Activite } from './admin/common';
 
 /* ========================================================================== */
@@ -84,7 +85,8 @@ function TableauDeBord({ user, data, error, reload }: { user: SessionUser; data:
   return (
     <div className="space-y-6">
       <WelcomeBanner photo="croix_aube" surtitre="Administration" titre={<>Bonjour, {user.name}</>} texte="Vue globale de la plateforme Ame & Vie.">
-        {!!s.pasteurs_en_attente && <button onClick={() => go('admin', 'pasteurs')} className="rounded-full bg-white px-4 py-2 text-[13px] font-semibold text-ink">{s.pasteurs_en_attente} pasteur(s) à valider →</button>}
+        {!!s.paiements_a_valider && <button onClick={() => go('admin', 'paiements')} className="rounded-full bg-accent px-4 py-2 text-[13px] font-semibold text-ink">{s.paiements_a_valider} paiement(s) à valider →</button>}
+        {!!s.pasteurs_en_attente && <button onClick={() => go('admin', 'pasteurs')} className="rounded-full bg-white px-4 py-2 text-[13px] font-semibold text-ink">{s.pasteurs_en_attente} guide(s) à valider →</button>}
         {!!data?.alertes.length && <button onClick={() => go('admin', 'abonnements')} className="rounded-full bg-white/15 px-4 py-2 text-[13px] font-semibold text-white ring-1 ring-white/30">{data.alertes.length} abonnement(s) expirent bientôt</button>}
       </WelcomeBanner>
       {error && <LoadError message={error} onRetry={reload} />}
@@ -95,7 +97,7 @@ function TableauDeBord({ user, data, error, reload }: { user: SessionUser; data:
         { label: 'Utilisateurs inscrits', value: s.inscrits, icon: Users, hint: s.comptes_actifs != null ? `${s.comptes_actifs} actifs` : undefined, onClick: () => go('admin', 'visiteurs') },
         { label: 'Abonnements actifs', value: s.abonnements_actifs, icon: Crown, onClick: () => go('admin', 'abonnements') },
         { label: 'Abonnements expirés', value: s.abonnements_expires, icon: CreditCard, onClick: () => go('admin', 'abonnements') },
-        { label: 'Pasteurs', value: s.pasteurs, icon: Church, hint: s.pasteurs_actifs != null ? `${s.pasteurs_actifs} actifs` : undefined, onClick: () => go('admin', 'pasteurs') },
+        { label: 'Guides spirituels', value: s.pasteurs, icon: Church, hint: s.pasteurs_actifs != null ? `${s.pasteurs_actifs} actifs` : undefined, onClick: () => go('admin', 'pasteurs') },
         { label: 'Contenus publiés', value: s.contenus_publies, icon: Library, onClick: () => go('admin', 'contenus') },
         { label: 'Documents', value: s.documents, icon: FileText, onClick: () => go('admin', 'contenus') },
         { label: 'Paroles de Dieu', value: s.paroles, icon: BookOpen, onClick: () => go('admin', 'contenus') },
@@ -129,7 +131,7 @@ function Activites() {
   return (
     <div>
       <PageHeader titre="Activités" texte="Suivi à distance : connexions, publications, documents, abonnements… avec la date de chaque action." />
-      <div className="mb-5"><Tabs id="act" value={role} onChange={setRole} options={[{ value: 'pasteur', label: 'Pasteurs' }, { value: 'visiteur', label: 'Visiteurs' }, { value: 'admin', label: 'Administration' }, { value: 'tous', label: 'Tout' }]} /></div>
+      <div className="mb-5"><Tabs id="act" value={role} onChange={setRole} options={[{ value: 'pasteur', label: 'Guides spirituels' }, { value: 'visiteur', label: 'Visiteurs' }, { value: 'admin', label: 'Administration' }, { value: 'tous', label: 'Tout' }]} /></div>
       <Card>{error ? <LoadError message={error} onRetry={reload} /> : loading && !data ? <Skeleton className="h-64" /> : <ActivityList items={data?.activites ?? []} />}</Card>
     </div>
   );
@@ -155,7 +157,7 @@ export function ImportExemples({ onDone }: { onDone?: () => void }) {
       <p className="text-[14px] text-ink/70">
         Ajoute 26 publications prêtes à l’emploi : 8 Paroles de Dieu, 5 enseignements, 7 contenus spirituels et
         <strong> 6 documents PDF à télécharger</strong> (plan de lecture de la Bible, guide de prière 21 jours, étude des Béatitudes…),
-        en Gratuit et en Premium. Elles sont publiées au nom du pasteur « Équipe Ame & Vie » ; vous pourrez les modifier ou les supprimer dans « Contenus ».
+        en Gratuit et en Premium. Elles sont publiées au nom de Jean, guide spirituel ; vous pourrez les modifier ou les supprimer dans « Contenus ».
       </p>
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <Button icon={<Sparkles className="h-4 w-4" />} loading={busy} onClick={lancer} shine>Ajouter les contenus d’exemple</Button>
@@ -240,7 +242,8 @@ export default function AdminSpace({ page, id }: { page: string; id: string }) {
       titre: 'Gestion', items: [
         { id: 'visiteurs', label: 'Visiteurs', icon: Users },
         { id: 'abonnements', label: 'Abonnements', icon: CreditCard, badge: overview.data?.alertes.length || undefined },
-        { id: 'pasteurs', label: 'Pasteurs', icon: UserCheck, badge: s.pasteurs_en_attente || undefined },
+        { id: 'paiements', label: 'Paiements crypto', icon: Bitcoin, badge: s.paiements_a_valider || undefined },
+        { id: 'pasteurs', label: 'Guides spirituels', icon: UserCheck, badge: s.pasteurs_en_attente || undefined },
         { id: 'contenus', label: 'Contenus', icon: Library },
         { id: 'prieres', label: 'Demandes de prière', icon: HandHeart, badge: s.prieres_nouvelles || undefined },
       ],
@@ -251,7 +254,9 @@ export default function AdminSpace({ page, id }: { page: string; id: string }) {
   const active = sections.some((x) => x.items.some((i) => i.id === page)) ? page : '';
   const quick: QuickAction[] = [
     { label: 'Activer un abonnement', icon: Crown, onClick: () => go('admin', 'visiteurs') },
-    { label: 'Valider un pasteur', icon: UserCheck, onClick: () => go('admin', 'pasteurs') },
+    { label: 'Valider un paiement', icon: Bitcoin, onClick: () => go('admin', 'paiements') },
+    { label: 'Ajouter un livre', icon: BookOpen, onClick: () => go('admin', 'contenus') },
+    { label: 'Valider un guide spirituel', icon: UserCheck, onClick: () => go('admin', 'pasteurs') },
     { label: 'Abonnements qui expirent', icon: AlertTriangle, onClick: () => go('admin', 'abonnements') },
     { label: 'Dernières activités', icon: Activity, onClick: () => go('admin', 'activites') },
   ];
@@ -260,12 +265,13 @@ export default function AdminSpace({ page, id }: { page: string; id: string }) {
   switch (active) {
     case 'visiteurs': content = <VisitorsAdmin onChange={overview.reload} />; break;
     case 'abonnements': content = <SubscriptionsAdmin onChange={overview.reload} />; break;
+    case 'paiements': content = <PaymentsAdmin onChange={overview.reload} />; break;
     case 'pasteurs': content = id ? <PastorDetail key={id} id={id} /> : <PastorsAdmin onChange={overview.reload} />; break;
     case 'contenus':
       content = id ? (
         <div><PageHeader titre="Modifier la publication" /><ContentEditor key={id} role="admin" contentId={id} onDone={() => go('admin', 'contenus')} /></div>
       ) : (
-        <div><PageHeader titre="Contenus" texte="Toutes les publications des pasteurs : consulter, modifier, retirer ou supprimer." />
+        <div><PageHeader titre="Contenus" texte="Toutes les publications des guides spirituels : consulter, modifier, retirer ou supprimer." actions={<AjouterLivre />} />
           <ContentsManager role="admin" onEdit={(cid) => go('admin', 'contenus', cid)} /></div>
       );
       break;

@@ -1,11 +1,11 @@
 {
-  "_aide": "Contenus d'exemple importés depuis l'administration (Base de données → Ajouter les contenus d'exemple). Textes bibliques : Louis Segond 1910 (domaine public).",
+  "_aide": "Contenus d'exemple ajoutés automatiquement : Christianisme (Jean, textes Louis Segond 1910), Islam et Spiritualité universelle (guides provisoires). Citations du Coran : traductions du sens à faire relire. Régénérer : scripts/exemples_religions.py.",
   "pasteur": {
-    "prenom": "Équipe",
-    "nom": "Ame & Vie",
+    "prenom": "Jean",
+    "nom": "",
     "email": "equipe@ameetvie.org",
     "eglise": "Ame & Vie",
-    "bio": "Contenus proposés par l'équipe Ame & Vie pour bien démarrer."
+    "bio": "Guide spirituel de la plateforme Ame & Vie. Il partage chaque semaine la Parole, des enseignements et des livres pour grandir dans la foi."
   },
   "contenus": [
     {
@@ -227,6 +227,297 @@
       "description": "Des cartes à découper, classées par thème : confiance, paix, pardon, force, espérance.",
       "access": "premium",
       "category": "Méditation"
+    },
+    {
+      "v": 2,
+      "religion": "musulman",
+      "guide": "islam",
+      "type": "parole",
+      "title": "L’Ouverture (al-Fâtiha)",
+      "description": "La première sourate, récitée dans chaque prière.",
+      "access": "gratuit",
+      "content": "« Au nom d’Allah, le Tout Miséricordieux, le Très Miséricordieux. Louange à Allah, Seigneur des mondes, le Tout Miséricordieux, le Très Miséricordieux, Maître du Jour du Jugement. C’est Toi seul que nous adorons, et c’est Toi seul dont nous implorons le secours. Guide-nous sur le droit chemin, le chemin de ceux que Tu as comblés de Tes bienfaits, non de ceux qui ont encouru la colère, ni des égarés. »\n\nMéditation\nCette sourate est un dialogue : la louange d’abord, puis la demande. Avant de demander, je reconnais Celui à qui je parle. Aujourd’hui, je la récite lentement, en pensant au sens de chaque phrase.\n\n(Traduction du sens)",
+      "bible_ref": "Coran 1:1-7",
+      "category": "Prière"
+    },
+    {
+      "v": 2,
+      "religion": "musulman",
+      "guide": "islam",
+      "type": "parole",
+      "title": "Le verset du Trône (Âyat al-Kursî)",
+      "description": "Un verset de protection et de grandeur.",
+      "access": "gratuit",
+      "content": "« Allah ! Point de divinité à part Lui, le Vivant, Celui qui subsiste par Lui-même. Ni somnolence ni sommeil ne Le saisissent. À Lui appartient tout ce qui est dans les cieux et sur la terre. Qui peut intercéder auprès de Lui sans Sa permission ? Il connaît ce qui est devant eux et ce qui est derrière eux, et ils n’embrassent de Sa science que ce qu’Il veut. Son Trône s’étend sur les cieux et la terre, et leur garde ne Lui coûte aucune peine. Il est le Très-Haut, l’Immense. »\n\nMéditation\nRien n’échappe à Celui qui ne dort jamais. Quand l’inquiétude m’empêche de dormir, je me souviens que Lui veille.\n\n(Traduction du sens)",
+      "bible_ref": "Coran 2:255",
+      "category": "Méditation"
+    },
+    {
+      "v": 2,
+      "religion": "musulman",
+      "guide": "islam",
+      "type": "parole",
+      "title": "Avec la difficulté, la facilité",
+      "description": "Une promesse répétée deux fois, pour les jours lourds.",
+      "access": "gratuit",
+      "content": "« Car, à côté de la difficulté, il y a certes une facilité. Oui, à côté de la difficulté, il y a certes une facilité. »\n\nMéditation\nLe verset ne dit pas « après », mais « avec » : la facilité est déjà là, cachée dans l’épreuve. Je cherche aujourd’hui un petit signe de cette facilité.\n\n(Traduction du sens)",
+      "bible_ref": "Coran 94:5-6",
+      "category": "Exhortation"
+    },
+    {
+      "v": 2,
+      "religion": "musulman",
+      "guide": "islam",
+      "type": "parole",
+      "title": "Les cœurs s’apaisent",
+      "description": "Le rappel d’Allah, chemin de la paix intérieure.",
+      "access": "gratuit",
+      "content": "« Ceux qui ont cru, et dont les cœurs se tranquillisent au rappel d’Allah. N’est-ce point par le rappel d’Allah que les cœurs se tranquillisent ? »\n\nMéditation\nQuelques minutes de dhikr peuvent changer une journée. Je choisis un moment fixe pour me souvenir d’Allah.\n\n(Traduction du sens)",
+      "bible_ref": "Coran 13:28",
+      "category": "Méditation"
+    },
+    {
+      "v": 2,
+      "religion": "musulman",
+      "guide": "islam",
+      "type": "parole",
+      "title": "Le monothéisme pur (al-Ikhlâs)",
+      "description": "Une courte sourate au cœur de la foi.",
+      "access": "gratuit",
+      "content": "« Dis : Il est Allah, l’Unique. Allah, Celui vers qui l’on se tourne en tout besoin. Il n’a pas engendré et n’a pas été engendré. Et nul n’est égal à Lui. »\n\nMéditation\nQuatre versets suffisent à dire l’essentiel. Je la récite avec attention, en laissant chaque mot me parler.\n\n(Traduction du sens)",
+      "bible_ref": "Coran 112",
+      "category": "Prière"
+    },
+    {
+      "v": 2,
+      "religion": "musulman",
+      "guide": "islam",
+      "type": "parole",
+      "title": "Aucune âme n’est chargée au-delà de sa capacité",
+      "description": "Un verset de réconfort et une invocation.",
+      "access": "gratuit",
+      "content": "« Allah n’impose à aucune âme une charge supérieure à sa capacité. […] Seigneur, ne nous tiens pas rigueur de nos oublis et de nos erreurs. »\n\nMéditation\nCe que je vis aujourd’hui, Allah sait que je peux le porter. Je Lui demande la force, et je me pardonne aussi mes faiblesses.\n\n(Traduction du sens, extrait)",
+      "bible_ref": "Coran 2:286",
+      "category": "Exhortation"
+    },
+    {
+      "v": 2,
+      "religion": "musulman",
+      "guide": "islam",
+      "type": "enseignement",
+      "title": "Les cinq piliers de l’islam",
+      "description": "La base de la pratique, expliquée simplement.",
+      "access": "gratuit",
+      "content": "Les cinq piliers sont comme les colonnes d’une maison.\n\n1. La shahâda : attester qu’il n’y a de divinité qu’Allah et que Muhammad est Son messager.\n2. La prière (salât) : cinq rendez-vous quotidiens avec Allah.\n3. L’aumône (zakât) : purifier ses biens en partageant avec ceux qui sont dans le besoin.\n4. Le jeûne du Ramadan (sawm) : un mois de maîtrise de soi, de prière et de générosité.\n5. Le pèlerinage (hajj) à La Mecque, une fois dans la vie pour qui en a la capacité.\n\nPour aller plus loin\nChaque pilier relie le croyant à Allah et aux autres. La prière forme le cœur, l’aumône ouvre la main, le jeûne apprend la patience.",
+      "category": "Étude coranique"
+    },
+    {
+      "v": 2,
+      "religion": "musulman",
+      "guide": "islam",
+      "type": "enseignement",
+      "title": "La patience (as-sabr) dans le Coran",
+      "description": "Trois visages de la patience, et comment la cultiver.",
+      "access": "premium",
+      "content": "« Ô les croyants ! Cherchez secours dans la patience et la prière. Allah est avec ceux qui sont patients. » (Coran 2:153, traduction du sens)\n\nLes savants distinguent trois patiences :\n• la patience dans l’obéissance : persévérer dans le bien, même quand c’est difficile ;\n• la patience face à l’interdit : résister à ce qui fait du tort ;\n• la patience dans l’épreuve : accepter ce qui ne dépend pas de nous, sans perdre confiance.\n\nCultiver la patience\n1. Respirer et invoquer avant de répondre.\n2. Se rappeler que l’épreuve a une fin.\n3. Chercher la compagnie de personnes patientes.\n4. Demander à Allah : « Seigneur, accorde-nous l’endurance. »",
+      "category": "Étude coranique"
+    },
+    {
+      "v": 2,
+      "religion": "musulman",
+      "guide": "islam",
+      "type": "enseignement",
+      "title": "Le pardon et la miséricorde",
+      "description": "Pardonner comme on espère être pardonné.",
+      "access": "premium",
+      "content": "« Qu’ils pardonnent et qu’ils passent l’éponge. N’aimez-vous pas qu’Allah vous pardonne ? » (Coran 24:22, traduction du sens)\n\nLa miséricorde est au cœur de l’islam : chaque sourate, sauf une, commence par « Au nom d’Allah, le Tout Miséricordieux, le Très Miséricordieux ».\n\nPardonner ne veut pas dire oublier ni accepter l’injustice. C’est refuser que la rancune dirige notre cœur.\n\nUn chemin en quatre pas\n1. Reconnaître la blessure devant Allah.\n2. Remettre la justice entre Ses mains.\n3. Invoquer pour la personne, même en quelques mots.\n4. Demander conseil à l’imam ou à un proche si la blessure est profonde.",
+      "category": "Exhortation"
+    },
+    {
+      "v": 2,
+      "religion": "musulman",
+      "guide": "islam",
+      "type": "contenu",
+      "title": "Invocations du matin et du soir",
+      "description": "Un rappel simple, à la portée de tous.",
+      "access": "gratuit",
+      "content": "Après la prière ou à tout moment :\n\n• Subhâna-llâh (Gloire à Allah) — 33 fois\n• Al-hamdu li-llâh (Louange à Allah) — 33 fois\n• Allâhu akbar (Allah est le plus grand) — 33 fois\n\nLe matin, on peut dire aussi : « Nous voici au matin, et le royaume appartient à Allah. »\nLe soir : « Nous voici au soir, et le royaume appartient à Allah. »\n\nConseil\nUn chapelet (misbaha) ou les doigts suffisent pour compter. L’important est la présence du cœur.",
+      "category": "Prière"
+    },
+    {
+      "v": 2,
+      "religion": "musulman",
+      "guide": "islam",
+      "type": "contenu",
+      "title": "Préparer son cœur au Ramadan",
+      "description": "Quelques semaines avant le mois béni, se préparer en douceur.",
+      "access": "premium",
+      "content": "Ramadan se prépare avant Ramadan.\n\n1. Reprendre doucement la lecture du Coran, quelques versets par jour.\n2. Jeûner un ou deux jours volontaires pour habituer le corps.\n3. Régler ses dettes et se réconcilier avec ceux que l’on a blessés.\n4. Préparer un budget d’aumône.\n5. Écrire trois intentions pour le mois.\n\nInvocation\n« Ô Allah, fais-nous atteindre Ramadan, et accepte-le de nous. »",
+      "category": "Méditation"
+    },
+    {
+      "v": 2,
+      "religion": "musulman",
+      "guide": "islam",
+      "type": "document",
+      "title": "Guide de la prière (salât) pour débutants",
+      "description": "Les ablutions, les cinq prières et les gestes, expliqués pas à pas.",
+      "access": "gratuit",
+      "category": "Prière",
+      "file": "guide-priere-salat-debutants.pdf"
+    },
+    {
+      "v": 2,
+      "religion": "musulman",
+      "guide": "islam",
+      "type": "document",
+      "title": "Les 99 plus beaux noms d’Allah",
+      "description": "La liste complète avec le sens de chaque nom, pour une méditation quotidienne.",
+      "access": "premium",
+      "category": "Méditation",
+      "file": "99-noms-d-allah.pdf"
+    },
+    {
+      "v": 2,
+      "religion": "musulman",
+      "guide": "islam",
+      "type": "document",
+      "title": "Ramadan : 30 jours de réflexion",
+      "description": "Un thème, une pensée et un geste pour chaque jour du mois béni.",
+      "access": "premium",
+      "category": "Méditation",
+      "file": "ramadan-30-jours.pdf"
+    },
+    {
+      "v": 2,
+      "religion": "universel",
+      "guide": "universel",
+      "type": "contenu",
+      "title": "Ce qui dépend de nous",
+      "description": "Une sagesse stoïcienne pour retrouver la paix.",
+      "access": "gratuit",
+      "content": "« Il y a des choses qui dépendent de nous, et d’autres qui n’en dépendent pas. » — d’après Épictète\n\nLa pluie, l’avis des autres, le passé : cela ne dépend pas de moi. Mes choix, mes paroles, ma manière de réagir : cela dépend de moi.\n\nExercice du jour\nPrenez un souci qui vous pèse. Divisez une feuille en deux colonnes : « ce qui dépend de moi » et « ce qui n’en dépend pas ». Agissez sur la première, relâchez la seconde.",
+      "bible_ref": "d’après Épictète, Manuel",
+      "category": "Sagesse"
+    },
+    {
+      "v": 2,
+      "religion": "universel",
+      "guide": "universel",
+      "type": "contenu",
+      "title": "Le premier pas",
+      "description": "Commencer petit, mais commencer.",
+      "access": "gratuit",
+      "content": "« Un voyage de mille lieues commence par un premier pas. » — d’après Lao-Tseu\n\nNous attendons souvent d’être prêts pour commencer. La sagesse taoïste invite à faire le premier pas, même petit.\n\nAujourd’hui\nChoisissez un projet que vous repoussez et faites-en la plus petite étape possible : cinq minutes suffisent.",
+      "bible_ref": "d’après Lao-Tseu, Tao Te King",
+      "category": "Sagesse"
+    },
+    {
+      "v": 2,
+      "religion": "universel",
+      "guide": "universel",
+      "type": "enseignement",
+      "title": "La règle d’or dans les traditions du monde",
+      "description": "Une même sagesse, sous mille formes.",
+      "access": "gratuit",
+      "content": "Presque toutes les traditions enseignent une même règle :\n\n• « Ne fais pas à autrui ce que tu ne voudrais pas qu’on te fasse. » (d’après Confucius)\n• « Tout ce que vous voulez que les hommes fassent pour vous, faites-le de même pour eux. » (Évangile selon Matthieu 7:12)\n• « Aucun de vous n’est vraiment croyant tant qu’il ne désire pas pour son frère ce qu’il désire pour lui-même. » (hadith rapporté par al-Bukhârî et Muslim)\n• « Ne blesse pas les autres de la manière qui te blesserait toi-même. » (d’après un enseignement bouddhique)\n\nCe qui nous rassemble\nAu-delà des différences, cette règle trace un chemin commun : le respect de l’autre comme de soi-même.\n\nÀ méditer\nDans quelle situation de ma semaine puis-je appliquer cette règle concrètement ?",
+      "category": "Sagesse"
+    },
+    {
+      "v": 2,
+      "religion": "universel",
+      "guide": "universel",
+      "type": "contenu",
+      "title": "Respirer pour apaiser l’esprit",
+      "description": "Cinq minutes de respiration, accessibles à tous.",
+      "access": "gratuit",
+      "content": "Un exercice simple, quelle que soit votre croyance :\n\n1. Asseyez-vous, pieds au sol, dos droit.\n2. Inspirez par le nez en comptant jusqu’à 5.\n3. Expirez doucement par la bouche en comptant jusqu’à 5.\n4. Continuez pendant 5 minutes.\n\nBienfaits\nCette respiration lente calme le cœur et apaise les pensées. Pratiquée trois fois par jour, elle aide à traverser les moments de stress.",
+      "category": "Pleine conscience"
+    },
+    {
+      "v": 2,
+      "religion": "universel",
+      "guide": "universel",
+      "type": "enseignement",
+      "title": "La gratitude transforme le regard",
+      "description": "Pourquoi dire merci rend plus heureux.",
+      "access": "premium",
+      "content": "« La gratitude transforme ce que nous avons en suffisance. »\n\nToutes les traditions invitent à rendre grâce. La gratitude n’ignore pas les difficultés : elle apprend à voir aussi le bien.\n\nTrois pratiques\n1. Le carnet : chaque soir, écrire trois mercis.\n2. La lettre : écrire à une personne pour la remercier de ce qu’elle vous a apporté.\n3. Le regard : une fois par jour, s’arrêter devant une chose belle et simple.\n\nÀ essayer pendant 30 jours : c’est le temps qu’il faut pour qu’une habitude s’installe.",
+      "category": "Méditation"
+    },
+    {
+      "v": 2,
+      "religion": "universel",
+      "guide": "universel",
+      "type": "enseignement",
+      "title": "Traverser le deuil et la perte",
+      "description": "Des repères doux pour les jours de peine.",
+      "access": "premium",
+      "content": "Le deuil n’est pas une maladie : c’est l’amour qui continue, privé de son objet.\n\nCe qui peut aider\n• Accepter que la peine vienne par vagues.\n• Parler de la personne disparue, garder des souvenirs.\n• Prendre soin de son corps : sommeil, repas, marche.\n• Se donner le droit de rire à nouveau sans culpabilité.\n• Demander de l’aide : un proche, un guide spirituel, un professionnel si la peine devient trop lourde.\n\nUne pensée\n« Ceux que nous avons aimés ne sont plus là où ils étaient, mais ils sont partout où nous sommes. » (pensée populaire)",
+      "category": "Exhortation"
+    },
+    {
+      "v": 2,
+      "religion": "universel",
+      "guide": "universel",
+      "type": "contenu",
+      "title": "Méditation du soir : faire la paix avec sa journée",
+      "description": "Un rituel de dix minutes avant de dormir.",
+      "access": "premium",
+      "content": "1. Asseyez-vous et respirez lentement dix fois.\n2. Repassez votre journée comme un film, sans juger.\n3. Remerciez pour un moment heureux.\n4. Reconnaissez un moment difficile, et dites-vous : « J’ai fait de mon mieux. »\n5. Laissez partir ce que vous ne pouvez pas changer.\n6. Souhaitez la paix à une personne de votre choix.\n\nVous pouvez terminer par la prière ou le silence de votre tradition.",
+      "category": "Pleine conscience"
+    },
+    {
+      "v": 2,
+      "religion": "universel",
+      "guide": "universel",
+      "type": "document",
+      "title": "Méditation : programme de 21 jours",
+      "description": "Dix minutes par jour pour apaiser l’esprit, habiter son corps et ouvrir son cœur.",
+      "access": "premium",
+      "category": "Pleine conscience",
+      "file": "meditation-21-jours.pdf"
+    },
+    {
+      "v": 2,
+      "religion": "universel",
+      "guide": "universel",
+      "type": "document",
+      "title": "Carnet de gratitude (30 jours)",
+      "description": "Un carnet à imprimer : trois mercis chaque soir pendant un mois.",
+      "access": "gratuit",
+      "category": "Méditation",
+      "file": "carnet-de-gratitude.pdf"
+    },
+    {
+      "v": 2,
+      "religion": "universel",
+      "guide": "universel",
+      "type": "document",
+      "title": "Sagesses du monde : 40 pensées",
+      "description": "Des paroles de toutes les cultures, à garder sur soi ou à afficher.",
+      "access": "gratuit",
+      "category": "Sagesse",
+      "file": "sagesses-du-monde-40-pensees.pdf"
+    }
+  ],
+  "version": 2,
+  "guides": [
+    {
+      "cle": "islam",
+      "prenom": "Guide",
+      "nom": "Islam",
+      "email": "islam@ameetvie.org",
+      "eglise": "Ame & Vie",
+      "bio": "Guide spirituel pour les contenus musulmans (nom provisoire, modifiable dans l’administration)."
+    },
+    {
+      "cle": "universel",
+      "prenom": "Guide",
+      "nom": "Sagesse",
+      "email": "sagesse@ameetvie.org",
+      "eglise": "Ame & Vie",
+      "bio": "Guide pour la spiritualité universelle : méditation, sagesses du monde, paix intérieure (nom provisoire, modifiable)."
     }
   ]
 }

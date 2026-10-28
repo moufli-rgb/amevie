@@ -18,6 +18,8 @@ export interface Actor {
   /** Visiteur uniquement : abonnement courant et droit Premium (calculés côté serveur) */
   abonnement?: SubscriptionRow | null;
   premium?: boolean;
+  /** Guide ouvert par l'administration : nom de l'administrateur */
+  via_admin?: string;
 }
 
 function bearer(req: Req): string | null {
@@ -49,9 +51,18 @@ export async function getActor(req: Req): Promise<Actor> {
       .maybeSingle();
     check(error, 'pastors');
     if (!data) throw new ApiError(401, MSG_SESSION, 'SESSION');
-    if (!data.is_active) throw new ApiError(403, 'Votre compte pasteur est désactivé. Contactez l’administration.', 'COMPTE_INACTIF');
+    // Accès ouvert par l'administration : l'administrateur doit toujours exister
+    let viaAdmin: string | undefined;
+    if (payload.adm) {
+      const a = await db().from('admin_users').select('email, display_name').eq('user_id', payload.adm).maybeSingle();
+      check(a.error, 'admin_users');
+      if (!a.data) throw new ApiError(401, MSG_SESSION, 'SESSION');
+      viaAdmin = a.data.display_name || a.data.email;
+    } else if (!data.is_active) {
+      throw new ApiError(403, 'Votre compte de guide spirituel est désactivé. Contactez l’administration.', 'COMPTE_INACTIF');
+    }
     const { is_active: _s, ...rest } = data;
-    return { ...rest, role: 'pasteur', name: `${data.prenom} ${data.nom}` };
+    return { ...rest, role: 'pasteur', name: `${data.prenom} ${data.nom}`.trim(), ...(viaAdmin ? { via_admin: viaAdmin } : {}) };
   }
 
   const { data, error } = await db()

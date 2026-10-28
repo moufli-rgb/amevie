@@ -84,7 +84,7 @@ Le résultat est votre `PDG_AUTH_SECRET` (32 caractères minimum).
    `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_ANON_KEY` et `PDG_AUTH_SECRET`. Cochez *Production*, *Preview* et *Development*.
 5. Cliquez sur **Deploy**.
 
-Le projet utilise **10 fonctions serveur** (la limite de l'offre gratuite Vercel est de 12) :
+Le projet utilise **11 fonctions serveur** (la limite de l'offre gratuite Vercel est de 12) :
 
 | Route | Rôle |
 |---|---|
@@ -98,6 +98,7 @@ Le projet utilise **10 fonctions serveur** (la limite de l'offre gratuite Vercel
 | `/api/admin` | statistiques, journal d'activité, état de la base |
 | `/api/favorites` | « Ma bibliothèque » (Premium) |
 | `/api/prayers` | demandes de prière |
+| `/api/payments` | paiement de l'abonnement en cryptomonnaie (NOWPayments) |
 
 ### Nom de domaine (facultatif)
 Vercel → projet → **Settings → Domains** : ajoutez votre domaine et suivez les instructions DNS.
@@ -179,3 +180,80 @@ vercel dev                      # front-end + fonctions /api sur http://localhos
 - Toutes les entrées sont validées côté serveur : types, longueurs, emails, uuid, dates, types de fichiers.
 - Limitation des tentatives de connexion : 5 échecs par email et 20 par adresse IP en 15 minutes déclenchent un blocage de 15 minutes. Les messages d'erreur restent génériques.
 - En-têtes de sécurité dans `vercel.json` : CSP, X-Frame-Options DENY, nosniff, Referrer-Policy, HSTS et Permissions-Policy.
+
+---
+
+## Paiement de l'abonnement en cryptomonnaie
+
+Quand le visiteur clique sur **« Payer en crypto »**, il choisit entre deux moyens de paiement.
+
+| | Paiement automatique | Envoi direct (manuel) |
+|---|---|---|
+| Comment | Page sécurisée NOWPayments, avec plus de 300 cryptos au choix | Votre adresse de portefeuille et son QR code, puis le visiteur colle le numéro de transaction |
+| Accès Premium | Ouvert **tout seul** après confirmation | Ouvert quand **vous cliquez « Valider »** |
+| À régler | Un compte NOWPayments et 2 variables Vercel | Vos adresses, dans **Administration → Paiements crypto → Mes adresses** |
+
+Vous pouvez activer l'un, l'autre ou les deux. Le prix d'un mois se règle avec `PRIX_ABONNEMENT` : 10 par défaut, dans la devise `DEVISE_ABONNEMENT`, `usd` par défaut.
+
+### Paiement manuel : valider un paiement
+1. Le tableau de bord affiche **« 1 paiement à valider »**, et un badge apparaît sur **Paiements crypto**.
+2. Ouvrez l'onglet **À valider**. Vous voyez le visiteur, l'adresse utilisée et le numéro de transaction.
+3. Cliquez sur **« Vérifier sur la blockchain »** pour contrôler le montant et l'adresse de réception (Tronscan, Etherscan, BscScan, mempool…).
+4. Cliquez sur **Valider · donner l'accès** : l'abonnement d'un mois est activé, ou prolongé à la suite s'il est encore en cours. Sinon, cliquez sur **Refuser**.
+5. Le visiteur voit le résultat dans **Mon abonnement**.
+
+Un même numéro de transaction ne peut être déclaré qu'une fois, et un paiement ne peut être validé qu'une fois.
+
+### Paiement automatique : créer le compte NOWPayments
+
+1. Créez un compte sur <https://nowpayments.io>, puis vérifiez votre email.
+2. **Settings → Payment details** : ajoutez l'adresse de votre portefeuille, celle où vous recevrez l'argent (par exemple une adresse USDT TRC20 ou BTC).
+3. **Settings → API keys** : cliquez sur **Add new key**, puis copiez la clé. C'est votre `NOWPAYMENTS_API_KEY`.
+4. **Settings → Payments → Instant payment notifications** : générez la **IPN secret key**, puis copiez-la. C'est votre `NOWPAYMENTS_IPN_SECRET`.
+
+#### Ajouter les variables dans Vercel
+Dans PowerShell, dans le dossier du projet, ajoutez chaque variable (collez la valeur quand Vercel la demande) :
+```powershell
+vercel env add NOWPAYMENTS_API_KEY production
+vercel env add NOWPAYMENTS_IPN_SECRET production
+vercel env add PRIX_ABONNEMENT production
+vercel env add DEVISE_ABONNEMENT production
+```
+- `PRIX_ABONNEMENT` : le prix d'un mois, par exemple `10`.
+- `DEVISE_ABONNEMENT` : la devise du prix, par exemple `usd` ou `eur`.
+
+Sans `PRIX_ABONNEMENT` et `DEVISE_ABONNEMENT`, le prix est de 10 USD.
+
+Redéployez ensuite avec `vercel deploy --prod`.
+
+#### Suivre les paiements
+**Administration → Paiements crypto** montre chaque paiement : qui a payé, combien, en quelle crypto, et si l'abonnement a été activé.
+
+### Sécurité
+- Le prix est fixé par le serveur ; le navigateur ne peut pas le modifier.
+- Chaque notification de NOWPayments est vérifiée avec la signature HMAC-SHA512 (`NOWPAYMENTS_IPN_SECRET`).
+- Un paiement ne crédite qu'une seule fois.
+- Un montant inférieur au prix n'active rien : le paiement passe « À vérifier ».
+
+Vous pouvez toujours activer ou prolonger un abonnement à la main dans **Visiteurs**.
+
+---
+
+## Guide spirituel « Jean » et accès de l'administration
+
+- Les « pasteurs » s'appellent désormais **guides spirituels**. Le guide de la plateforme, auteur des contenus d'exemple, s'appelle **Jean**.
+- Pour agir dans l'espace d'un guide : **Administration → Guides spirituels → Ouvrir son espace**. Un bandeau rappelle que vous êtes en mode administration, et **« Revenir à l'administration »** vous ramène à votre espace. Chaque accès est noté dans le journal d'activité.
+- Pour **ajouter un livre** : **Administration → Contenus → Ajouter un livre ou un document**. Cela ouvre directement le formulaire « Document » dans l'espace de Jean. Formats acceptés : PDF, EPUB, Word, PowerPoint, audio, vidéo MP4, image et texte, jusqu'à 50 Mo.
+
+> ⚠️ Après cette mise à jour, **ré-exécutez tout le fichier `supabase/schema.sql`** dans le SQL Editor de Supabase. Vous pouvez le relancer sans risque. Il ajoute la table `payments`, le format EPUB et le nom de famille facultatif des guides.
+
+---
+
+## Religions : Christianisme, Islam, Spiritualité universelle
+
+- Chaque publication a une **religion**, choisie dans le formulaire de publication. La bibliothèque propose un filtre : Toutes les traditions, Christianisme, Islam ou Spiritualité universelle. Liens directs : `/#bibliotheque/chretien`, `/#bibliotheque/musulman`, `/#bibliotheque/universel`.
+- Contenus déjà fournis : 26 chrétiens (Jean), 14 musulmans (dont 3 livres PDF : prière pour débutants, 99 noms d'Allah, Ramadan) et 10 universels (dont 3 livres PDF : méditation 21 jours, carnet de gratitude, 40 sagesses).
+- Les guides **« Guide Islam »** et **« Guide Sagesse »** ont des noms provisoires. Renommez-les dans **Administration → Guides spirituels → Modifier**.
+- Les citations du Coran sont des **traductions du sens** rédigées pour la plateforme. Faites-les relire par une personne qualifiée.
+- Les nouveaux contenus s'ajoutent tout seuls à la prochaine visite, même si le site est déjà en ligne. Ce que vous avez supprimé ne revient pas.
+- Les illustrations Islam et Universel sont des dessins originaux (`scripts/illustrations_religions.py`). Les contenus et les PDF se régénèrent avec `scripts/exemples_religions.py`.

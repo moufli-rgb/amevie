@@ -18,9 +18,9 @@ const PasteurSpace = lazy(() => import('@/spaces/PasteurSpace'));
 const AdminSpace = lazy(() => import('@/spaces/AdminSpace'));
 
 const TITRES: Record<string, string> = {
-  accueil: SITE.slogan, apropos: 'À propos', pasteurs: 'Pasteurs', bibliotheque: 'Contenus', contenu: 'Contenu',
+  accueil: SITE.slogan, apropos: 'À propos', pasteurs: 'Guides spirituels', bibliotheque: 'Contenus', contenu: 'Contenu',
   abonnement: 'Abonnement', connexion: 'Connexion', inscription: 'Créer un compte', espace: 'Mon espace',
-  pasteur: 'Espace pasteur', admin: 'Administration',
+  pasteur: 'Espace guide spirituel', admin: 'Administration',
 };
 
 export default function App() {
@@ -45,7 +45,7 @@ export default function App() {
     case 'abonnement': page = <SubscriptionPage />; break;
     case 'connexion': page = <LoginPage />; break;
     case 'inscription': page = <RegisterPage />; break;
-    case 'espace': page = <VisitorSpace page={route.page} />; break;
+    case 'espace': page = <VisitorSpace page={route.page} id={route.id} />; break;
     case 'pasteur': page = <PasteurSpace page={route.page} id={route.id} />; break;
     case 'admin': page = <AdminSpace page={route.page} id={route.id} />; break;
     default: page = <HomePage ancre={route.page} />;

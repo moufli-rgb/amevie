@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  BookOpen, Church, Eye, FileText, GraduationCap, HandHeart, KeyRound, LayoutDashboard, Library, Mail, Phone, PlusCircle, Settings, Sparkles, User,
+  ArrowLeft, BookOpen, Church, Eye, FileText, GraduationCap, HandHeart, KeyRound, LayoutDashboard, Library, Mail, Phone, PlusCircle, Settings, Sparkles, User,
 } from 'lucide-react';
 import { api, ApiError } from '@/lib/api';
 import { go } from '@/lib/router';
@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Skeleton } from '@/components/ui/Empty';
 import { AuthLayout } from '@/dashboard/AuthLayout';
 import { PageHeader, Shell, type NavSection, type QuickAction } from '@/dashboard/Shell';
+import { revenirAdministration } from '@/lib/accesGuide';
 import { useAuth } from '@/dashboard/useAuth';
 import { useData } from '@/dashboard/useData';
 import { Card, StatGrid, Tabs, WelcomeBanner } from '@/dashboard/Widgets';
@@ -58,9 +59,9 @@ function PasteurAuth({ onLogin, notice }: { onLogin: (t: string, u: SessionUser)
   }
 
   return (
-    <AuthLayout photo="spiritual_bible_study" surtitre="Espace" titre="Pasteur"
+    <AuthLayout photo="spiritual_bible_study" surtitre="Espace" titre="Guide spirituel"
       texte={mode === 'connexion' ? 'Connectez-vous pour publier et gérer vos contenus.' : 'Créez votre compte : il sera actif après validation par l’administration.'}
-      msg={msg} loading={loading} submitLabel={mode === 'connexion' ? 'Se connecter' : 'Créer mon compte pasteur'} onSubmit={submit}>
+      msg={msg} loading={loading} submitLabel={mode === 'connexion' ? 'Se connecter' : 'Créer mon compte de guide'} onSubmit={submit}>
       <Tabs id="pasteur-auth" value={mode} onChange={(m) => { setMode(m); setMsg(null); }} options={[{ value: 'connexion', label: 'Se connecter' }, { value: 'inscription', label: 'Créer un compte' }]} />
       {mode === 'inscription' && (
         <>
@@ -88,7 +89,7 @@ function Accueil({ user }: { user: SessionUser }) {
   const publier = (t: TypeContenu) => go('pasteur', 'nouveau', t);
   return (
     <div className="space-y-6">
-      <WelcomeBanner photo="chorale" surtitre="Espace pasteur" titre={<>Bienvenue, Pst {user.prenom ?? user.name}</>}
+      <WelcomeBanner photo="chorale" surtitre="Espace guide spirituel" titre={<>Bienvenue, {user.prenom || user.name}</>}
         texte="Partagez la Parole : vos publications sont visibles par les visiteurs selon l’accès choisi (Gratuit ou Premium)." />
       <StatGrid cols="sm:grid-cols-4" stats={[
         { label: 'Paroles de Dieu', value: loading && !data ? null : n('parole'), icon: BookOpen, onClick: () => go('pasteur', 'publications') },
@@ -132,13 +133,13 @@ function Parametres({ user, onUpdate }: { user: SessionUser; onUpdate: (u: Parti
   return (
     <div className="space-y-6">
       <PageHeader titre="Paramètres" texte="Votre profil public et votre mot de passe." />
-      <ProfileHeader name={`Pst ${user.name}`} lignes={[{ label: 'Email', value: user.email }, { label: 'Téléphone', value: user.telephone }, { label: 'Église', value: user.eglise }]} />
+      <ProfileHeader name={user.name} lignes={[{ label: 'Email', value: user.email }, { label: 'Téléphone', value: user.telephone }, { label: 'Église', value: user.eglise }]} />
       <SimpleFieldsCard title="Mon profil" fields={[
         { key: 'nom', label: 'Nom', value: user.nom ?? '' },
         { key: 'prenom', label: 'Prénom', value: user.prenom ?? '' },
         { key: 'telephone', label: 'Téléphone', value: user.telephone ?? '', type: 'tel' },
         { key: 'eglise', label: 'Église / ministère', value: user.eglise ?? '' },
-        { key: 'bio', label: 'Présentation (page « Pasteurs »)', value: user.bio ?? '', hint: '1 000 caractères maximum' },
+        { key: 'bio', label: 'Présentation (page « Guides spirituels »)', value: user.bio ?? '', hint: '1 000 caractères maximum' },
       ]} onSave={async (v) => {
         const r = await api<{ user: SessionUser }>('profile', { method: 'PATCH', role: 'pasteur', body: v });
         onUpdate(r.user);
@@ -202,9 +203,18 @@ export default function PasteurSpace({ page, id }: { page: string; id: string })
     content = <Accueil user={user} />;
   }
 
+  const viaAdmin = !!user.via_admin;
   return (
-    <Shell espace="pasteur" user={{ ...user, site_name: user.eglise ?? undefined }} roleLabel="Pasteur" sections={sections} active={page === 'modifier' ? 'publications' : active || (page === 'nouveau' ? 'nouveau' : '')}
-      bottom={['', 'publications', 'prieres']} quickActions={quick} onLogout={() => { logout(); go('pasteur'); }}>
+    <Shell espace="pasteur" user={{ ...user, site_name: viaAdmin ? 'Accès administration' : user.eglise ?? undefined }} roleLabel="Guide spirituel" sections={sections} active={page === 'modifier' ? 'publications' : active || (page === 'nouveau' ? 'nouveau' : '')}
+      bottom={['', 'publications', 'prieres']} quickActions={quick} onLogout={() => { if (viaAdmin) revenirAdministration(); else { logout(); go('pasteur'); } }}>
+      {viaAdmin && (
+        <div className="mb-6 flex flex-col gap-3 rounded-2xl bg-accent/15 px-4 py-3 ring-1 ring-accent/40 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-[14px]"><strong>Mode administration</strong> : vous agissez dans l’espace de <strong>{user.name}</strong>. Ce que vous publiez paraît à son nom.</p>
+          <button onClick={revenirAdministration} className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-ink px-4 text-[13.5px] font-semibold text-fond hover:opacity-90">
+            <ArrowLeft className="h-4 w-4" /> Revenir à l’administration
+          </button>
+        </div>
+      )}
       {content}
     </Shell>
   );

@@ -85,6 +85,10 @@ create table if not exists public.pastors (
   last_login_at    timestamptz
 );
 
+-- Le nom de famille d'un guide peut rester vide (ex. « Jean »)
+alter table public.pastors drop constraint if exists pastors_nom_check;
+alter table public.pastors add constraint pastors_nom_check check (char_length(nom) <= 60);
+
 -- ---------------------------------------------------------------------------
 -- admin_users : administrateurs (liés aux comptes Supabase Auth)
 -- ---------------------------------------------------------------------------
@@ -198,6 +202,59 @@ create table if not exists public.site_visits (
 );
 
 -- ---------------------------------------------------------------------------
+-- payments : paiements en cryptomonnaie (NOWPayments)
+--  Le visiteur choisit la cryptomonnaie qu'il veut sur la page de paiement.
+--  Quand NOWPayments confirme le paiement (« finished »), le serveur active
+--  ou prolonge automatiquement l'abonnement (credited = true, une seule fois).
+-- ---------------------------------------------------------------------------
+create table if not exists public.payments (
+  id              uuid primary key default gen_random_uuid(),
+  user_id         uuid not null references public.users(id) on delete cascade,
+  order_id        text not null unique,
+  provider        text not null default 'nowpayments',
+  invoice_id      text,
+  payment_id      text,
+  price_amount    numeric(12,2) not null check (price_amount > 0),
+  price_currency  text not null,
+  pay_currency    text,
+  pay_amount      numeric(30,12),
+  months          integer not null default 1 check (months between 1 and 36),
+  status          text not null default 'en_attente',
+  credited        boolean not null default false,
+  subscription_id uuid references public.subscriptions(id) on delete set null,
+  created_at      timestamptz not null default now(),
+  updated_at      timestamptz not null default now()
+);
+create index if not exists payments_user_idx on public.payments (user_id, created_at desc);
+
+-- Paiement manuel : le visiteur envoie lui-même la crypto à l'adresse affichée,
+-- colle la preuve (numéro de transaction) et l'administrateur valide ou refuse.
+alter table public.payments add column if not exists tx_hash      text;
+alter table public.payments add column if not exists wallet_label text;
+alter table public.payments add column if not exists admin_note   text;
+alter table public.payments add column if not exists reviewed_by  text;
+alter table public.payments add column if not exists reviewed_at  timestamptz;
+create unique index if not exists payments_tx_hash_idx on public.payments (lower(tx_hash)) where tx_hash is not null;
+
+-- ---------------------------------------------------------------------------
+-- settings : réglages modifiables depuis l'administration
+--  (adresses de portefeuille pour le paiement manuel, version des contenus d'exemple…)
+-- ---------------------------------------------------------------------------
+create table if not exists public.settings (
+  key         text primary key,
+  value       jsonb not null default '{}'::jsonb,
+  updated_at  timestamptz not null default now()
+);
+
+-- ---------------------------------------------------------------------------
+-- Religion de chaque publication (filtre de la bibliothèque)
+-- ---------------------------------------------------------------------------
+alter table public.contents add column if not exists religion text not null default 'chretien';
+alter table public.contents drop constraint if exists contents_religion_check;
+alter table public.contents add constraint contents_religion_check check (religion in ('chretien', 'musulman', 'universel'));
+create index if not exists contents_religion_idx on public.contents (religion, is_published, created_at desc);
+
+-- ---------------------------------------------------------------------------
 -- Stockage des documents : bucket PRIVÉ (50 Mo max par fichier).
 -- Liens de téléchargement signés par le serveur (2 min), seulement si l'accès est autorisé.
 -- ---------------------------------------------------------------------------
@@ -210,7 +267,7 @@ values (
     'application/vnd.ms-powerpoint',
     'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     'audio/mpeg', 'audio/mp4', 'audio/x-m4a', 'audio/wav', 'video/mp4',
-    'image/jpeg', 'image/png', 'image/webp', 'text/plain'
+    'image/jpeg', 'image/png', 'image/webp', 'text/plain', 'application/epub+zip'
   ]
 )
 on conflict (id) do update
@@ -224,7 +281,7 @@ declare t text;
 begin
   foreach t in array array[
     'users', 'subscriptions', 'pastors', 'admin_users', 'contents',
-    'favorites', 'prayer_requests', 'activity_logs', 'login_attempts', 'site_visits'
+    'favorites', 'prayer_requests', 'activity_logs', 'login_attempts', 'site_visits', 'payments', 'settings'
   ] loop
     execute format('alter table public.%I enable row level security', t);
     execute format('alter table public.%I force row level security', t);

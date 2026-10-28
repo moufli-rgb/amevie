@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { motion } from 'motion/react';
 import {
-  ArrowLeft, BookOpen, Check, Church, Clock, FileText, GraduationCap, Mail, Pencil, Phone, Power, Sparkles, Trash2, UserPlus, Users,
+  ArrowLeft, BookOpen, Check, Church, Clock, DoorOpen, FileText, GraduationCap, Mail, Pencil, Phone, Power, Sparkles, Trash2, UserPlus, Users,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { depuis, formatDate, formatDateCourte } from '@/lib/format';
@@ -19,6 +19,22 @@ import { PageHeader } from '@/dashboard/Shell';
 import { Card, LoadError, SearchInput, StatGrid, Tabs } from '@/dashboard/Widgets';
 import { useData } from '@/dashboard/useData';
 import { libelleAction } from './common';
+import { ouvrirEspaceGuide } from '@/lib/accesGuide';
+
+/** Bouton « Ouvrir son espace » (l'administration agit dans l'espace du guide). */
+function OuvrirEspace({ id, size = 'sm', label = 'Ouvrir son espace' }: { id: string; size?: 'sm' | 'md'; label?: string }) {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  return (
+    <span className="inline-flex flex-col">
+      <Button size={size} icon={<DoorOpen className="h-3.5 w-3.5" />} loading={busy} onClick={async () => {
+        setBusy(true); setErr(null);
+        try { await ouvrirEspaceGuide(id); } catch (e) { setErr(e instanceof Error ? e.message : 'Erreur.'); setBusy(false); }
+      }}>{label}</Button>
+      {err && <span className="mt-1 text-mini text-erreur">{err}</span>}
+    </span>
+  );
+}
 
 interface Pasteur {
   id: string; nom: string; prenom: string; email: string; telephone: string | null; eglise: string | null; bio: string | null;
@@ -46,7 +62,7 @@ function PasteurForm({ p, onClose, onSaved }: { p: Pasteur | null; onClose: () =
     finally { setBusy(false); }
   }
   return (
-    <Modal open onClose={onClose} title={p ? `Modifier · Pst ${p.prenom} ${p.nom}` : 'Ajouter un pasteur'} wide
+    <Modal open onClose={onClose} title={p ? `Modifier · ${p.prenom} ${p.nom}`.trim() : 'Ajouter un guide spirituel'} wide
       footer={<><Button variant="secondary" onClick={onClose}>Annuler</Button><Button loading={busy} onClick={save}>{p ? 'Enregistrer' : 'Créer le compte'}</Button></>}>
       <div className="grid gap-3 sm:grid-cols-2">
         <Field label="Nom *" value={f.nom} onChange={set('nom')} maxLength={60} />
@@ -56,7 +72,7 @@ function PasteurForm({ p, onClose, onSaved }: { p: Pasteur | null; onClose: () =
         <Field label="Église / ministère" value={f.eglise} onChange={set('eglise')} maxLength={120} className="sm:col-span-2" />
         <div className="sm:col-span-2"><TextArea label="Présentation" rows={3} value={f.bio} onChange={set('bio')} maxLength={1000} /></div>
         <Field label={p ? 'Nouveau mot de passe (facultatif)' : 'Mot de passe provisoire *'} type="password" value={f.password} onChange={set('password')} maxLength={128}
-          hint={p ? 'Laissez vide pour ne pas le changer.' : 'Communiquez-le au pasteur : il pourra le changer dans ses paramètres.'} className="sm:col-span-2" />
+          hint={p ? 'Laissez vide pour ne pas le changer.' : 'Communiquez-le au guide spirituel : il pourra le changer dans ses paramètres.'} className="sm:col-span-2" />
         <div className="sm:col-span-2"><Alert msg={msg} /></div>
       </div>
     </Modal>
@@ -74,12 +90,12 @@ export function PastorDetail({ id }: { id: string }) {
   const n = (t: string) => contents.filter((c) => c.type === t).length;
   return (
     <div className="space-y-6">
-      <button onClick={() => go('admin', 'pasteurs')} className="inline-flex items-center gap-2 text-[13.5px] font-semibold text-ink/60 hover:text-primary"><ArrowLeft className="h-4 w-4" /> Tous les pasteurs</button>
+      <button onClick={() => go('admin', 'pasteurs')} className="inline-flex items-center gap-2 text-[13.5px] font-semibold text-ink/60 hover:text-primary"><ArrowLeft className="h-4 w-4" /> Tous les guides spirituels</button>
       <Card>
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
           <span className="grid h-20 w-20 shrink-0 place-items-center rounded-3xl bg-primary font-serif text-2xl text-on-primary">{p.prenom[0]}{p.nom[0]}</span>
           <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2"><h1 className="text-2xl">Pst {p.prenom} {p.nom}</h1>
+            <div className="flex flex-wrap items-center gap-2"><h1 className="text-2xl">{`${p.prenom} ${p.nom}`.trim()}</h1>
               <Badge tone={p.is_active ? 'actif' : p.en_attente ? 'attente' : 'rejet'}>{p.is_active ? 'Actif' : 'Inactif'}</Badge></div>
             <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-[13.5px] text-ink/65">
               <span className="inline-flex items-center gap-1.5"><Mail className="h-3.5 w-3.5" />{p.email}</span>
@@ -89,7 +105,10 @@ export function PastorDetail({ id }: { id: string }) {
             </div>
             {p.bio && <p className="mt-3 text-[14px] text-ink/70">{p.bio}</p>}
           </div>
-          <Button variant="secondary" icon={<Pencil className="h-4 w-4" />} onClick={() => setEdit(true)}>Modifier</Button>
+          <div className="flex flex-wrap gap-2">
+            <OuvrirEspace id={p.id} size="md" label="Ouvrir son espace" />
+            <Button variant="secondary" icon={<Pencil className="h-4 w-4" />} onClick={() => setEdit(true)}>Modifier</Button>
+          </div>
         </div>
       </Card>
       <StatGrid cols="sm:grid-cols-4" stats={[
@@ -131,7 +150,7 @@ export function PastorDetail({ id }: { id: string }) {
   );
 }
 
-/* ------------------------------------------------------------------ Liste des pasteurs */
+/* ------------------------------------------------------------------ Liste des guides spirituels */
 export function PastorsAdmin({ onChange }: { onChange: () => void }) {
   const { data, setData, error, loading, reload } = useData<{ pastors: Pasteur[] }>('pastors', 'admin');
   const [filtre, setFiltre] = useState<'tous' | 'actifs' | 'attente' | 'inactifs'>('tous');
@@ -150,7 +169,7 @@ export function PastorsAdmin({ onChange }: { onChange: () => void }) {
     try {
       const r = await api<{ pastor: Pasteur }>(`pastors?id=${p.id}`, { method: 'PATCH', role: 'admin', body: { is_active } });
       setData({ pastors: items.map((x) => (x.id === p.id ? { ...x, ...r.pastor, en_attente: false } : x)) });
-      setFlash({ kind: 'success', text: `Pst ${p.prenom} ${p.nom} : compte ${is_active ? 'activé' : 'désactivé'}.` }); onChange();
+      setFlash({ kind: 'success', text: `${`${p.prenom} ${p.nom}`.trim()} : compte ${is_active ? 'activé' : 'désactivé'}.` }); onChange();
     } catch (e) { setFlash({ kind: 'error', text: e instanceof Error ? e.message : 'Erreur.' }); }
   }
   async function supprimer() {
@@ -163,10 +182,10 @@ export function PastorsAdmin({ onChange }: { onChange: () => void }) {
   const actifs = items.filter((p) => p.is_active).length;
   return (
     <div>
-      <PageHeader titre="Pasteurs" texte="Validez les nouveaux comptes, suivez les publications et l’activité de chaque pasteur."
-        actions={<Button icon={<UserPlus className="h-4 w-4" />} onClick={() => setForm('nouveau')} shine>Ajouter un pasteur</Button>} />
+      <PageHeader titre="Guides spirituels" texte="Validez les nouveaux comptes, suivez les publications et l’activité de chaque guide spirituel."
+        actions={<Button icon={<UserPlus className="h-4 w-4" />} onClick={() => setForm('nouveau')} shine>Ajouter un guide spirituel</Button>} />
       <StatGrid cols="sm:grid-cols-4" stats={[
-        { label: 'Pasteurs inscrits', value: items.length, icon: Users }, { label: 'Pasteurs actifs', value: actifs, icon: Check },
+        { label: 'Guides inscrits', value: items.length, icon: Users }, { label: 'Guides actifs', value: actifs, icon: Check },
         { label: 'Paroles publiées', value: items.reduce((s, p) => s + (p.stats?.parole ?? 0), 0), icon: BookOpen },
         { label: 'Documents ajoutés', value: items.reduce((s, p) => s + (p.stats?.document ?? 0), 0), icon: FileText },
       ]} />
@@ -179,7 +198,7 @@ export function PastorsAdmin({ onChange }: { onChange: () => void }) {
       </div>
       <div className="mb-4"><Alert msg={flash} /></div>
       {error ? <LoadError message={error} onRetry={reload} /> : loading && !data ? <Skeleton className="h-64" /> : liste.length === 0 ? (
-        <EmptyState icon={<Church className="h-6 w-6" />} title="Aucun pasteur" text="Ajoutez un pasteur ou attendez les inscriptions." />
+        <EmptyState icon={<Church className="h-6 w-6" />} title="Aucun guide spirituel" text="Ajoutez un guide spirituel ou attendez les inscriptions." />
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">
           {liste.map((p, i) => (
@@ -189,7 +208,7 @@ export function PastorsAdmin({ onChange }: { onChange: () => void }) {
                 <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-primary/10 font-serif text-primary">{p.prenom[0]}{p.nom[0]}</span>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <button onClick={() => go('admin', 'pasteurs', p.id)} className="truncate text-left text-[16px] font-bold hover:text-primary">Pst {p.prenom} {p.nom}</button>
+                    <button onClick={() => go('admin', 'pasteurs', p.id)} className="truncate text-left text-[16px] font-bold hover:text-primary">{`${p.prenom} ${p.nom}`.trim()}</button>
                     <Badge tone={p.is_active ? 'actif' : p.en_attente ? 'attente' : 'rejet'}>{p.is_active ? 'Actif' : p.en_attente ? 'À valider' : 'Désactivé'}</Badge>
                   </div>
                   <p className="truncate text-[13px] text-ink/55">{p.email}{p.eglise ? ` · ${p.eglise}` : ''}</p>
@@ -209,6 +228,7 @@ export function PastorsAdmin({ onChange }: { onChange: () => void }) {
               <div className="mt-4 flex flex-wrap gap-2">
                 {!p.is_active && <Button size="sm" icon={<Check className="h-3.5 w-3.5" />} onClick={() => statut(p, true)}>{p.en_attente ? 'Valider' : 'Activer'}</Button>}
                 {p.is_active && <Button size="sm" variant="secondary" icon={<Power className="h-3.5 w-3.5" />} onClick={() => statut(p, false)}>Désactiver</Button>}
+                <OuvrirEspace id={p.id} />
                 <Button size="sm" variant="ghost" onClick={() => go('admin', 'pasteurs', p.id)}>Profil & activités</Button>
                 <Button size="sm" variant="ghost" icon={<Pencil className="h-3.5 w-3.5" />} onClick={() => setForm(p)}>Modifier</Button>
                 <Button size="sm" variant="ghost" icon={<Trash2 className="h-3.5 w-3.5" />} onClick={() => setSuppr(p)}>Supprimer</Button>
@@ -219,10 +239,34 @@ export function PastorsAdmin({ onChange }: { onChange: () => void }) {
       )}
       {form && <PasteurForm p={form === 'nouveau' ? null : form} onClose={() => setForm(null)} onSaved={(np, nouveau) => {
         setForm(null); reload(); onChange();
-        setFlash({ kind: 'success', text: nouveau ? `Compte de Pst ${np.prenom} ${np.nom} créé et actif.` : 'Pasteur modifié.' });
+        setFlash({ kind: 'success', text: nouveau ? `Compte de ${`${np.prenom} ${np.nom}`.trim()} créé et actif.` : 'Guide spirituel modifié.' });
       }} />}
-      <ConfirmDialog open={!!suppr} onClose={() => setSuppr(null)} onConfirm={supprimer} danger title="Supprimer ce pasteur ?" confirmLabel="Supprimer"
-        message={<>Le compte de <strong>Pst {suppr?.prenom} {suppr?.nom}</strong>, ses publications et ses fichiers seront supprimés définitivement.</>} />
+      <ConfirmDialog open={!!suppr} onClose={() => setSuppr(null)} onConfirm={supprimer} danger title="Supprimer ce guide spirituel ?" confirmLabel="Supprimer"
+        message={<>Le compte de <strong>{suppr?.prenom} {suppr?.nom}</strong>, ses publications et ses fichiers seront supprimés définitivement.</>} />
     </div>
+  );
+}
+
+/**
+ * « Ajouter un livre » depuis l'administration : ouvre l'espace de Jean (ou du premier guide actif)
+ * directement sur une nouvelle publication de type Document.
+ */
+export function AjouterLivre({ label = 'Ajouter un livre ou un document' }: { label?: string }) {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  async function ouvrir() {
+    setBusy(true); setErr(null);
+    try {
+      const { pastors } = await api<{ pastors: Pasteur[] }>('pastors', { role: 'admin' });
+      const guide = pastors.find((p) => p.email === 'equipe@ameetvie.org') ?? pastors.find((p) => p.is_active) ?? pastors[0];
+      if (!guide) { setErr('Aucun guide spirituel : ajoutez-en un dans « Guides spirituels ».'); setBusy(false); return; }
+      await ouvrirEspaceGuide(guide.id, 'nouveau', 'document');
+    } catch (e) { setErr(e instanceof Error ? e.message : 'Erreur.'); setBusy(false); }
+  }
+  return (
+    <span className="inline-flex flex-col items-start">
+      <Button icon={<BookOpen className="h-4 w-4" />} loading={busy} onClick={ouvrir} shine>{label}</Button>
+      {err && <span className="mt-1 text-mini text-erreur">{err}</span>}
+    </span>
   );
 }

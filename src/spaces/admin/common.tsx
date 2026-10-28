@@ -126,7 +126,7 @@ export function SubscriptionPanel({ userId, abonnement, types = TYPES_PAR_DEFAUT
 
 /** Libellés lisibles du journal d'activité. */
 const ACTIONS: Record<string, string> = {
-  inscription_visiteur: 's’est inscrit(e)', inscription_pasteur: 'a créé un compte pasteur', connexion: 's’est connecté(e)',
+  inscription_visiteur: 's’est inscrit(e)', inscription_pasteur: 'a créé un compte de guide spirituel', connexion: 's’est connecté(e)',
   publication_parole: 'a publié une Parole de Dieu', publication_enseignement: 'a publié un enseignement', publication_document: 'a ajouté un document',
   publication_contenu: 'a publié un contenu spirituel', modification_parole: 'a modifié une Parole de Dieu', modification_enseignement: 'a modifié un enseignement',
   modification_document: 'a modifié un document', modification_contenu: 'a modifié un contenu', suppression_parole: 'a supprimé une Parole de Dieu',
@@ -136,8 +136,9 @@ const ACTIONS: Record<string, string> = {
   activation_abonnement: 'a activé un abonnement', renouvellement_abonnement: 'a renouvelé un abonnement', abonnement_prolonger: 'a prolongé un abonnement',
   abonnement_modifier: 'a modifié un abonnement', abonnement_desactiver: 'a désactivé un abonnement', abonnement_reactiver: 'a réactivé un abonnement',
   activation_compte: 'a activé un compte', desactivation_compte: 'a désactivé un compte', modification_compte: 'a modifié un compte', suppression_compte: 'a supprimé un compte',
-  ajout_pasteur: 'a ajouté un pasteur', activation_pasteur: 'a activé un pasteur', desactivation_pasteur: 'a désactivé un pasteur',
-  modification_pasteur: 'a modifié un pasteur', suppression_pasteur: 'a supprimé un pasteur', profil_modifie: 'a modifié son profil', mot_de_passe_modifie: 'a changé son mot de passe',
+  ajout_pasteur: 'a ajouté un guide spirituel', activation_pasteur: 'a activé un guide spirituel', desactivation_pasteur: 'a désactivé un guide spirituel',
+  modification_pasteur: 'a modifié un guide spirituel', suppression_pasteur: 'a supprimé un guide spirituel', profil_modifie: 'a modifié son profil', mot_de_passe_modifie: 'a changé son mot de passe',
+  acces_espace_guide: 'a ouvert l’espace d’un guide spirituel', paiement_demande: 'a lancé un paiement crypto', paiement_crypto: 'a payé son abonnement en crypto', paiement_manuel_declare: 'a déclaré un paiement crypto', paiement_valide: 'a validé un paiement', paiement_refuse: 'a refusé un paiement', portefeuilles_modifies: 'a modifié les adresses de paiement',
 };
 export const libelleAction = (a: string) => ACTIONS[a] ?? a.replace(/_/g, ' ');
 

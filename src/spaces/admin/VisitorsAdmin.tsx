@@ -170,7 +170,7 @@ export function VisitorsAdmin({ onChange }: { onChange: () => void }) {
 
   return (
     <div>
-      <PageHeader titre="Visiteurs" texte="Comptes inscrits, statut et abonnement. Activez l’accès Premium après confirmation du paiement sur WhatsApp." />
+      <PageHeader titre="Visiteurs" texte="Comptes inscrits, statut et abonnement. Les paiements en crypto activent l’accès Premium automatiquement ; vous pouvez aussi l’activer ou le prolonger à la main." />
       <div className="mb-5 flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
         <Tabs id="filtre-visiteurs" value={filtre} onChange={setFiltre} options={[
           { value: 'tous', label: 'Tous', badge: n('tous') || undefined }, { value: 'actifs', label: 'Actifs' }, { value: 'inactifs', label: 'Inactifs', badge: n('inactifs') || undefined },

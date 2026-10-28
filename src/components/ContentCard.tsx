@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 import { Eye, Lock, Paperclip, PlayCircle } from 'lucide-react';
-import { TYPES, TYPE_COULEURS, TYPE_IMAGES, auteur, type Contenu } from '@/lib/contenus';
+import { RELIGIONS, RELIGION_IMAGES, TYPES, TYPE_COULEURS, TYPE_IMAGES, auteur, type Contenu } from '@/lib/contenus';
 import { Img, imagePour, type ImgName } from './Img';
 import { formatDateCourte } from '@/lib/format';
 import { hrefOf } from '@/lib/router';
@@ -11,7 +11,7 @@ export function ContentCard({ c, i = 0 }: { c: Contenu; i?: number }) {
   const T = TYPES[c.type];
   const Icon = T.icon;
   const C = TYPE_COULEURS[c.type];
-  const image = imagePour(c.id, TYPE_IMAGES[c.type] as unknown as ImgName[]);
+  const image = imagePour(c.id, (c.religion && c.religion !== 'chretien' ? RELIGION_IMAGES[c.religion] : TYPE_IMAGES[c.type]) as unknown as ImgName[]);
   return (
     <motion.a href={hrefOf('contenu', c.id)}
       initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-30px' }}
@@ -28,8 +28,13 @@ export function ContentCard({ c, i = 0 }: { c: Contenu; i?: number }) {
             <span className={`grid h-6 w-6 place-items-center rounded-full ${C.bg} text-white`}><Icon className="h-3.5 w-3.5" /></span>
             {c.category ?? T.label}
           </span>
-          {c.access === 'premium' ? <PremiumBadge verrouille={c.locked} small /> : <GratuitBadge small />}
+          <span className="rounded-full bg-white/92 backdrop-blur">{c.access === 'premium' ? <PremiumBadge verrouille={c.locked} small /> : <GratuitBadge small />}</span>
         </div>
+        {c.religion && c.religion !== 'chretien' && (
+          <span className={`absolute left-3 top-3 inline-flex items-center gap-1 rounded-full ${RELIGIONS[c.religion].bg} px-2.5 py-1 text-mini font-bold text-white shadow-doux`}>
+            <span aria-hidden>{RELIGIONS[c.religion].symbole}</span> {RELIGIONS[c.religion].court}
+          </span>
+        )}
         {c.locked && <span className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full bg-black/45 text-white backdrop-blur"><Lock className="h-4 w-4" /></span>}
       </div>
       <div className="flex flex-1 flex-col p-5 pt-4 sm:px-6">

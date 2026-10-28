@@ -18,7 +18,7 @@
   --couleur-fond: #fdf8f1;            /* ivoire : fond général                       */
   --couleur-texte: #2a1d16;           /* brun profond : texte                        */
   --couleur-sur-principale: #fffaf3;  /* texte posé SUR la couleur principale        */
-  --couleur-whatsapp: #1f8f4e;        /* bouton « Faire mon abonnement »             */
+  --couleur-whatsapp: #1f8f4e;        /* (ancien bouton WhatsApp, inutilisé)          */
   --couleur-succes: #15803d;          /* messages de succès, statut « Actif »        */
   --couleur-erreur: #b91c1c;          /* messages d'erreur, statut « Expiré »        */
 
@@ -27,6 +27,9 @@
   --couleur-enseignement: #7c2d5b;    /* Enseignements : prune                       */
   --couleur-document: #0f6b6b;        /* Documents : bleu-vert                       */
   --couleur-contenu: #b7791f;         /* Contenus spirituels : ambre                 */
+  --couleur-chretien: #9a3f1f;        /* Christianisme : brique                      */
+  --couleur-musulman: #0f766e;        /* Islam : vert émeraude                       */
+  --couleur-universel: #5b4fb3;       /* Spiritualité universelle : indigo           */
   /* ───────────────────────────────────────── */
 
   /* Version neutre (noir / gris / blanc) si vous préférez :
@@ -61,6 +64,11 @@
   --color-enseignement: var(--couleur-enseignement);
   --color-document: var(--couleur-document);
   --color-contenu: var(--couleur-contenu);
+  --color-succes: var(--couleur-succes);
+  --color-erreur: var(--couleur-erreur);
+  --color-chretien: var(--couleur-chretien);
+  --color-musulman: var(--couleur-musulman);
+  --color-universel: var(--couleur-universel);
 
   --font-serif: "Fraunces Variable", "Fraunces", Georgia, "Times New Roman", serif;
   --font-sans: "Manrope Variable", "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;

@@ -1,19 +1,20 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import {
-  BookMarked, BookOpen, CreditCard, FileText, HandHeart, Library, LayoutDashboard, MessageCircle, Send, Settings, Trash2,
+  BookMarked, BookOpen, CreditCard, FileText, HandHeart, Library, LayoutDashboard, Bitcoin, PartyPopper, Send, Settings, Trash2,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { go, hrefOf } from '@/lib/router';
 import { useVisitor } from '@/lib/visitor';
 import type { SessionUser } from '@/lib/session';
 import { formatDate, depuis } from '@/lib/format';
-import { lienWhatsApp, SITE } from '@/config/site';
+import { SITE } from '@/config/site';
 import type { Contenu } from '@/lib/contenus';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { ContentCard } from '@/components/ContentCard';
 import { LibraryView } from '@/components/LibraryView';
-import { Paywall, WhatsAppButton } from '@/components/Premium';
+import { CryptosAcceptees, Paywall, PayButton, prixAffiche, useTarif } from '@/components/Premium';
+import { STATUTS_PAIEMENT } from '@/lib/paiements';
 import { SubscriptionStatus } from '@/components/SubscriptionStatus';
 import { Field, TextArea } from '@/components/ui/Field';
 import { Button } from '@/components/ui/Button';
@@ -101,7 +102,7 @@ function Prieres() {
       const r = await api<{ prayer: Priere }>('prayers', { method: 'POST', role: 'visiteur', body: f });
       setData({ prayers: [r.prayer, ...(data?.prayers ?? [])] });
       setF({ subject: '', message: '', anonymous: false });
-      setMsg({ kind: 'success', text: 'Votre demande a été transmise aux pasteurs. Nous prions avec vous.' });
+      setMsg({ kind: 'success', text: 'Votre demande a été transmise aux guides spirituels. Nous prions avec vous.' });
     } catch (err) { setMsg({ kind: 'error', text: err instanceof Error ? err.message : 'Erreur.' }); }
     finally { setBusy(false); }
   }
@@ -113,14 +114,14 @@ function Prieres() {
 
   return (
     <div className="space-y-6">
-      <PageHeader titre="Demandes de prière" texte="Gratuit. Vos demandes sont lues par les pasteurs de la plateforme." />
+      <PageHeader titre="Demandes de prière" texte="Gratuit. Vos demandes sont lues par les guides spirituels de la plateforme." />
       <Card title="Nouvelle demande">
         <form onSubmit={envoyer} className="space-y-4">
           <Field label="Sujet" value={f.subject} onChange={(e) => setF({ ...f, subject: e.target.value })} maxLength={120} placeholder="Ex. Santé de ma mère" />
           <TextArea label="Votre message" value={f.message} onChange={(e) => setF({ ...f, message: e.target.value })} maxLength={2000} />
           <label className="flex items-center gap-3 text-[14px]">
             <input type="checkbox" checked={f.anonymous} onChange={(e) => setF({ ...f, anonymous: e.target.checked })} className="h-5 w-5 accent-[var(--couleur-principale)]" />
-            Rester anonyme auprès des pasteurs
+            Rester anonyme auprès des guides spirituels
           </label>
           <Alert msg={msg} />
           <Button type="submit" loading={busy} icon={<Send className="h-4 w-4" />}>Envoyer ma demande</Button>
@@ -151,29 +152,49 @@ function Prieres() {
           </ul>
         )}
       </Card>
-      <ConfirmDialog open={!!suppr} onClose={() => setSuppr(null)} onConfirm={supprimer} danger title="Supprimer cette demande ?" confirmLabel="Supprimer" message="Elle ne sera plus visible par les pasteurs." />
+      <ConfirmDialog open={!!suppr} onClose={() => setSuppr(null)} onConfirm={supprimer} danger title="Supprimer cette demande ?" confirmLabel="Supprimer" message="Elle ne sera plus visible par les guides spirituels." />
     </div>
   );
 }
 
 /* ---------------------------------------------------------------- Abonnement */
 interface Historique { id: string; type: string; duration_months: number; start_date: string; end_date: string; statut_reel: 'actif' | 'expire' | 'desactive' }
-function Abonnement({ user }: { user: SessionUser }) {
+interface PaiementVisiteur { id: string; price_amount: number; price_currency: string; pay_currency: string | null; status: string; credited: boolean; created_at: string }
+function Abonnement({ user, merci }: { user: SessionUser; merci: boolean }) {
   const { data } = useData<{ historique: Historique[] }>('subscriptions?scope=me', 'visiteur');
+  const paiements = useData<{ payments: PaiementVisiteur[] }>('payments', 'visiteur');
+  const tarif = useTarif();
+  // Après le paiement : on relit les paiements toutes les 15 s jusqu'à la confirmation
+  const enAttente = merci && !user.premium;
+  useEffect(() => {
+    if (!enAttente) return;
+    const t = window.setInterval(() => paiements.reload(), 15_000);
+    return () => window.clearInterval(t);
+  }, [enAttente]); // eslint-disable-line react-hooks/exhaustive-deps
   const ton = { actif: 'actif', expire: 'rejet', desactive: 'neutre' } as const;
   const lib = { actif: 'Actif', expire: 'Expiré', desactive: 'Désactivé' } as const;
   return (
     <div className="space-y-6">
-      <PageHeader titre="Mon abonnement" texte={`Durée : ${SITE.dureeAbonnement}, activée par l’administrateur après paiement sur WhatsApp.`} />
+      <PageHeader titre="Mon abonnement" texte={`Durée : ${SITE.dureeAbonnement}${prixAffiche(tarif) ? ` · ${prixAffiche(tarif)}` : ''}, payé en cryptomonnaie et activé automatiquement.`} />
+      {merci && (
+        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+          className="flex items-start gap-4 rounded-2xl bg-[color-mix(in_oklab,var(--couleur-succes)_12%,var(--couleur-fond))] p-5 ring-1 ring-[color-mix(in_oklab,var(--couleur-succes)_35%,transparent)]">
+          <PartyPopper className="h-6 w-6 shrink-0 text-succes" />
+          <div className="text-[14.5px]">
+            <p className="font-semibold">{user.premium ? 'Merci ! Votre accès Premium est actif.' : 'Merci pour votre paiement !'}</p>
+            {!user.premium && <p className="mt-1 text-ink/70">Le réseau confirme la transaction : cela prend en général quelques minutes. Cette page se met à jour toute seule, inutile de payer une deuxième fois.</p>}
+          </div>
+        </motion.div>
+      )}
       <SubscriptionStatus a={user.abonnement} />
       <div className="grid gap-6 lg:grid-cols-2">
         <Card title="Comment s’abonner ou renouveler">
           <ol className="space-y-3 text-[14.5px] text-ink/75">
-            <li><strong className="text-primary">1.</strong> Cliquez sur « Faire mon abonnement » : WhatsApp s’ouvre avec un message prêt (votre email y figure).</li>
-            <li><strong className="text-primary">2.</strong> Réglez votre abonnement avec l’administrateur ({SITE.whatsappAffiche}).</li>
-            <li><strong className="text-primary">3.</strong> L’administrateur active votre accès : le Premium est débloqué aussitôt.</li>
+            <li><strong className="text-primary">1.</strong> Cliquez sur « Payer en crypto » : une page de paiement sécurisée s’ouvre.</li>
+            <li><strong className="text-primary">2.</strong> Choisissez la cryptomonnaie que vous voulez, puis envoyez le montant affiché.</li>
+            <li><strong className="text-primary">3.</strong> Dès la confirmation, votre Premium s’active tout seul. Payé avant la fin ? Le mois s’ajoute à la suite.</li>
           </ol>
-          <div className="mt-5"><WhatsAppButton /></div>
+          <div className="mt-5 flex flex-col items-start gap-4"><PayButton /><CryptosAcceptees className="!justify-start" /></div>
         </Card>
         <Card title="Historique">
           {!data?.historique.length ? <p className="text-[14px] text-ink/55">Aucun abonnement pour le moment.</p> : (
@@ -187,6 +208,27 @@ function Abonnement({ user }: { user: SessionUser }) {
                   <Badge tone={ton[h.statut_reel]}>{lib[h.statut_reel]}</Badge>
                 </li>
               ))}
+            </ul>
+          )}
+        </Card>
+        <Card title="Mes paiements crypto" className="lg:col-span-2">
+          {!paiements.data?.payments.length ? <p className="text-[14px] text-ink/55">Aucun paiement pour le moment.</p> : (
+            <ul className="divide-y divide-ligne">
+              {paiements.data.payments.map((p) => {
+                const st = STATUTS_PAIEMENT[p.status] ?? { label: p.status, tone: 'neutre' as const };
+                return (
+                  <li key={p.id} className="flex items-center justify-between gap-3 py-3">
+                    <div className="flex items-center gap-3">
+                      <span className="grid h-9 w-9 place-items-center rounded-xl bg-accent/15 text-ink"><Bitcoin className="h-4 w-4" /></span>
+                      <div>
+                        <p className="text-[14px] font-semibold">{Number(p.price_amount)} {p.price_currency.toUpperCase()}{p.pay_currency ? ` · en ${p.pay_currency.toUpperCase()}` : ''}</p>
+                        <p className="text-mini text-ink/55">{formatDate(p.created_at)}</p>
+                      </div>
+                    </div>
+                    <Badge tone={st.tone}>{p.credited ? 'Payé · activé' : st.label}</Badge>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </Card>
@@ -219,7 +261,7 @@ function Parametres({ user, onUpdate }: { user: SessionUser; onUpdate: (u: Parti
 }
 
 /* ================================================================ Espace visiteur */
-export default function VisitorSpace({ page }: { page: string }) {
+export default function VisitorSpace({ page, id = '' }: { page: string; id?: string }) {
   const { user, checking, logout, updateUser } = useVisitor();
   if (checking) return <LoadingScreen label="Vérification de votre session…" />;
   if (!user) return <LoginPage />;
@@ -242,7 +284,7 @@ export default function VisitorSpace({ page }: { page: string }) {
   ];
   const active = page && sections.some((s) => s.items.some((i) => i.id === page)) ? page : '';
   const quick: QuickAction[] = [
-    { label: 'Faire mon abonnement', icon: MessageCircle, onClick: () => window.open(lienWhatsApp(user.email), '_blank', 'noopener') },
+    { label: 'Payer mon abonnement', icon: Bitcoin, onClick: () => go('espace', 'abonnement') },
     { label: 'Demander une prière', icon: HandHeart, onClick: () => go('espace', 'prieres') },
     { label: 'Paroles de Dieu', icon: BookOpen, onClick: () => go('bibliotheque', 'parole') },
     { label: 'Documents', icon: FileText, onClick: () => go('bibliotheque', 'document') },
@@ -253,7 +295,7 @@ export default function VisitorSpace({ page }: { page: string }) {
     case 'contenus': content = <div><PageHeader titre="Contenus" texte="Les contenus Premium sont signalés par un cadenas." /><LibraryView /></div>; break;
     case 'favoris': content = <Favoris user={user} />; break;
     case 'prieres': content = <Prieres />; break;
-    case 'abonnement': content = <Abonnement user={user} />; break;
+    case 'abonnement': content = <Abonnement user={user} merci={id === 'merci'} />; break;
     case 'profil': content = <Parametres user={user} onUpdate={updateUser} />; break;
     default: content = <Accueil user={user} />;
   }

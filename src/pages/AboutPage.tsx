@@ -4,7 +4,7 @@ import { BookOpen, Compass, HandHeart, Heart, ShieldCheck, Users } from 'lucide-
 import { PublicHeader } from '@/components/public/PublicHeader';
 import { PublicFooter } from '@/components/public/PublicFooter';
 import { Img } from '@/components/Img';
-import { WhatsAppButton } from '@/components/Premium';
+import { PayButton } from '@/components/Premium';
 import { Reveal, SectionTitle } from '@/components/ui/Reveal';
 import { SITE } from '@/config/site';
 import { hrefOf } from '@/lib/router';
@@ -12,8 +12,8 @@ import { hrefOf } from '@/lib/router';
 const VALEURS = [
   { icon: BookOpen, titre: 'La Parole au centre', texte: 'Chaque contenu s’enracine dans les Écritures.' },
   { icon: Heart, titre: 'La bienveillance', texte: 'Un lieu sûr, accueillant pour les jeunes comme pour les aînés.' },
-  { icon: Users, titre: 'La communauté', texte: 'Des pasteurs et des fidèles qui avancent ensemble.' },
-  { icon: ShieldCheck, titre: 'La confiance', texte: 'Des données protégées et des pasteurs vérifiés par l’administration.' },
+  { icon: Users, titre: 'La communauté', texte: 'Des guides spirituels et des fidèles qui avancent ensemble.' },
+  { icon: ShieldCheck, titre: 'La confiance', texte: 'Des données protégées et des guides spirituels vérifiés par l’administration.' },
 ];
 
 export function AboutPage() {
@@ -43,7 +43,7 @@ export function AboutPage() {
             <Reveal delay={0.1}>
               <p className="mt-5 text-[15.5px] text-ink/70">
                 Ame & Vie rassemble en un seul lieu des Paroles de Dieu, des enseignements, des méditations et des documents
-                publiés par des pasteurs. Chacun peut y trouver de quoi nourrir sa foi, où qu’il soit, sur téléphone comme sur ordinateur.
+                publiés par nos guides spirituels. Chacun peut y trouver de quoi nourrir sa foi, où qu’il soit, sur téléphone comme sur ordinateur.
               </p>
               <p className="mt-4 text-[15.5px] text-ink/70">
                 L’essentiel est gratuit. L’abonnement Premium permet d’aller plus loin et de soutenir la plateforme et ceux qui la font vivre.
@@ -77,8 +77,8 @@ export function AboutPage() {
           <div className="mt-12 grid gap-5 md:grid-cols-3">
             {[
               { icon: Compass, titre: 'Visiteurs', texte: 'Lisent, téléchargent, demandent une prière. Premium pour tout débloquer.', href: hrefOf('inscription'), cta: 'Créer un compte' },
-              { icon: BookOpen, titre: 'Pasteurs', texte: 'Publient Paroles, enseignements et documents depuis leur espace.', href: hrefOf('pasteur'), cta: 'Espace pasteur' },
-              { icon: HandHeart, titre: 'Administration', texte: 'Valide les pasteurs, gère les abonnements et veille sur la plateforme.', href: '', cta: '' },
+              { icon: BookOpen, titre: 'Pasteurs', texte: 'Publient Paroles, enseignements et documents depuis leur espace.', href: hrefOf('pasteur'), cta: 'Espace guide spirituel' },
+              { icon: HandHeart, titre: 'Administration', texte: 'Valide les guides spirituels, gère les abonnements et veille sur la plateforme.', href: '', cta: '' },
             ].map((e, i) => (
               <Reveal key={e.titre} delay={i * 0.1} className="flex flex-col rounded-3xl bg-fond p-7 shadow-doux ring-1 ring-ligne">
                 <span className="grid h-12 w-12 place-items-center rounded-2xl bg-primary text-on-primary"><e.icon className="h-5 w-5" /></span>
@@ -88,7 +88,7 @@ export function AboutPage() {
               </Reveal>
             ))}
           </div>
-          <Reveal className="mt-14 text-center"><WhatsAppButton size="lg" /></Reveal>
+          <Reveal className="mt-14 text-center"><PayButton size="lg" /></Reveal>
         </section>
       </main>
       <PublicFooter />

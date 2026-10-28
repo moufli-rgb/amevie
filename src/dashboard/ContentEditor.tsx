@@ -3,14 +3,26 @@ import { AnimatePresence, motion } from 'motion/react';
 import { CheckCircle2, Crown, FileUp, Globe, Lock, Save, Send, Trash2, UploadCloud } from 'lucide-react';
 import { api } from '@/lib/api';
 import type { Role } from '@/lib/session';
-import { CATEGORIES, TYPES, tailleFichier, type Contenu, type TypeContenu } from '@/lib/contenus';
+import { CATEGORIES, RELIGIONS, TYPES, tailleFichier, type Contenu, type Religion, type TypeContenu } from '@/lib/contenus';
 import { Field, SelectField, TextArea } from '@/components/ui/Field';
 import { Button } from '@/components/ui/Button';
 import { Alert, type AlertMsg } from '@/components/ui/Alert';
 import { Skeleton } from '@/components/ui/Empty';
 import { Card } from './Widgets';
 
-const ACCEPT = '.pdf,.doc,.docx,.ppt,.pptx,.mp3,.m4a,.wav,.mp4,.jpg,.jpeg,.png,.webp,.txt';
+const ACCEPT = '.pdf,.epub,.doc,.docx,.ppt,.pptx,.mp3,.m4a,.wav,.mp4,.jpg,.jpeg,.png,.webp,.txt';
+/** Type du fichier d'après son extension (certains navigateurs ne le donnent pas, surtout sous Windows). */
+const TYPES_EXT: Record<string, string> = {
+  pdf: 'application/pdf', epub: 'application/epub+zip', doc: 'application/msword',
+  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ppt: 'application/vnd.ms-powerpoint', pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  mp3: 'audio/mpeg', m4a: 'audio/mp4', wav: 'audio/wav', mp4: 'video/mp4',
+  jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', txt: 'text/plain',
+};
+function typeDe(file: File): string {
+  const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+  return TYPES_EXT[ext] ?? file.type ?? '';
+}
 const MAX = 50 * 1024 * 1024;
 
 interface Fichier { file_url: string; file_name: string; file_type: string; file_size: number }
@@ -20,10 +32,16 @@ function envoyer(url: string, file: File, onProgress: (p: number) => void): Prom
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open('PUT', url);
-    xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+    xhr.setRequestHeader('Content-Type', typeDe(file) || 'application/octet-stream');
     xhr.setRequestHeader('x-upsert', 'false');
     xhr.upload.onprogress = (e) => e.lengthComputable && onProgress(e.loaded / e.total);
-    xhr.onload = () => (xhr.status >= 200 && xhr.status < 300 ? resolve() : reject(new Error("L'envoi du fichier a échoué.")));
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) return resolve();
+      const refus = xhr.status === 400 || xhr.status === 413 || xhr.status === 415;
+      reject(new Error(refus
+        ? `Le stockage a refusé ce fichier (code ${xhr.status}) : format ou taille non autorisés. Ré-exécutez le script supabase/schema.sql pour mettre à jour les formats acceptés.`
+        : `L'envoi du fichier a échoué (code ${xhr.status}). Réessayez.`));
+    };
     xhr.onerror = () => reject(new Error("L'envoi du fichier a échoué (connexion)."));
     xhr.send(file);
   });
@@ -37,7 +55,7 @@ export function ContentEditor({ role, contentId, initialType = 'parole', pastorI
   role: Role; contentId?: string; initialType?: TypeContenu; pastorId?: string; onDone: (c: Contenu, message: string) => void;
 }) {
   const [type, setType] = useState<TypeContenu>(initialType);
-  const [f, setF] = useState({ title: '', description: '', content: '', bible_ref: '', category: '', video_url: '', access: 'gratuit' as 'gratuit' | 'premium', is_published: true });
+  const [f, setF] = useState({ title: '', description: '', content: '', bible_ref: '', category: '', religion: 'chretien' as Religion, video_url: '', access: 'gratuit' as 'gratuit' | 'premium', is_published: true });
   const [fichier, setFichier] = useState<Fichier | null>(null);
   const [aFichierExistant, setAFichierExistant] = useState(false);
   const [progress, setProgress] = useState<number | null>(null);
@@ -54,7 +72,7 @@ export function ContentEditor({ role, contentId, initialType = 'parole', pastorI
       setType(c.type);
       setOwner(c.pastor_id);
       setF({
-        title: c.title, description: c.description ?? '', content: c.content ?? '', bible_ref: c.bible_ref ?? '', category: c.category ?? '',
+        title: c.title, description: c.description ?? '', content: c.content ?? '', bible_ref: c.bible_ref ?? '', category: c.category ?? '', religion: c.religion ?? 'chretien',
         video_url: c.video_url ?? '', access: c.access, is_published: c.is_published,
       });
       setAFichierExistant(c.has_file);
@@ -67,13 +85,15 @@ export function ContentEditor({ role, contentId, initialType = 'parole', pastorI
   async function choisirFichier(file?: File | null) {
     if (!file) return;
     if (file.size > MAX) return setMsg({ kind: 'error', text: 'Le fichier doit faire moins de 50 Mo.' });
+    const mime = typeDe(file);
+    if (!Object.values(TYPES_EXT).includes(mime)) return setMsg({ kind: 'error', text: 'Format non accepté. Utilisez un PDF, un EPUB, un document Word ou PowerPoint, un audio, une vidéo MP4, une image ou un texte.' });
     setMsg(null); setProgress(0);
     try {
       const { path, signedUrl } = await api<{ path: string; signedUrl: string }>('files', {
-        method: 'POST', role, body: { name: file.name, type: file.type, size: file.size, ...(role === 'admin' ? { pastor_id: owner } : {}) },
+        method: 'POST', role, body: { name: file.name, type: mime, size: file.size, ...(role === 'admin' ? { pastor_id: owner } : {}) },
       });
       await envoyer(signedUrl, file, setProgress);
-      setFichier({ file_url: path, file_name: file.name, file_type: file.type, file_size: file.size });
+      setFichier({ file_url: path, file_name: file.name, file_type: mime, file_size: file.size });
       if (!f.title) setF((s) => ({ ...s, title: file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ') }));
     } catch (e) {
       setMsg({ kind: 'error', text: e instanceof Error ? e.message : 'Erreur.' });
@@ -87,7 +107,7 @@ export function ContentEditor({ role, contentId, initialType = 'parole', pastorI
     if (type === 'document' && !fichier) return setMsg({ kind: 'error', text: 'Ajoutez le fichier du document.' });
     const body: Record<string, unknown> = {
       title: f.title, description: f.description || null, content: f.content || null, bible_ref: f.bible_ref || null,
-      category: f.category || null, video_url: f.video_url || null, access: f.access, is_published: publier,
+      category: f.category || null, religion: f.religion, video_url: f.video_url || null, access: f.access, is_published: publier,
     };
     // Fichier : nouveau → envoyé ; retiré → null ; inchangé → non envoyé
     if (fichier?.file_url) Object.assign(body, fichier);
@@ -131,8 +151,20 @@ export function ContentEditor({ role, contentId, initialType = 'parole', pastorI
         <Card>
           <div className="space-y-4">
             <Field label="Titre *" value={f.title} onChange={set('title')} maxLength={160} placeholder={type === 'parole' ? 'Ex. La paix qui surpasse toute intelligence' : 'Titre de la publication'} />
+            <div>
+              <span className="mb-1.5 block text-[13px] font-semibold text-ink/80">Religion / tradition</span>
+              <div className="flex flex-wrap gap-2">
+                {(Object.keys(RELIGIONS) as Religion[]).map((r) => (
+                  <button key={r} type="button" onClick={() => setF((s) => ({ ...s, religion: r }))} aria-pressed={f.religion === r}
+                    className={`inline-flex h-10 items-center gap-2 rounded-xl px-4 text-[13.5px] font-semibold ring-1 transition ${f.religion === r ? `${RELIGIONS[r].bg} text-white ring-transparent` : 'bg-fond ring-ligne hover:ring-ink/30'}`}>
+                    <span aria-hidden>{RELIGIONS[r].symbole}</span> {RELIGIONS[r].label}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label={type === 'parole' ? 'Référence biblique *' : 'Référence biblique'} value={f.bible_ref} onChange={set('bible_ref')} maxLength={120} placeholder="Ex. Jean 3:16" />
+              <Field label={type === 'parole' ? 'Référence *' : 'Référence'} value={f.bible_ref} onChange={set('bible_ref')} maxLength={120}
+                placeholder={f.religion === 'musulman' ? 'Ex. Coran 2:255' : f.religion === 'universel' ? 'Ex. Marc Aurèle, Pensées' : 'Ex. Jean 3:16'} />
               <SelectField label="Catégorie" value={f.category} onChange={set('category')}>
                 <option value="">— Aucune —</option>
                 {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -172,7 +204,7 @@ export function ContentEditor({ role, contentId, initialType = 'parole', pastorI
                   <>
                     <FileUp className="h-7 w-7 text-primary" />
                     <p className="text-[14px] font-semibold">Choisir ou déposer un fichier</p>
-                    <p className="text-mini text-ink/55">PDF, Word, PowerPoint, audio, vidéo MP4, image · 50 Mo maximum</p>
+                    <p className="text-mini text-ink/55">PDF, EPUB, Word, PowerPoint, audio, vidéo MP4, image · 50 Mo maximum</p>
                   </>
                 )}
               </motion.button>

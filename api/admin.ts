@@ -39,7 +39,7 @@ export default route({
           return error ? null : n ?? 0;
         })(),
       ]);
-      const [inscrits, actifs, pasteurs, pasteursActifs, publies, documents, paroles, enseignements, prieres, subs, act] = await Promise.all([
+      const [inscrits, actifs, pasteurs, pasteursActifs, publies, documents, paroles, enseignements, prieres, subs, act, aValider] = await Promise.all([
         count('users'), count('users', [['is_active', true]]),
         count('pastors'), count('pastors', [['is_active', true]]),
         count('contents', [['is_published', true]]), count('contents', [['type', 'document']]),
@@ -47,6 +47,7 @@ export default route({
         count('prayer_requests', [['status', 'nouvelle']]),
         db().from('subscriptions').select('*, users(nom, prenom)').order('created_at', { ascending: false }).limit(50000),
         db().from('activity_logs').select('*').order('created_at', { ascending: false }).limit(12),
+        count('payments', [['status', 'a_valider']]),
       ]);
       check(subs.error, 'subscriptions');
       const now = Date.now();
@@ -63,7 +64,7 @@ export default route({
           abonnements_expires: statuts.filter((s) => s === 'expire').length,
           abonnements_desactives: statuts.filter((s) => s === 'desactive').length,
           pasteurs, pasteurs_actifs: pasteursActifs, pasteurs_en_attente: enAttente.count ?? 0,
-          contenus_publies: publies, documents, paroles, enseignements, prieres_nouvelles: prieres,
+          contenus_publies: publies, documents, paroles, enseignements, prieres_nouvelles: prieres, paiements_a_valider: aValider,
         },
         alertes: courants
           .filter((s) => statutReel(s, now) === 'actif' && joursRestants(s, now) <= 7)

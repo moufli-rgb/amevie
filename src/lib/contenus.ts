@@ -24,13 +24,28 @@ export const TYPE_IMAGES = {
   contenu: ['priere_femme', 'lumiere', 'hero_prayer_light', 'louange', 'community_fellowship'],
 } as const;
 
-export const CATEGORIES = ['Méditation', 'Prière', 'Louange', 'Témoignage', 'Exhortation', 'Étude biblique', 'Famille', 'Jeunesse', 'Autre'];
+export const CATEGORIES = ['Méditation', 'Prière', 'Louange', 'Témoignage', 'Exhortation', 'Étude biblique', 'Étude coranique', 'Sagesse', 'Pleine conscience', 'Famille', 'Jeunesse', 'Autre'];
+
+/** Religions / traditions (filtre simple de la bibliothèque). */
+export type Religion = 'chretien' | 'musulman' | 'universel';
+export const RELIGIONS: Record<Religion, { label: string; court: string; symbole: string; bg: string; text: string; soft: string; ring: string }> = {
+  chretien: { label: 'Christianisme', court: 'Chrétien', symbole: '✝', bg: 'bg-chretien', text: 'text-chretien', soft: 'bg-chretien/10', ring: 'ring-chretien/40' },
+  musulman: { label: 'Islam', court: 'Musulman', symbole: '☪', bg: 'bg-musulman', text: 'text-musulman', soft: 'bg-musulman/10', ring: 'ring-musulman/40' },
+  universel: { label: 'Spiritualité universelle', court: 'Universel', symbole: '✦', bg: 'bg-universel', text: 'text-universel', soft: 'bg-universel/10', ring: 'ring-universel/40' },
+};
+/** Illustrations propres à chaque tradition (les photos chrétiennes ne sont utilisées que pour le Christianisme). */
+export const RELIGION_IMAGES = {
+  musulman: ['islam_motif', 'islam_nuit'],
+  universel: ['universel_aube', 'universel_mandala'],
+} as const;
+export const estReligion = (v: string): v is Religion => v in RELIGIONS;
 
 /** Publication telle que renvoyée par /api/contents. */
 export interface Contenu {
   id: string;
   pastor_id: string;
   type: TypeContenu;
+  religion?: Religion;
   category: string | null;
   title: string;
   description: string | null;
@@ -53,7 +68,7 @@ export interface Contenu {
 }
 
 export function auteur(c: Pick<Contenu, 'pastors'>) {
-  return c.pastors ? `Pst ${c.pastors.prenom} ${c.pastors.nom}` : 'Ame & Vie';
+  return c.pastors ? `${c.pastors.prenom} ${c.pastors.nom}`.trim() : 'Ame & Vie';
 }
 
 export function tailleFichier(n?: number | null) {
