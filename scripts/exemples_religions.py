@@ -383,9 +383,9 @@ ISLAM = [
  C('musulman', 'islam', 'contenu', "Préparer son cœur au Ramadan", "Quelques semaines avant le mois béni, se préparer en douceur.",
    "Ramadan se prépare avant Ramadan.\n\n1. Reprendre doucement la lecture du Coran, quelques versets par jour.\n2. Jeûner un ou deux jours volontaires pour habituer le corps.\n3. Régler ses dettes et se réconcilier avec ceux que l’on a blessés.\n4. Préparer un budget d’aumône.\n5. Écrire trois intentions pour le mois.\n\nInvocation\n« Ô Allah, fais-nous atteindre Ramadan, et accepte-le de nous. »",
    access='premium', categorie='Méditation'),
- C('musulman', 'islam', 'document', "Guide de la prière (salât) pour débutants", "Les ablutions, les cinq prières et les gestes, expliqués pas à pas.", access='gratuit', categorie='Prière', fichier='guide-priere-salat-debutants.pdf'),
- C('musulman', 'islam', 'document', "Les 99 plus beaux noms d’Allah", "La liste complète avec le sens de chaque nom, pour une méditation quotidienne.", access='premium', categorie='Méditation', fichier='99-noms-d-allah.pdf'),
- C('musulman', 'islam', 'document', "Ramadan : 30 jours de réflexion", "Un thème, une pensée et un geste pour chaque jour du mois béni.", access='premium', categorie='Méditation', fichier='ramadan-30-jours.pdf'),
+ C('musulman', 'islam', 'document', "Guide de la prière (salât) pour débutants", "Les ablutions, les cinq prières et les gestes, expliqués pas à pas.", access='payant', categorie='Prière', fichier='guide-priere-salat-debutants.pdf'),
+ C('musulman', 'islam', 'document', "Les 99 plus beaux noms d’Allah", "La liste complète avec le sens de chaque nom, pour une méditation quotidienne.", access='payant', categorie='Méditation', fichier='99-noms-d-allah.pdf'),
+ C('musulman', 'islam', 'document', "Ramadan : 30 jours de réflexion", "Un thème, une pensée et un geste pour chaque jour du mois béni.", access='payant', categorie='Méditation', fichier='ramadan-30-jours.pdf'),
 ]
 
 UNIVERSEL = [
@@ -410,9 +410,9 @@ UNIVERSEL = [
  C('universel', 'universel', 'contenu', "Méditation du soir : faire la paix avec sa journée", "Un rituel de dix minutes avant de dormir.",
    "1. Asseyez-vous et respirez lentement dix fois.\n2. Repassez votre journée comme un film, sans juger.\n3. Remerciez pour un moment heureux.\n4. Reconnaissez un moment difficile, et dites-vous : « J’ai fait de mon mieux. »\n5. Laissez partir ce que vous ne pouvez pas changer.\n6. Souhaitez la paix à une personne de votre choix.\n\nVous pouvez terminer par la prière ou le silence de votre tradition.",
    access='premium', categorie='Pleine conscience'),
- C('universel', 'universel', 'document', "Méditation : programme de 21 jours", "Dix minutes par jour pour apaiser l’esprit, habiter son corps et ouvrir son cœur.", access='premium', categorie='Pleine conscience', fichier='meditation-21-jours.pdf'),
- C('universel', 'universel', 'document', "Carnet de gratitude (30 jours)", "Un carnet à imprimer : trois mercis chaque soir pendant un mois.", access='gratuit', categorie='Méditation', fichier='carnet-de-gratitude.pdf'),
- C('universel', 'universel', 'document', "Sagesses du monde : 40 pensées", "Des paroles de toutes les cultures, à garder sur soi ou à afficher.", access='gratuit', categorie='Sagesse', fichier='sagesses-du-monde-40-pensees.pdf'),
+ C('universel', 'universel', 'document', "Méditation : programme de 21 jours", "Dix minutes par jour pour apaiser l’esprit, habiter son corps et ouvrir son cœur.", access='payant', categorie='Pleine conscience', fichier='meditation-21-jours.pdf'),
+ C('universel', 'universel', 'document', "Carnet de gratitude (30 jours)", "Un carnet à imprimer : trois mercis chaque soir pendant un mois.", access='payant', categorie='Méditation', fichier='carnet-de-gratitude.pdf'),
+ C('universel', 'universel', 'document', "Sagesses du monde : 40 pensées", "Des paroles de toutes les cultures, à garder sur soi ou à afficher.", access='payant', categorie='Sagesse', fichier='sagesses-du-monde-40-pensees.pdf'),
 ]
 
 GUIDES = [

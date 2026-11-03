@@ -18,6 +18,8 @@ export interface Actor {
   /** Visiteur uniquement : abonnement courant et droit Premium (calculés côté serveur) */
   abonnement?: SubscriptionRow | null;
   premium?: boolean;
+  /** Visiteur : documents achetés à l'unité */
+  achats?: Set<string>;
   /** Guide ouvert par l'administration : nom de l'administrateur */
   via_admin?: string;
 }
@@ -75,7 +77,14 @@ export async function getActor(req: Req): Promise<Actor> {
   if (!data.is_active) throw new ApiError(403, 'Votre compte est désactivé. Contactez l’administration.', 'COMPTE_INACTIF');
   const abonnement = await abonnementCourant(data.id);
   const { is_active: _s, ...rest } = data;
-  return { ...rest, role: 'visiteur', name: `${data.prenom} ${data.nom}`, abonnement, premium: resume(abonnement).premium };
+  return { ...rest, role: 'visiteur', name: `${data.prenom} ${data.nom}`, abonnement, premium: resume(abonnement).premium, achats: await achatsDe(data.id) };
+}
+
+/** Documents achetés par un visiteur (paiements crédités liés à un document). */
+async function achatsDe(userId: string): Promise<Set<string>> {
+  const { data, error } = await db().from('payments').select('content_id').eq('user_id', userId).eq('credited', true).not('content_id', 'is', null);
+  if (error) return new Set(); // table ou colonne absente : aucun achat
+  return new Set((data ?? []).map((x) => x.content_id as string));
 }
 
 /** Exige l'un des rôles indiqués. */
@@ -101,6 +110,6 @@ export function requirePremium(actor: Actor) {
 
 /** Version publique de l'utilisateur (renvoyée au client). */
 export function publicUser(a: Actor) {
-  const { abonnement, ...rest } = a;
-  return a.role === 'visiteur' ? { ...rest, abonnement: resume(abonnement ?? null) } : rest;
+  const { abonnement, achats, ...rest } = a;
+  return a.role === 'visiteur' ? { ...rest, abonnement: resume(abonnement ?? null), achats: [...(achats ?? [])] } : rest;
 }

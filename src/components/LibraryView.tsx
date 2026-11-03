@@ -9,7 +9,7 @@ import { normalize } from '@/lib/normalize';
 import { useVisitor } from '@/lib/visitor';
 
 type FiltreType = 'tous' | TypeContenu;
-type FiltreAcces = 'tous' | 'gratuit' | 'premium';
+type FiltreAcces = 'tous' | 'gratuit' | 'premium' | 'payant';
 type FiltreReligion = 'toutes' | Religion;
 
 /** Bibliothèque filtrable (pages publiques et espace visiteur). */
@@ -57,7 +57,7 @@ export function LibraryView({ initialType = 'tous', initialReligion = 'toutes', 
         ]} />
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <Tabs id="lib-acces" value={acces} onChange={setAcces} options={[
-            { value: 'tous', label: 'Tous les accès' }, { value: 'gratuit', label: 'Gratuits' }, { value: 'premium', label: 'Premium' },
+            { value: 'tous', label: 'Tous les accès' }, { value: 'gratuit', label: 'Gratuits' }, { value: 'premium', label: 'Premium' }, { value: 'payant', label: 'À l’unité' },
           ]} />
           <SearchInput value={q} onChange={setQ} placeholder="Titre, verset, guide…" />
         </div>

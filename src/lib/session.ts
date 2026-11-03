@@ -27,6 +27,8 @@ export interface SessionUser {
   bio?: string | null;
   premium?: boolean;
   abonnement?: Abonnement;
+  /** Documents achetés à l'unité (identifiants) */
+  achats?: string[];
   /** Espace d'un guide ouvert par l'administration : nom de l'administrateur */
   via_admin?: string;
   /** compatibilité avec la coque des tableaux de bord */

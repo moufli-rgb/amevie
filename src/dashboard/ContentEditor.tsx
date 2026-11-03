@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { CheckCircle2, Crown, FileUp, Globe, Lock, Save, Send, Trash2, UploadCloud } from 'lucide-react';
+import { CheckCircle2, Crown, FileUp, Globe, Lock, Save, Send, ShoppingBag, Trash2, UploadCloud } from 'lucide-react';
 import { api } from '@/lib/api';
 import type { Role } from '@/lib/session';
 import { CATEGORIES, RELIGIONS, TYPES, tailleFichier, type Contenu, type Religion, type TypeContenu } from '@/lib/contenus';
@@ -55,7 +55,7 @@ export function ContentEditor({ role, contentId, initialType = 'parole', pastorI
   role: Role; contentId?: string; initialType?: TypeContenu; pastorId?: string; onDone: (c: Contenu, message: string) => void;
 }) {
   const [type, setType] = useState<TypeContenu>(initialType);
-  const [f, setF] = useState({ title: '', description: '', content: '', bible_ref: '', category: '', religion: 'chretien' as Religion, video_url: '', access: 'gratuit' as 'gratuit' | 'premium', is_published: true });
+  const [f, setF] = useState({ title: '', description: '', content: '', bible_ref: '', category: '', religion: 'chretien' as Religion, video_url: '', access: (initialType === 'document' ? 'payant' : 'gratuit') as 'gratuit' | 'premium' | 'payant', is_published: true });
   const [fichier, setFichier] = useState<Fichier | null>(null);
   const [aFichierExistant, setAFichierExistant] = useState(false);
   const [progress, setProgress] = useState<number | null>(null);
@@ -137,7 +137,7 @@ export function ContentEditor({ role, contentId, initialType = 'parole', pastorI
             {(Object.keys(TYPES) as TypeContenu[]).map((t) => {
               const T = TYPES[t]; const on = t === type;
               return (
-                <motion.button type="button" key={t} onClick={() => setType(t)} whileTap={{ scale: 0.97 }}
+                <motion.button type="button" key={t} onClick={() => { setType(t); if (!contentId) setF((s) => ({ ...s, access: t === 'document' ? 'payant' : s.access === 'payant' ? 'gratuit' : s.access })); }} whileTap={{ scale: 0.97 }}
                   className={`relative rounded-2xl p-4 text-left transition ${on ? 'bg-primary text-on-primary shadow-doux' : 'bg-fond ring-1 ring-ligne hover:ring-primary/40'}`}>
                   <T.icon className="h-5 w-5" />
                   <p className="mt-3 text-[14px] font-bold">{T.label}</p>
@@ -218,13 +218,14 @@ export function ContentEditor({ role, contentId, initialType = 'parole', pastorI
       <div className="space-y-4 lg:sticky lg:top-6 lg:self-start">
         <Card title="Accès">
           <div className="grid grid-cols-2 gap-2">
-            {([['gratuit', 'Gratuit', Globe, 'Visible par tous'], ['premium', 'Premium', Crown, 'Abonnés uniquement']] as const).map(([v, l, I, d]) => (
+            {([['gratuit', 'Gratuit', Globe, 'Visible par tous'], ['premium', 'Premium', Crown, 'Abonnés uniquement'], ['payant', 'Payant', ShoppingBag, 'Vendu à l’unité']] as const).map(([v, l, I, d]) => (
               <button type="button" key={v} onClick={() => setF((s) => ({ ...s, access: v }))}
                 className={`rounded-2xl p-3 text-left transition ${f.access === v ? 'bg-primary text-on-primary' : 'bg-surface hover:bg-ligne/60'}`}>
                 <I className="h-4 w-4" /><p className="mt-2 text-[14px] font-bold">{l}</p><p className="text-mini opacity-75">{d}</p>
               </button>
             ))}
           </div>
+          {f.access === 'payant' && <p className="mt-3 flex items-center gap-1.5 text-mini text-ink/60"><ShoppingBag className="h-3.5 w-3.5" /> Chacun l’achète à l’unité (prix fixé dans Vercel : PRIX_DOCUMENT, 10 USD par défaut). Non inclus dans le Premium.</p>}
           {f.access === 'premium' && <p className="mt-3 flex items-center gap-1.5 text-mini text-ink/60"><Lock className="h-3.5 w-3.5" /> Texte, vidéo et fichier réservés aux abonnés (contrôle serveur).</p>}
         </Card>
         <Card>

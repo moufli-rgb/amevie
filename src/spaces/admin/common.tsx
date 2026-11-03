@@ -138,7 +138,7 @@ const ACTIONS: Record<string, string> = {
   activation_compte: 'a activé un compte', desactivation_compte: 'a désactivé un compte', modification_compte: 'a modifié un compte', suppression_compte: 'a supprimé un compte',
   ajout_pasteur: 'a ajouté un guide spirituel', activation_pasteur: 'a activé un guide spirituel', desactivation_pasteur: 'a désactivé un guide spirituel',
   modification_pasteur: 'a modifié un guide spirituel', suppression_pasteur: 'a supprimé un guide spirituel', profil_modifie: 'a modifié son profil', mot_de_passe_modifie: 'a changé son mot de passe',
-  acces_espace_guide: 'a ouvert l’espace d’un guide spirituel', paiement_demande: 'a lancé un paiement crypto', paiement_crypto: 'a payé son abonnement en crypto', paiement_manuel_declare: 'a déclaré un paiement crypto', paiement_valide: 'a validé un paiement', paiement_refuse: 'a refusé un paiement', portefeuilles_modifies: 'a modifié les adresses de paiement',
+  acces_espace_guide: 'a ouvert l’espace d’un guide spirituel', paiement_demande: 'a lancé un paiement crypto', paiement_crypto: 'a payé son abonnement en crypto', paiement_manuel_declare: 'a déclaré un paiement crypto', paiement_valide: 'a validé un paiement', paiement_refuse: 'a refusé un paiement', portefeuilles_modifies: 'a modifié les adresses de paiement', achat_document: 'a acheté un document',
 };
 export const libelleAction = (a: string) => ACTIONS[a] ?? a.replace(/_/g, ' ');
 

@@ -193,7 +193,16 @@ Quand le visiteur clique sur **« Payer en crypto »**, il choisit entre deux mo
 | Accès Premium | Ouvert **tout seul** après confirmation | Ouvert quand **vous cliquez « Valider »** |
 | À régler | Un compte NOWPayments et 2 variables Vercel | Vos adresses, dans **Administration → Paiements crypto → Mes adresses** |
 
-Vous pouvez activer l'un, l'autre ou les deux. Le prix d'un mois se règle avec `PRIX_ABONNEMENT` : 10 par défaut, dans la devise `DEVISE_ABONNEMENT`, `usd` par défaut.
+Vous pouvez activer l'un, l'autre ou les deux.
+
+**Prix** (variables Vercel, facultatives) :
+- `PRIX_ABONNEMENT` : un mois Premium, **25** par défaut ;
+- `PRIX_DOCUMENT` : un document ou un livre à l'unité, **10** par défaut ;
+- `DEVISE_ABONNEMENT` : la devise de ces prix, `usd` par défaut.
+
+**Documents vendus à l'unité** : tous les documents et livres sont « Payants ». Ils ne sont **pas inclus** dans le Premium : chacun, abonné ou non, les achète un par un. Sur la page du document, le bouton **« Acheter ce document »** propose le paiement automatique ou l'envoi direct. Une fois payé, le document est téléchargeable sans limite par cet acheteur seulement. Dans le formulaire de publication, l'accès **« Payant · vendu à l'unité »** est choisi d'office pour un document.
+
+**Adresse de paiement manuel déjà réglée** : USDT · TRC20 → `TQ99wYe8799nGyygkruytN74LodxoTv1gf`. Elle se modifie dans **Paiements crypto → Mes adresses**.
 
 ### Paiement manuel : valider un paiement
 1. Le tableau de bord affiche **« 1 paiement à valider »**, et un badge apparaît sur **Paiements crypto**.
@@ -219,10 +228,11 @@ vercel env add NOWPAYMENTS_IPN_SECRET production
 vercel env add PRIX_ABONNEMENT production
 vercel env add DEVISE_ABONNEMENT production
 ```
-- `PRIX_ABONNEMENT` : le prix d'un mois, par exemple `10`.
+- `PRIX_ABONNEMENT` : le prix d'un mois, par exemple `25`.
+- `PRIX_DOCUMENT` : le prix d'un document à l'unité, par exemple `10`.
 - `DEVISE_ABONNEMENT` : la devise du prix, par exemple `usd` ou `eur`.
 
-Sans `PRIX_ABONNEMENT` et `DEVISE_ABONNEMENT`, le prix est de 10 USD.
+Sans ces variables : 25 USD par mois et 10 USD par document.
 
 Redéployez ensuite avec `vercel deploy --prod`.
 

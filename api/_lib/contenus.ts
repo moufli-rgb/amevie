@@ -25,15 +25,17 @@ export const COLONNES_LISTE =
   'id, pastor_id, type, religion, category, title, description, bible_ref, access, is_published, views, file_name, file_type, file_size, file_url, video_url, created_at, updated_at, pastors(prenom, nom, eglise)';
 
 export interface ContentRow {
-  id: string; pastor_id: string; type: TypeContenu; title: string; access: 'gratuit' | 'premium'; is_published: boolean;
+  id: string; pastor_id: string; type: TypeContenu; title: string; access: 'gratuit' | 'premium' | 'payant'; is_published: boolean;
   content?: string | null; video_url?: string | null; file_url?: string | null; [k: string]: unknown;
 }
 
 /** L'utilisateur a-t-il droit au contenu complet ? (contrôle serveur) */
-export function peutVoir(actor: Actor | null, c: Pick<ContentRow, 'access'>): boolean {
+export function peutVoir(actor: Actor | null, c: Pick<ContentRow, 'access' | 'id'>): boolean {
   if (c.access === 'gratuit') return true;
   if (!actor) return false;
   if (actor.role === 'admin' || actor.role === 'pasteur') return true;
+  // Document vendu à l'unité : seulement s'il a été acheté (pas inclus dans le Premium)
+  if (c.access === 'payant') return !!actor.achats?.has(c.id);
   return !!actor.premium;
 }
 
@@ -45,7 +47,9 @@ export function proteger<T extends ContentRow>(actor: Actor | null, c: T) {
   const { file_url, ...rest } = c;
   const autorise = peutVoir(actor, c);
   const base = { ...rest, has_file: !!file_url, has_video: !!c.video_url };
-  if (autorise) return { ...base, locked: false };
+  if (autorise) return { ...base, locked: false, ...(c.access === 'payant' ? { achete: true } : {}) };
+  // Document payant : la présentation reste visible, seul le fichier est verrouillé
+  if (c.access === 'payant') return { ...base, locked: true, achete: false };
   return { ...base, content: null, video_url: null, locked: true };
 }
 
@@ -60,7 +64,7 @@ export function valider(b: Record<string, unknown>, opts: { partiel: boolean; ty
   if (has('bible_ref')) out.bible_ref = v.text(b.bible_ref, 'Référence', { max: 120 });
   if (has('category')) out.category = v.oneOf(b.category, 'Catégorie', CATEGORIES);
   if (has('religion')) out.religion = v.oneOf(b.religion ?? 'chretien', 'Religion', RELIGIONS, true);
-  if (has('access')) out.access = v.oneOf(b.access, 'Accès', ['gratuit', 'premium'] as const, true);
+  if (has('access')) out.access = v.oneOf(b.access, 'Accès', ['gratuit', 'premium', 'payant'] as const, true);
   if (has('is_published')) out.is_published = b.is_published === undefined ? true : v.bool(b.is_published, 'Publication');
   if (has('video_url')) {
     const url = v.text(b.video_url, 'Lien vidéo', { max: 300 });

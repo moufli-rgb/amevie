@@ -55,7 +55,9 @@ export interface Contenu {
   file_name: string | null;
   file_type: string | null;
   file_size: number | null;
-  access: 'gratuit' | 'premium';
+  access: 'gratuit' | 'premium' | 'payant';
+  /** Document payant : déjà acheté par ce visiteur */
+  achete?: boolean;
   is_published: boolean;
   views: number;
   created_at: string;

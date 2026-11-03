@@ -45,6 +45,11 @@ export default route({
     const proprio = actor?.role === 'pasteur' && actor.id === c.pastor_id;
     if (!c.is_published && !proprio && actor?.role !== 'admin') throw new ApiError(404, 'Fichier introuvable.');
     if (!peutVoir(actor, c)) {
+      if (c.access === 'payant') {
+        throw actor
+          ? new ApiError(402, 'Ce document est vendu à l’unité. Achetez-le pour le télécharger.', 'ACHAT_REQUIS')
+          : new ApiError(401, 'Connectez-vous pour acheter et télécharger ce document.', 'CONNEXION_REQUISE');
+      }
       throw actor
         ? new ApiError(402, 'Ce document est réservé aux abonnés. Faites votre abonnement pour le télécharger.', 'ABONNEMENT_REQUIS')
         : new ApiError(401, 'Connectez-vous pour télécharger ce document.', 'CONNEXION_REQUISE');

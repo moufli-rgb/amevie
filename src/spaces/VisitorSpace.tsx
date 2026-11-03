@@ -159,7 +159,7 @@ function Prieres() {
 
 /* ---------------------------------------------------------------- Abonnement */
 interface Historique { id: string; type: string; duration_months: number; start_date: string; end_date: string; statut_reel: 'actif' | 'expire' | 'desactive' }
-interface PaiementVisiteur { id: string; price_amount: number; price_currency: string; pay_currency: string | null; status: string; credited: boolean; created_at: string }
+interface PaiementVisiteur { id: string; content_id?: string | null; contents?: { title: string } | null; price_amount: number; price_currency: string; pay_currency: string | null; status: string; credited: boolean; created_at: string }
 function Abonnement({ user, merci }: { user: SessionUser; merci: boolean }) {
   const { data } = useData<{ historique: Historique[] }>('subscriptions?scope=me', 'visiteur');
   const paiements = useData<{ payments: PaiementVisiteur[] }>('payments', 'visiteur');
@@ -211,7 +211,7 @@ function Abonnement({ user, merci }: { user: SessionUser; merci: boolean }) {
             </ul>
           )}
         </Card>
-        <Card title="Mes paiements crypto" className="lg:col-span-2">
+        <Card title="Mes paiements (abonnement et documents)" className="lg:col-span-2">
           {!paiements.data?.payments.length ? <p className="text-[14px] text-ink/55">Aucun paiement pour le moment.</p> : (
             <ul className="divide-y divide-ligne">
               {paiements.data.payments.map((p) => {
@@ -221,7 +221,8 @@ function Abonnement({ user, merci }: { user: SessionUser; merci: boolean }) {
                     <div className="flex items-center gap-3">
                       <span className="grid h-9 w-9 place-items-center rounded-xl bg-accent/15 text-ink"><Bitcoin className="h-4 w-4" /></span>
                       <div>
-                        <p className="text-[14px] font-semibold">{Number(p.price_amount)} {p.price_currency.toUpperCase()}{p.pay_currency ? ` · en ${p.pay_currency.toUpperCase()}` : ''}</p>
+                        <p className="text-[14px] font-semibold">{p.content_id ? <a href={hrefOf('contenu', p.content_id)} className="hover:text-primary">Document « {p.contents?.title ?? '—'} »</a> : 'Abonnement Premium'}</p>
+                        <p className="text-mini text-ink/60">{Number(p.price_amount)} {p.price_currency.toUpperCase()}{p.pay_currency ? ` · en ${p.pay_currency.toUpperCase()}` : ''}</p>
                         <p className="text-mini text-ink/55">{formatDate(p.created_at)}</p>
                       </div>
                     </div>

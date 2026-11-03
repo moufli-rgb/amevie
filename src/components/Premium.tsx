@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { Bitcoin, Crown, Lock } from 'lucide-react';
+import { Bitcoin, Crown, Lock, ShoppingBag } from 'lucide-react';
 import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
 import { SITE } from '@/config/site';
 import { api } from '@/lib/api';
@@ -14,13 +14,23 @@ export function PremiumBadge({ verrouille = false, small = false }: { verrouille
     </span>
   );
 }
+/** Document vendu à l'unité : prix, ou « Acheté ». */
+export function PayantBadge({ achete = false, small = false }: { achete?: boolean; small?: boolean }) {
+  const tarif = useTarif();
+  const prix = tarif?.prix_document ? `${tarif.prix_document.toLocaleString('fr-FR')} ${tarif.devise.toUpperCase()}` : 'Payant';
+  return (
+    <span className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full font-bold ring-1 ${achete ? 'bg-[color-mix(in_oklab,var(--couleur-succes)_14%,var(--couleur-fond))] text-succes ring-succes/30' : 'bg-primary/12 text-primary ring-primary/30'} ${small ? 'px-2 py-0.5 text-mini' : 'px-2.5 py-1 text-[12px]'}`}>
+      <ShoppingBag className="h-3 w-3" /> {achete ? 'Acheté' : prix}
+    </span>
+  );
+}
 export function GratuitBadge({ small = false }: { small?: boolean }) {
   return <span className={`inline-flex items-center rounded-full bg-surface font-semibold text-ink/70 ring-1 ring-ligne ${small ? 'px-2 py-0.5 text-mini' : 'px-2.5 py-1 text-[12px]'}`}>Gratuit</span>;
 }
 
 /** Tarif public et moyens de paiement (lus une fois par visite). */
 export interface Portefeuille { id: string; label: string; adresse: string; note?: string }
-export interface Tarif { actif: boolean; auto: boolean; prix: number; devise: string; manuel: { actif: boolean; portefeuilles: Portefeuille[] } }
+export interface Tarif { actif: boolean; auto: boolean; prix: number; prix_document?: number; devise: string; manuel: { actif: boolean; portefeuilles: Portefeuille[] } }
 const TARIF_VIDE: Tarif = { actif: false, auto: false, prix: 0, devise: 'usd', manuel: { actif: false, portefeuilles: [] } };
 let tarifCache: Promise<Tarif> | null = null;
 export function rechargerTarif() { tarifCache = null; }
@@ -43,11 +53,11 @@ export const prixAffiche = (t: { prix: number; devise: string } | null) =>
  *  - envoi direct à l'adresse de l'administration, puis validation dans le tableau de bord.
  * Sans compte : renvoie vers la création de compte.
  */
-export function PayButton({ className = '', label = 'Payer mon abonnement en crypto', size = 'md' }: { className?: string; label?: string; size?: 'md' | 'lg' }) {
+export function PayButton({ className = '', label = 'Payer mon abonnement en crypto', size = 'md', document }: { className?: string; label?: string; size?: 'md' | 'lg'; document?: { id: string; title: string } }) {
   const { user } = useVisitor();
   const tarif = useTarif();
   const [ouvert, setOuvert] = useState(false);
-  const prix = prixAffiche(tarif);
+  const prix = prixAffiche(document ? (tarif ? { prix: tarif.prix_document ?? 0, devise: tarif.devise } : null) : tarif);
   return (
     <span className={`inline-flex flex-col items-center ${className}`}>
       <motion.button type="button" onClick={() => (user ? setOuvert(true) : go('inscription'))} whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
@@ -59,7 +69,7 @@ export function PayButton({ className = '', label = 'Payer mon abonnement en cry
       </motion.button>
       {ouvert && (
         <Suspense fallback={null}>
-          <PaiementModal tarif={tarif} onClose={() => setOuvert(false)} />
+          <PaiementModal tarif={tarif} document={document} onClose={() => setOuvert(false)} />
         </Suspense>
       )}
     </span>

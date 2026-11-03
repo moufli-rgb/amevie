@@ -103,7 +103,7 @@ create table if not exists public.admin_users (
 -- ---------------------------------------------------------------------------
 -- contents : publications des pasteurs
 --  type   : parole (Parole de Dieu) | enseignement | document | contenu (méditation, prière…)
---  access : gratuit | premium
+--  access : gratuit | premium | payant (document vendu à l'unité)
 --  file_url : chemin du fichier dans le bucket privé « documents »
 -- ---------------------------------------------------------------------------
 create table if not exists public.contents (
@@ -253,6 +253,22 @@ alter table public.contents add column if not exists religion text not null defa
 alter table public.contents drop constraint if exists contents_religion_check;
 alter table public.contents add constraint contents_religion_check check (religion in ('chretien', 'musulman', 'universel'));
 create index if not exists contents_religion_idx on public.contents (religion, is_published, created_at desc);
+
+-- ---------------------------------------------------------------------------
+-- Documents vendus à l'unité : accès « payant » (prix : variable PRIX_DOCUMENT, 10 USD par défaut).
+-- Un achat = un paiement crédité lié au document (payments.content_id). Il n'est pas inclus dans le Premium.
+-- ---------------------------------------------------------------------------
+alter table public.contents drop constraint if exists contents_access_check;
+alter table public.contents add constraint contents_access_check check (access in ('gratuit', 'premium', 'payant'));
+alter table public.payments add column if not exists content_id uuid references public.contents(id) on delete set null;
+create index if not exists payments_achats_idx on public.payments (user_id, content_id) where content_id is not null and credited;
+-- Tous les documents deviennent payants à l'unité
+update public.contents set access = 'payant' where type = 'document' and access <> 'payant';
+
+-- Adresse de paiement manuel par défaut (modifiable : Administration → Paiements crypto → Mes adresses)
+insert into public.settings (key, value)
+values ('portefeuilles', '{"liste":[{"id":"w-usdt-trc20","label":"USDT · TRC20","adresse":"TQ99wYe8799nGyygkruytN74LodxoTv1gf","note":"Réseau TRON (TRC20) uniquement"}]}'::jsonb)
+on conflict (key) do nothing;
 
 -- ---------------------------------------------------------------------------
 -- Stockage des documents : bucket PRIVÉ (50 Mo max par fichier).

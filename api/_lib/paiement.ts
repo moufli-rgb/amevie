@@ -9,7 +9,8 @@
  * Variables Vercel :
  *  NOWPAYMENTS_API_KEY     clé API (tableau de bord NOWPayments → Settings → API keys)
  *  NOWPAYMENTS_IPN_SECRET  clé secrète IPN (Settings → Payments → Instant payment notifications)
- *  PRIX_ABONNEMENT         prix d'un mois (ex. 10)            — facultatif, 10 par défaut
+ *  PRIX_ABONNEMENT         prix d'un mois d'abonnement        — facultatif, 25 par défaut
+ *  PRIX_DOCUMENT           prix d'un document à l'unité       — facultatif, 10 par défaut
  *  DEVISE_ABONNEMENT       devise du prix (usd, eur…)         — facultatif, usd par défaut
  *  NOWPAYMENTS_SANDBOX     « 1 » pour utiliser le bac à sable — facultatif
  */
@@ -20,13 +21,14 @@ import { abonnementCourant, ajouterMois, statutReel, type SubscriptionRow } from
 
 export function configPaiement() {
   const lire = (n: string) => (process.env[n] ?? '').trim();
-  const prix = Number(lire('PRIX_ABONNEMENT').replace(',', '.')) || 10;
+  const prix = Number(lire('PRIX_ABONNEMENT').replace(',', '.')) || 25;
+  const prixDocument = Number(lire('PRIX_DOCUMENT').replace(',', '.')) || 10;
   const devise = (lire('DEVISE_ABONNEMENT') || 'usd').toLowerCase();
   const apiKey = lire('NOWPAYMENTS_API_KEY');
   const ipnSecret = lire('NOWPAYMENTS_IPN_SECRET');
   const base = lire('NOWPAYMENTS_API_URL').replace(/\/+$/, '')
     || (lire('NOWPAYMENTS_SANDBOX') === '1' ? 'https://api-sandbox.nowpayments.io/v1' : 'https://api.nowpayments.io/v1');
-  return { prix: Math.round(prix * 100) / 100, devise, apiKey, ipnSecret, base, actif: !!apiKey && !!ipnSecret };
+  return { prix: Math.round(prix * 100) / 100, prixDocument: Math.round(prixDocument * 100) / 100, devise, apiKey, ipnSecret, base, actif: !!apiKey && !!ipnSecret };
 }
 
 /** Tri récursif des clés (exigé par NOWPayments pour la signature). */
@@ -51,7 +53,7 @@ export function signatureValide(corps: unknown, signature: string | undefined, s
 }
 
 /** Crée la facture NOWPayments. */
-export async function creerFacture(p: { orderId: string; description: string; origine: string }) {
+export async function creerFacture(p: { orderId: string; description: string; origine: string; prix?: number; retour?: string }) {
   const c = configPaiement();
   if (!c.actif) throw new ApiError(503, 'Le paiement en cryptomonnaie n’est pas encore activé sur le site. Réessayez plus tard.', 'PAIEMENT_INACTIF');
   let r: Response;
@@ -60,13 +62,13 @@ export async function creerFacture(p: { orderId: string; description: string; or
       method: 'POST',
       headers: { 'x-api-key': c.apiKey, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        price_amount: c.prix,
+        price_amount: p.prix ?? c.prix,
         price_currency: c.devise,
         order_id: p.orderId,
         order_description: p.description,
         ipn_callback_url: `${p.origine}/api/payments?action=ipn`,
-        success_url: `${p.origine}/#espace/abonnement/merci`,
-        cancel_url: `${p.origine}/#espace/abonnement`,
+        success_url: `${p.origine}/${p.retour ?? '#espace/abonnement/merci'}`,
+        cancel_url: `${p.origine}/${p.retour ?? '#espace/abonnement'}`,
         is_fee_paid_by_user: false,
       }),
     });
@@ -80,7 +82,7 @@ export async function creerFacture(p: { orderId: string; description: string; or
       ? 'Le paiement crypto est mal configuré (clé NOWPAYMENTS_API_KEY refusée).'
       : 'Le service de paiement a refusé la demande. Réessayez dans un instant.', 'PAIEMENT_REFUSE');
   }
-  return { invoiceId: String(data.id ?? ''), url: data.invoice_url, prix: c.prix, devise: c.devise };
+  return { invoiceId: String(data.id ?? ''), url: data.invoice_url, prix: p.prix ?? c.prix, devise: c.devise };
 }
 
 /** Statuts NOWPayments → libellés du site. */

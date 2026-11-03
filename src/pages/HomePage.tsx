@@ -35,7 +35,7 @@ const GRATUIT = [
 ];
 const PREMIUM = [
   'Tous les enseignements et contenus Premium',
-  'Téléchargement de tous les documents',
+  'Messages et méditations Premium de toutes les traditions',
   'Ma bibliothèque : vos favoris toujours sous la main',
   'Les nouveautés Premium dès leur publication',
 ];

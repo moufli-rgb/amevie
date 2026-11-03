@@ -13,6 +13,7 @@ import { useVisitor } from '@/lib/visitor';
 const FAQ = [
   ['Comment se passe le paiement ?', 'Cliquez sur « Payer mon abonnement en crypto » : une page de paiement sécurisée s’ouvre. Choisissez la cryptomonnaie que vous voulez (Bitcoin, Ethereum, USDT, BNB, Solana, TRON… plus de 300 au choix), puis envoyez le montant indiqué depuis votre portefeuille ou votre plateforme d’échange.'],
   ['Quand mon accès est-il activé ?', 'Automatiquement, dès que le réseau a confirmé votre paiement (en général quelques minutes). Revenez sur le site : votre accès Premium est débloqué, sans aucune démarche.'],
+  ['Et les livres et documents ?', 'Ils sont vendus à l’unité (10 USD chacun), pour tout le monde, abonné ou non. Sur la page du document, cliquez « Acheter ce document » : une fois payé, vous pouvez le télécharger autant de fois que vous voulez.'],
   ['Je préfère envoyer moi-même la crypto', 'C’est possible : choisissez « Envoyer moi-même ». Le site affiche l’adresse de l’administration (avec un QR code). Envoyez le montant, collez le numéro de la transaction, et l’administration valide votre accès après vérification.'],
   ['Puis-je payer avec n’importe quelle cryptomonnaie ?', 'Oui. Le prix est fixé en une seule devise, et la page de paiement calcule tout de suite le montant exact dans la cryptomonnaie que vous choisissez.'],
   ['Combien de temps dure l’abonnement ?', `${SITE.dureeAbonnement}. Par exemple : activé le 10 octobre, il expire le 10 novembre. À cette date, l’accès Premium se coupe automatiquement ; le gratuit reste accessible.`],
@@ -41,7 +42,7 @@ export function SubscriptionPage() {
               <p className="relative mt-2 text-white/70">Durée : {SITE.dureeAbonnement} · renouvelable</p>
               {prixAffiche(tarif) && <p className="relative mt-4 font-serif text-5xl text-white">{prixAffiche(tarif)}<span className="ml-2 font-sans text-base text-white/60">/ mois</span></p>}
               <ul className="relative mt-7 space-y-3.5">
-                {['Tous les enseignements et contenus Premium', 'Téléchargement de tous les documents', 'Ma bibliothèque : enregistrez vos contenus favoris', 'Toutes les fonctionnalités gratuites'].map((t) => (
+                {['Tous les enseignements et contenus Premium', 'Messages et méditations Premium de toutes les traditions', 'Ma bibliothèque : enregistrez vos contenus favoris', 'Toutes les fonctionnalités gratuites'].map((t) => (
                   <li key={t} className="flex gap-3 text-[15px] text-white/90"><span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-accent text-ink"><Check className="h-3 w-3" strokeWidth={3} /></span>{t}</li>
                 ))}
               </ul>

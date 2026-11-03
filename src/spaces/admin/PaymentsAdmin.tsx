@@ -17,6 +17,7 @@ import { useData } from '@/dashboard/useData';
 interface Paiement {
   id: string; order_id: string; provider: string; price_amount: number; price_currency: string; pay_currency: string | null; pay_amount: number | null;
   wallet_label: string | null; tx_hash: string | null; admin_note: string | null; reviewed_by: string | null; reviewed_at: string | null;
+  content_id?: string | null; contents?: { title: string } | null;
   months: number; status: string; credited: boolean; created_at: string; users: { nom: string; prenom: string; email: string } | null;
 }
 interface Donnees { payments: Paiement[]; config: { actif: boolean; prix: number; devise: string }; portefeuilles: Portefeuille[] }
@@ -91,6 +92,7 @@ function Ligne({ p, onDecide }: { p: Paiement; onDecide?: (p: Paiement, action: 
         </span>
         <div className="min-w-0">
           <p className="truncate text-[14px] font-semibold">{p.users ? `${p.users.prenom} ${p.users.nom}` : 'Compte supprimé'} <span className="font-normal text-ink/55">· {p.users?.email}</span></p>
+          <p className="text-[13px] font-semibold text-primary">{p.content_id ? `Achat du document « ${p.contents?.title ?? 'supprimé'} »` : `Abonnement Premium · ${p.months} mois`}</p>
           <p className="text-mini text-ink/55">
             {formatDate(p.created_at)} ({depuis(p.created_at)}) · {Number(p.price_amount)} {p.price_currency.toUpperCase()} · {p.provider === 'manuel' ? `envoi direct${p.wallet_label ? ` en ${p.wallet_label}` : ''}` : 'automatique'}
             {p.pay_currency ? ` · payé en ${p.pay_currency.toUpperCase()}${p.pay_amount ? ` (${Number(p.pay_amount)})` : ''}` : ''}
@@ -107,7 +109,7 @@ function Ligne({ p, onDecide }: { p: Paiement; onDecide?: (p: Paiement, action: 
       <div className="flex shrink-0 flex-wrap items-center gap-2">
         {p.status === 'a_valider' && onDecide ? (
           <>
-            <Button size="sm" icon={<Check className="h-3.5 w-3.5" />} loading={busy === 'valider'} onClick={() => agir('valider')}>Valider · donner l’accès</Button>
+            <Button size="sm" icon={<Check className="h-3.5 w-3.5" />} loading={busy === 'valider'} onClick={() => agir('valider')}>{p.content_id ? 'Valider · ouvrir le téléchargement' : 'Valider · donner l’accès'}</Button>
             <Button size="sm" variant="secondary" icon={<X className="h-3.5 w-3.5" />} loading={busy === 'refuser'} onClick={() => agir('refuser')}>Refuser</Button>
           </>
         ) : (

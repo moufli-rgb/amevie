@@ -34,7 +34,7 @@ function BoutonCopier({ texte }: { texte: string }) {
 }
 
 /** Fenêtre de paiement : automatique (NOWPayments) ou envoi direct validé par l'administration. */
-export default function PaiementModal({ tarif, onClose }: { tarif: Tarif | null; onClose: () => void }) {
+export default function PaiementModal({ tarif, onClose, document: doc }: { tarif: Tarif | null; onClose: () => void; document?: { id: string; title: string } }) {
   const auto = !!tarif?.auto;
   const manuel = tarif?.manuel.actif ? tarif.manuel.portefeuilles : [];
   const [etape, setEtape] = useState<Etape>(() => (auto ? 'choix' : manuel.length ? 'manuel' : 'aucun'));
@@ -43,14 +43,15 @@ export default function PaiementModal({ tarif, onClose }: { tarif: Tarif | null;
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<AlertMsg | null>(null);
   const w = manuel.find((x) => x.id === wid) ?? manuel[0];
-  const prix = prixAffiche(tarif);
+  const prix = prixAffiche(doc ? (tarif ? { prix: tarif.prix_document ?? 0, devise: tarif.devise } : null) : tarif);
+  const cible = doc ? { content_id: doc.id } : {};
 
   useEffect(() => { if (tarif && etape === 'aucun' && (auto || manuel.length)) setEtape(auto ? 'choix' : 'manuel'); }, [tarif]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function payerAuto() {
     setBusy(true); setMsg(null);
     try {
-      const r = await api<{ url: string }>('payments?action=creer', { method: 'POST', role: 'visiteur' });
+      const r = await api<{ url: string }>('payments?action=creer', { method: 'POST', role: 'visiteur', body: cible });
       window.location.href = r.url;
     } catch (e) { setMsg({ kind: 'error', text: e instanceof Error ? e.message : 'Paiement impossible.' }); setBusy(false); }
   }
@@ -60,27 +61,27 @@ export default function PaiementModal({ tarif, onClose }: { tarif: Tarif | null;
     if (!w) return;
     setBusy(true); setMsg(null);
     try {
-      await api('payments?action=manuel', { method: 'POST', role: 'visiteur', body: { wallet_id: w.id, tx_hash: tx.trim() } });
+      await api('payments?action=manuel', { method: 'POST', role: 'visiteur', body: { wallet_id: w.id, tx_hash: tx.trim(), ...cible } });
       setEtape('envoye');
     } catch (err) { setMsg({ kind: 'error', text: err instanceof Error ? err.message : 'Erreur.' }); }
     finally { setBusy(false); }
   }
 
   return (
-    <Modal open onClose={onClose} title="Payer mon abonnement" wide>
+    <Modal open onClose={onClose} title={doc ? "Acheter ce document" : "Payer mon abonnement"} wide>
       {!tarif ? (
         <div className="grid place-items-center py-12"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
       ) : etape === 'aucun' ? (
         <p className="py-6 text-center text-[15px] text-ink/70">Le paiement en ligne n’est pas encore ouvert. Revenez dans quelques jours ou contactez l’administration.</p>
       ) : etape === 'choix' ? (
         <div className="space-y-4">
-          <p className="text-[14.5px] text-ink/70">Abonnement Premium · 1 mois{prix ? <> · <strong className="text-ink">{prix}</strong></> : ''}. Choisissez comment payer :</p>
+          <p className="text-[14.5px] text-ink/70">{doc ? <>Document « <strong className="text-ink">{doc.title}</strong> »</> : 'Abonnement Premium · 1 mois'}{prix ? <> · <strong className="text-ink">{prix}</strong></> : ''}. Choisissez comment payer :</p>
           <motion.button type="button" whileHover={{ y: -2 }} onClick={payerAuto} disabled={busy}
             className="flex w-full items-start gap-4 rounded-2xl bg-fond p-5 text-left ring-2 ring-primary/50 transition hover:ring-primary">
             <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-primary text-on-primary">{busy ? <Loader2 className="h-5 w-5 animate-spin" /> : <Zap className="h-5 w-5" />}</span>
             <span>
               <span className="flex flex-wrap items-center gap-2 text-[16px] font-bold">Paiement automatique <span className="rounded-full bg-accent/20 px-2 py-0.5 text-mini font-bold">Recommandé</span></span>
-              <span className="mt-1 block text-[14px] text-ink/65">Choisissez parmi plus de 300 cryptomonnaies. Le montant est calculé pour vous et votre accès s’ouvre tout seul en quelques minutes.</span>
+              <span className="mt-1 block text-[14px] text-ink/65">Choisissez parmi plus de 300 cryptomonnaies. Le montant est calculé pour vous et {doc ? 'le téléchargement s’ouvre' : 'votre accès s’ouvre'} tout seul en quelques minutes.</span>
             </span>
           </motion.button>
           {manuel.length > 0 && (
@@ -89,7 +90,7 @@ export default function PaiementModal({ tarif, onClose }: { tarif: Tarif | null;
               <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-secondary text-white"><Wallet className="h-5 w-5" /></span>
               <span>
                 <span className="block text-[16px] font-bold">Envoyer moi-même</span>
-                <span className="mt-1 block text-[14px] text-ink/65">Envoyez la crypto à l’adresse de l’administration ({manuel.map((x) => x.label).join(', ')}), puis collez le numéro de transaction. Accès ouvert après vérification.</span>
+                <span className="mt-1 block text-[14px] text-ink/65">Envoyez la crypto à l’adresse de l’administration ({manuel.map((x) => x.label).join(', ')}), puis collez le numéro de transaction. {doc ? 'Téléchargement' : 'Accès'} ouvert après vérification.</span>
               </span>
             </motion.button>
           )}
@@ -129,8 +130,8 @@ export default function PaiementModal({ tarif, onClose }: { tarif: Tarif | null;
           <motion.span initial={{ scale: 0.6 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 260, damping: 14 }}
             className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-[color-mix(in_oklab,var(--couleur-succes)_15%,var(--couleur-fond))] text-succes"><CheckCircle2 className="h-8 w-8" /></motion.span>
           <h3 className="mt-4 text-2xl">Merci !</h3>
-          <p className="mx-auto mt-2 max-w-md text-[14.5px] text-ink/70">Votre paiement est enregistré. L’administration vérifie la transaction et active votre accès Premium dès validation. Vous pouvez suivre l’état dans « Mon abonnement ».</p>
-          <Button className="mt-6" onClick={() => { onClose(); go('espace', 'abonnement'); }}>Voir mon abonnement</Button>
+          <p className="mx-auto mt-2 max-w-md text-[14.5px] text-ink/70">{doc ? <>Votre paiement pour « {doc.title} » est enregistré. Le téléchargement s’ouvre sur cette page dès que l’administration l’a validé.</> : 'Votre paiement est enregistré. L’administration vérifie la transaction et active votre accès Premium dès validation. Vous pouvez suivre l’état dans « Mon abonnement ».'}</p>
+          <Button className="mt-6" onClick={() => { onClose(); if (!doc) go('espace', 'abonnement'); }}>{doc ? 'Fermer' : 'Voir mon abonnement'}</Button>
         </div>
       )}
     </Modal>

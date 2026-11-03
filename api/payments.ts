@@ -13,7 +13,7 @@ import { randomBytes } from 'node:crypto';
 import { route, query, send, type Req } from './_lib/http.js';
 import { ApiError } from './_lib/errors.js';
 import { db, check } from './_lib/supabase.js';
-import { requireRole, getActor } from './_lib/auth.js';
+import { requireRole, getActor, type Actor } from './_lib/auth.js';
 import { logActivite } from './_lib/activity.js';
 import { configPaiement, creerFacture, crediterAbonnement, signatureValide, statutPaiement, lirePortefeuilles, validerPortefeuilles, validerTx } from './_lib/paiement.js';
 import { body, requireUuid, text } from './_lib/validate.js';
@@ -29,6 +29,28 @@ function origine(req: Req): string {
   return `${proto}://${h}`;
 }
 
+/** Document vendu à l'unité que ce visiteur peut acheter (publié, payant, pas encore acheté). */
+async function documentAchetable(v: Actor, contentId: unknown): Promise<{ id: string; title: string } | null> {
+  if (contentId === undefined || contentId === null || contentId === '') return null;
+  const id = requireUuid(contentId, 'Document');
+  const { data, error } = await db().from('contents').select('id, title, access, is_published').eq('id', id).maybeSingle();
+  check(error, 'contents');
+  if (!data || !data.is_published) throw new ApiError(404, 'Document introuvable.');
+  if (data.access !== 'payant') throw new ApiError(400, 'Ce contenu ne se vend pas à l’unité.');
+  if (v.achats?.has(id)) throw new ApiError(409, 'Vous avez déjà acheté ce document : il est téléchargeable sur sa page.', 'DEJA_ACHETE');
+  return { id: data.id as string, title: data.title as string };
+}
+
+/** Achat d'un document : journalise l'achat (le paiement crédité ouvre le téléchargement). */
+async function crediterAchat(p: { user_id: string; content_id: string; price_amount: number; price_currency: string }, par: { role: 'admin' | 'visiteur'; id: string; nom: string }, details: Record<string, unknown>) {
+  const { data: doc } = await db().from('contents').select('title').eq('id', p.content_id).maybeSingle();
+  await logActivite({
+    role: par.role, user_id: par.id, nom: par.nom, action: 'achat_document', cible_type: 'contenu', cible_id: p.content_id,
+    cible_titre: doc?.title ?? 'Document', details: { prix: `${p.price_amount} ${String(p.price_currency).toUpperCase()}`, acheteur: p.user_id, ...details },
+  });
+  return doc?.title as string | undefined;
+}
+
 /** Le visiteur déclare un envoi direct vers une adresse de l'administrateur. */
 async function manuel(req: Req) {
   const v = await requireRole(req, 'visiteur');
@@ -37,6 +59,7 @@ async function manuel(req: Req) {
   const w = portefeuilles.find((x) => x.id === b.wallet_id);
   if (!w) throw new ApiError(400, 'Choisissez l’adresse vers laquelle vous avez envoyé le paiement.');
   const tx = validerTx(b.tx_hash);
+  const doc = await documentAchetable(v, b.content_id);
   const enCours = await db().from('payments').select('id', { count: 'exact', head: true }).eq('user_id', v.id).eq('status', 'a_valider');
   check(enCours.error, 'payments');
   if ((enCours.count ?? 0) >= 3) throw new ApiError(429, 'Vous avez déjà 3 paiements en attente de validation. Patientez la réponse de l’administration.');
@@ -47,12 +70,15 @@ async function manuel(req: Req) {
   const c = configPaiement();
   const { data, error } = await db().from('payments').insert({
     user_id: v.id, order_id: `man-${Date.now().toString(36)}-${randomBytes(4).toString('hex')}`, provider: 'manuel',
-    price_amount: c.prix, price_currency: c.devise, months: 1, status: 'a_valider', wallet_label: w.label, tx_hash: tx,
+    price_amount: doc ? c.prixDocument : c.prix, price_currency: c.devise, months: 1, status: 'a_valider', wallet_label: w.label, tx_hash: tx,
+    ...(doc ? { content_id: doc.id } : {}),
   }).select('id, status, created_at').single();
   if (error?.code === '23505') throw new ApiError(409, 'Cette transaction a déjà été déclarée.', 'DOUBLON');
   check(error, 'payments');
-  await logActivite({ role: 'visiteur', user_id: v.id, nom: v.name, action: 'paiement_manuel_declare', details: { portefeuille: w.label } });
-  return { payment: data, message: 'Merci ! Votre paiement est enregistré. L’administration le vérifie et active votre accès Premium dès validation.' };
+  await logActivite({ role: 'visiteur', user_id: v.id, nom: v.name, action: 'paiement_manuel_declare', details: { portefeuille: w.label, document: doc?.title ?? null } });
+  return { payment: data, message: doc
+    ? `Merci ! Votre paiement pour « ${doc.title} » est enregistré. Le téléchargement s’ouvre dès que l’administration l’a validé.`
+    : 'Merci ! Votre paiement est enregistré. L’administration le vérifie et active votre accès Premium dès validation.' };
 }
 
 /** L'administrateur valide (abonnement activé) ou refuse un paiement manuel. */
@@ -74,6 +100,10 @@ async function decider(req: Req, action: 'valider' | 'refuser') {
   const verrou = await db().from('payments').update({ ...maj, credited: true, status: 'paye' }).eq('id', id).eq('credited', false).select('id');
   check(verrou.error, 'payments');
   if (!verrou.data?.length) throw new ApiError(409, 'Ce paiement a déjà été validé.');
+  if (p.content_id) {
+    const titre = await crediterAchat(p, { role: 'admin', id: admin.id, nom: admin.name }, { tx: p.tx_hash });
+    return { ok: true, message: `Achat validé : le visiteur peut télécharger « ${titre ?? 'le document'} ».` };
+  }
   const sub = await crediterAbonnement(p.user_id, p.months);
   await db().from('payments').update({ subscription_id: sub.id }).eq('id', id);
   await logActivite({
@@ -121,6 +151,11 @@ async function ipn(req: Req) {
   check(verrou.error, 'payments');
   if (!verrou.data?.length) return { ok: true, deja: true };
 
+  if (p.content_id) {
+    const { data: acheteur } = await db().from('users').select('prenom, nom').eq('id', p.user_id).maybeSingle();
+    await crediterAchat(p, { role: 'visiteur', id: p.user_id, nom: acheteur ? `${acheteur.prenom} ${acheteur.nom}` : 'Visiteur' }, { crypto: b.pay_currency ?? null });
+    return { ok: true };
+  }
   const sub = await crediterAbonnement(p.user_id, p.months);
   await db().from('payments').update({ subscription_id: sub.id }).eq('id', p.id);
   const { data: u } = await db().from('users').select('prenom, nom').eq('id', p.user_id).maybeSingle();
@@ -137,23 +172,23 @@ export default route({
     if (query(req, 'scope') === 'tarif') {
       const c = configPaiement();
       const portefeuilles = await lirePortefeuilles();
-      return { actif: c.actif || portefeuilles.length > 0, auto: c.actif, prix: c.prix, devise: c.devise, manuel: { actif: portefeuilles.length > 0, portefeuilles } };
+      return { actif: c.actif || portefeuilles.length > 0, auto: c.actif, prix: c.prix, prix_document: c.prixDocument, devise: c.devise, manuel: { actif: portefeuilles.length > 0, portefeuilles } };
     }
     const actor = await getActor(req);
     if (actor.role === 'visiteur') {
       const { data, error } = await db().from('payments')
-        .select('id, provider, price_amount, price_currency, pay_currency, wallet_label, tx_hash, admin_note, months, status, credited, created_at')
+        .select('id, provider, content_id, price_amount, price_currency, pay_currency, wallet_label, tx_hash, admin_note, months, status, credited, created_at, contents(title)')
         .eq('user_id', actor.id).order('created_at', { ascending: false }).limit(20);
       check(error, 'payments');
       return { payments: data ?? [] };
     }
     if (actor.role !== 'admin') throw new ApiError(403, 'Accès refusé.');
     const { data, error } = await db().from('payments')
-      .select('id, order_id, provider, price_amount, price_currency, pay_currency, pay_amount, wallet_label, tx_hash, admin_note, reviewed_by, reviewed_at, months, status, credited, created_at, users(nom, prenom, email)')
+      .select('id, order_id, provider, content_id, contents(title), price_amount, price_currency, pay_currency, pay_amount, wallet_label, tx_hash, admin_note, reviewed_by, reviewed_at, months, status, credited, created_at, users(nom, prenom, email)')
       .order('created_at', { ascending: false }).limit(300);
     check(error, 'payments');
     const c = configPaiement();
-    return { payments: data ?? [], config: { actif: c.actif, prix: c.prix, devise: c.devise }, portefeuilles: await lirePortefeuilles() };
+    return { payments: data ?? [], config: { actif: c.actif, prix: c.prix, prix_document: c.prixDocument, devise: c.devise }, portefeuilles: await lirePortefeuilles() };
   },
 
   async POST(req, res) {
@@ -181,12 +216,16 @@ export default route({
     check(recentes.error, 'payments');
     if ((recentes.count ?? 0) >= 5) throw new ApiError(429, 'Trop de tentatives de paiement. Réessayez dans une heure.');
 
+    const doc = await documentAchetable(v, body(req.body).content_id);
     const orderId = `av-${Date.now().toString(36)}-${randomBytes(6).toString('hex')}`;
     const { error } = await db().from('payments').insert({
-      user_id: v.id, order_id: orderId, price_amount: c.prix, price_currency: c.devise, months: 1, status: 'en_attente',
+      user_id: v.id, order_id: orderId, price_amount: doc ? c.prixDocument : c.prix, price_currency: c.devise, months: 1, status: 'en_attente',
+      ...(doc ? { content_id: doc.id } : {}),
     });
     check(error, 'payments');
-    const f = await creerFacture({ orderId, description: `Abonnement Ame & Vie — 1 mois (${v.email})`, origine: origine(req) });
+    const f = await creerFacture(doc
+      ? { orderId, description: `Ame & Vie — document « ${doc.title.slice(0, 80)} » (${v.email})`, origine: origine(req), prix: c.prixDocument, retour: `#contenu/${doc.id}` }
+      : { orderId, description: `Abonnement Ame & Vie — 1 mois (${v.email})`, origine: origine(req) });
     await db().from('payments').update({ invoice_id: f.invoiceId }).eq('order_id', orderId);
     await logActivite({ role: 'visiteur', user_id: v.id, nom: v.name, action: 'paiement_demande', details: { prix: f.prix, devise: f.devise } });
     send(res, 201, { url: f.url, prix: f.prix, devise: f.devise, abonnement: resume(v.abonnement ?? null) });
