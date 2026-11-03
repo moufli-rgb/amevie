@@ -14,9 +14,10 @@ import { hashPassword } from './crypto.js';
 import { ApiError } from './errors.js';
 
 interface Exemple {
-  type: 'parole' | 'enseignement' | 'document' | 'contenu';
+  type: 'parole' | 'enseignement' | 'document' | 'contenu' | 'programme' | 'pack';
   title: string; description?: string | null; content?: string | null; bible_ref?: string | null;
-  category?: string | null; access: 'gratuit' | 'premium'; file?: string;
+  category?: string | null; access: 'gratuit' | 'essentiel' | 'premium' | 'premium_plus' | 'payant'; file?: string;
+  price?: number; duree_jours?: number;
   religion?: 'chretien' | 'musulman' | 'universel'; guide?: string; v?: number;
 }
 interface Guide { cle?: string; prenom: string; nom: string; email: string; eglise: string; bio: string }
@@ -82,6 +83,8 @@ export async function importerExemples(depuisVersion = 0): Promise<{ ajoutes: nu
       access: c.access, is_published: true, created_at: quand, updated_at: quand,
     };
     if (c.religion && c.religion !== 'chretien') row.religion = c.religion;
+    if (c.price) row.price = c.price;
+    if (c.duree_jours) row.duree_jours = c.duree_jours;
     if (c.file) {
       const contenu = await readFile(path.join(dossierSeed(), 'documents', c.file));
       const chemin = `${pastorId}/exemple-${c.file}`;

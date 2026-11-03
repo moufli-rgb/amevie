@@ -4,7 +4,7 @@ import { RELIGIONS, RELIGION_IMAGES, TYPES, TYPE_COULEURS, TYPE_IMAGES, auteur, 
 import { Img, imagePour, type ImgName } from './Img';
 import { formatDateCourte } from '@/lib/format';
 import { hrefOf } from '@/lib/router';
-import { GratuitBadge, PayantBadge, PremiumBadge } from './Premium';
+import { AccesBadge } from './Premium';
 
 /** Carte d'un contenu de la bibliothèque. */
 export function ContentCard({ c, i = 0 }: { c: Contenu; i?: number }) {
@@ -28,7 +28,7 @@ export function ContentCard({ c, i = 0 }: { c: Contenu; i?: number }) {
             <span className={`grid h-6 w-6 place-items-center rounded-full ${C.bg} text-white`}><Icon className="h-3.5 w-3.5" /></span>
             {c.category ?? T.label}
           </span>
-          <span className="rounded-full bg-white/92 backdrop-blur">{c.access === 'premium' ? <PremiumBadge verrouille={c.locked} small /> : c.access === 'payant' ? <PayantBadge achete={!c.locked} small /> : <GratuitBadge small />}</span>
+          <span className="rounded-full bg-white/92 backdrop-blur"><AccesBadge c={c} small /></span>
         </div>
         {c.religion && c.religion !== 'chretien' && (
           <span className={`absolute left-3 top-3 inline-flex items-center gap-1 rounded-full ${RELIGIONS[c.religion].bg} px-2.5 py-1 text-mini font-bold text-white shadow-doux`}>

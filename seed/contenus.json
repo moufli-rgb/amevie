@@ -185,7 +185,7 @@
       "title": "Plan de lecture de la Bible en un an",
       "file": "plan-de-lecture-bible-1-an.pdf",
       "description": "Toute la Bible en 365 jours, de la Genèse à l'Apocalypse, avec une case à cocher par jour. À imprimer.",
-      "access": "payant",
+      "access": "essentiel",
       "category": "Étude biblique"
     },
     {
@@ -193,7 +193,7 @@
       "title": "Premiers pas dans la foi",
       "file": "premiers-pas-dans-la-foi.pdf",
       "description": "Un livret simple pour les nouveaux croyants : prière, lecture de la Bible, église, baptême.",
-      "access": "payant",
+      "access": "essentiel",
       "category": "Jeunesse"
     },
     {
@@ -201,23 +201,25 @@
       "title": "Carnet de méditation hebdomadaire",
       "file": "carnet-de-meditation.pdf",
       "description": "Des pages à imprimer pour noter vos lectures, prières et sujets de reconnaissance chaque semaine.",
-      "access": "payant",
+      "access": "essentiel",
       "category": "Méditation"
     },
     {
-      "type": "document",
+      "type": "programme",
       "title": "Guide de prière : 21 jours",
       "file": "guide-de-priere-21-jours.pdf",
       "description": "Trois semaines pour approfondir votre vie de prière : un thème, un verset et une prière par jour.",
       "access": "payant",
-      "category": "Prière"
+      "category": "Prière",
+      "price": 6,
+      "duree_jours": 21
     },
     {
       "type": "document",
       "title": "Étude biblique : les Béatitudes",
       "file": "etude-biblique-beatitudes.pdf",
       "description": "Huit leçons sur Matthieu 5:1-12, avec questions de discussion pour l'étude personnelle ou en groupe.",
-      "access": "payant",
+      "access": "premium",
       "category": "Étude biblique"
     },
     {
@@ -225,7 +227,7 @@
       "title": "30 versets à mémoriser",
       "file": "30-versets-a-memoriser.pdf",
       "description": "Des cartes à découper, classées par thème : confiance, paix, pardon, force, espérance.",
-      "access": "payant",
+      "access": "premium",
       "category": "Méditation"
     },
     {
@@ -362,7 +364,7 @@
       "type": "document",
       "title": "Guide de la prière (salât) pour débutants",
       "description": "Les ablutions, les cinq prières et les gestes, expliqués pas à pas.",
-      "access": "payant",
+      "access": "essentiel",
       "category": "Prière",
       "file": "guide-priere-salat-debutants.pdf"
     },
@@ -373,7 +375,7 @@
       "type": "document",
       "title": "Les 99 plus beaux noms d’Allah",
       "description": "La liste complète avec le sens de chaque nom, pour une méditation quotidienne.",
-      "access": "payant",
+      "access": "premium",
       "category": "Méditation",
       "file": "99-noms-d-allah.pdf"
     },
@@ -381,12 +383,14 @@
       "v": 2,
       "religion": "musulman",
       "guide": "islam",
-      "type": "document",
+      "type": "programme",
       "title": "Ramadan : 30 jours de réflexion",
       "description": "Un thème, une pensée et un geste pour chaque jour du mois béni.",
       "access": "payant",
       "category": "Méditation",
-      "file": "ramadan-30-jours.pdf"
+      "file": "ramadan-30-jours.pdf",
+      "price": 8,
+      "duree_jours": 30
     },
     {
       "v": 2,
@@ -471,12 +475,14 @@
       "v": 2,
       "religion": "universel",
       "guide": "universel",
-      "type": "document",
+      "type": "programme",
       "title": "Méditation : programme de 21 jours",
       "description": "Dix minutes par jour pour apaiser l’esprit, habiter son corps et ouvrir son cœur.",
       "access": "payant",
       "category": "Pleine conscience",
-      "file": "meditation-21-jours.pdf"
+      "file": "meditation-21-jours.pdf",
+      "price": 6,
+      "duree_jours": 21
     },
     {
       "v": 2,
@@ -485,7 +491,7 @@
       "type": "document",
       "title": "Carnet de gratitude (30 jours)",
       "description": "Un carnet à imprimer : trois mercis chaque soir pendant un mois.",
-      "access": "payant",
+      "access": "essentiel",
       "category": "Méditation",
       "file": "carnet-de-gratitude.pdf"
     },
@@ -496,7 +502,7 @@
       "type": "document",
       "title": "Sagesses du monde : 40 pensées",
       "description": "Des paroles de toutes les cultures, à garder sur soi ou à afficher.",
-      "access": "payant",
+      "access": "essentiel",
       "category": "Sagesse",
       "file": "sagesses-du-monde-40-pensees.pdf"
     }

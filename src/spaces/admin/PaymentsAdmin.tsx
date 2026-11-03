@@ -6,10 +6,10 @@ import { depuis, formatDate } from '@/lib/format';
 import { STATUTS_PAIEMENT } from '@/lib/paiements';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { Field } from '@/components/ui/Field';
+import { Field, TextArea } from '@/components/ui/Field';
 import { Alert, type AlertMsg } from '@/components/ui/Alert';
 import { Skeleton } from '@/components/ui/Empty';
-import { rechargerTarif, type Portefeuille } from '@/components/Premium';
+import { rechargerTarif, type Formule, type Portefeuille } from '@/components/Premium';
 import { PageHeader } from '@/dashboard/Shell';
 import { Card, LoadError, StatGrid, Tabs } from '@/dashboard/Widgets';
 import { useData } from '@/dashboard/useData';
@@ -17,10 +17,10 @@ import { useData } from '@/dashboard/useData';
 interface Paiement {
   id: string; order_id: string; provider: string; price_amount: number; price_currency: string; pay_currency: string | null; pay_amount: number | null;
   wallet_label: string | null; tx_hash: string | null; admin_note: string | null; reviewed_by: string | null; reviewed_at: string | null;
-  content_id?: string | null; contents?: { title: string } | null;
+  content_id?: string | null; contents?: { title: string } | null; formule?: string | null;
   months: number; status: string; credited: boolean; created_at: string; users: { nom: string; prenom: string; email: string } | null;
 }
-interface Donnees { payments: Paiement[]; config: { actif: boolean; prix: number; devise: string }; portefeuilles: Portefeuille[] }
+interface Donnees { payments: Paiement[]; config: { actif: boolean; prix: number; devise: string }; portefeuilles: Portefeuille[]; tarifs?: { formules: Formule[]; prix_produit: number; taux_fcfa: number } }
 
 /** Lien vers l'explorateur de la blockchain, d'après le réseau indiqué dans le nom de l'adresse. */
 function lienExplorateur(label: string | null, tx: string | null): string | null {
@@ -35,6 +35,53 @@ function lienExplorateur(label: string | null, tx: string | null): string | null
   if (/ltc|litecoin/.test(l)) return `https://blockchair.com/litecoin/transaction/${tx}`;
   if (/btc|bitcoin/.test(l)) return `https://mempool.space/tx/${tx}`;
   return null;
+}
+
+/* ------------------------------------------------------------------ Formules & prix */
+function Tarifs({ initial, onSaved }: { initial: { formules: Formule[]; prix_produit: number; taux_fcfa: number }; onSaved: () => void }) {
+  const [formules, setFormules] = useState(initial.formules.map((f) => ({ ...f, prixTexte: String(f.prix), avantagesTexte: f.avantages.join('\n') })));
+  const [prixProduit, setPrixProduit] = useState(String(initial.prix_produit));
+  const [taux, setTaux] = useState(String(initial.taux_fcfa));
+  const [msg, setMsg] = useState<AlertMsg | null>(null);
+  const [busy, setBusy] = useState(false);
+  const maj = (i: number, k: 'prixTexte' | 'avantagesTexte' | 'description', v: string) => setFormules((l) => l.map((f, j) => (j === i ? { ...f, [k]: v } : f)));
+  async function enregistrer() {
+    setBusy(true); setMsg(null);
+    try {
+      await api('payments?action=tarifs', { method: 'POST', role: 'admin', body: {
+        formules: formules.map((f) => ({ id: f.id, prix: f.prixTexte, description: f.description, avantages: f.avantagesTexte.split('\n').map((x) => x.trim()).filter(Boolean) })),
+        prix_produit: prixProduit, taux_fcfa: taux,
+      } });
+      rechargerTarif(); onSaved();
+      setMsg({ kind: 'success', text: 'Prix enregistrés : ils s’appliquent tout de suite aux nouveaux paiements.' });
+    } catch (e) { setMsg({ kind: 'error', text: e instanceof Error ? e.message : 'Erreur.' }); }
+    finally { setBusy(false); }
+  }
+  const fcfa = (v: string) => { const n = Number(v.replace(',', '.')); const t = Number(taux); return n > 0 && t > 0 ? `≈ ${(Math.round((n * t) / 50) * 50).toLocaleString('fr-FR')} F CFA` : ''; };
+  return (
+    <div className="space-y-6">
+      <div className="grid gap-4 lg:grid-cols-3">
+        {formules.map((f, i) => (
+          <Card key={f.id} title={`Formule ${f.nom}`}>
+            <div className="space-y-3">
+              <Field label="Prix par mois (USD)" inputMode="decimal" value={f.prixTexte} onChange={(e) => maj(i, 'prixTexte', e.target.value)} hint={fcfa(f.prixTexte)} />
+              <Field label="Phrase de présentation" value={f.description} onChange={(e) => maj(i, 'description', e.target.value)} maxLength={160} />
+              <TextArea label="Avantages (un par ligne)" rows={5} value={f.avantagesTexte} onChange={(e) => maj(i, 'avantagesTexte', e.target.value)} />
+            </div>
+          </Card>
+        ))}
+      </div>
+      <Card title="Produits vendus à l’unité et monnaie locale">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Prix par défaut d’un livre / programme / pack (USD)" inputMode="decimal" value={prixProduit} onChange={(e) => setPrixProduit(e.target.value)}
+            hint={`${fcfa(prixProduit)} · utilisé quand aucun prix n’est indiqué sur le produit`} />
+          <Field label="1 USD = combien de F CFA ? (affichage indicatif)" inputMode="numeric" value={taux} onChange={(e) => setTaux(e.target.value)} hint="Les paiements restent en USD ; le montant en F CFA est affiché pour information." />
+        </div>
+        <p className="mt-4 text-mini text-ink/55">Repères en F CFA : petit pack 1 000 F, pack complet 2 500 F, programme 7 jours 1 500 F, 14 jours 2 500 F, 30 jours 5 000 F, 40 jours 6 000 F, pack fête 2 500 F. Indiquez le prix de chaque produit dans son formulaire de publication.</p>
+      </Card>
+      <div className="flex flex-wrap items-center gap-3"><Button icon={<Save className="h-4 w-4" />} loading={busy} onClick={enregistrer}>Enregistrer les prix</Button><Alert msg={msg} /></div>
+    </div>
+  );
 }
 
 /* ------------------------------------------------------------------ Adresses de paiement */
@@ -92,7 +139,7 @@ function Ligne({ p, onDecide }: { p: Paiement; onDecide?: (p: Paiement, action: 
         </span>
         <div className="min-w-0">
           <p className="truncate text-[14px] font-semibold">{p.users ? `${p.users.prenom} ${p.users.nom}` : 'Compte supprimé'} <span className="font-normal text-ink/55">· {p.users?.email}</span></p>
-          <p className="text-[13px] font-semibold text-primary">{p.content_id ? `Achat du document « ${p.contents?.title ?? 'supprimé'} »` : `Abonnement Premium · ${p.months} mois`}</p>
+          <p className="text-[13px] font-semibold text-primary">{p.content_id ? `Achat du document « ${p.contents?.title ?? 'supprimé'} »` : `Formule ${p.formule ?? 'Premium'} · ${p.months} mois`}</p>
           <p className="text-mini text-ink/55">
             {formatDate(p.created_at)} ({depuis(p.created_at)}) · {Number(p.price_amount)} {p.price_currency.toUpperCase()} · {p.provider === 'manuel' ? `envoi direct${p.wallet_label ? ` en ${p.wallet_label}` : ''}` : 'automatique'}
             {p.pay_currency ? ` · payé en ${p.pay_currency.toUpperCase()}${p.pay_amount ? ` (${Number(p.pay_amount)})` : ''}` : ''}
@@ -127,7 +174,7 @@ function Ligne({ p, onDecide }: { p: Paiement; onDecide?: (p: Paiement, action: 
 /** Paiements : automatiques (NOWPayments) et manuels (à valider par l'administration). */
 export function PaymentsAdmin({ onChange }: { onChange?: () => void }) {
   const { data, setData, error, loading, reload } = useData<Donnees>('payments', 'admin');
-  const [onglet, setOnglet] = useState<'a_valider' | 'tous' | 'adresses'>('a_valider');
+  const [onglet, setOnglet] = useState<'a_valider' | 'tous' | 'adresses' | 'tarifs'>('a_valider');
   const [flash, setFlash] = useState<AlertMsg | null>(null);
   if (error) return <LoadError message={error} onRetry={reload} />;
   if (loading && !data) return <Skeleton className="h-96" />;
@@ -166,10 +213,13 @@ export function PaymentsAdmin({ onChange }: { onChange?: () => void }) {
       <Tabs id="paiements" value={onglet} onChange={setOnglet} options={[
         { value: 'a_valider', label: `À valider${aValider.length ? ` (${aValider.length})` : ''}` },
         { value: 'tous', label: 'Historique' },
+        { value: 'tarifs', label: 'Formules & prix' },
         { value: 'adresses', label: 'Mes adresses' },
       ]} />
       <Alert msg={flash} />
-      {onglet === 'adresses' ? (
+      {onglet === 'tarifs' && data?.tarifs ? (
+        <Tarifs initial={data.tarifs} onSaved={reload} />
+      ) : onglet === 'adresses' ? (
         <Portefeuilles initial={data?.portefeuilles ?? []} onSaved={reload} />
       ) : (
         <Card title={onglet === 'a_valider' ? 'Paiements à vérifier et valider' : `Historique (${items.length})`}>

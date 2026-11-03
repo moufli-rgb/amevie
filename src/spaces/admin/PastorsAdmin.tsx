@@ -14,7 +14,7 @@ import { Field, TextArea } from '@/components/ui/Field';
 import { Alert, type AlertMsg } from '@/components/ui/Alert';
 import { ConfirmDialog, Modal } from '@/components/ui/Modal';
 import { EmptyState, Skeleton } from '@/components/ui/Empty';
-import { GratuitBadge, PremiumBadge } from '@/components/Premium';
+import { AccesBadge } from '@/components/Premium';
 import { PageHeader } from '@/dashboard/Shell';
 import { Card, LoadError, SearchInput, StatGrid, Tabs } from '@/dashboard/Widgets';
 import { useData } from '@/dashboard/useData';
@@ -125,7 +125,7 @@ export function PastorDetail({ id }: { id: string }) {
                     <p className="truncate text-[14px] font-semibold hover:text-primary">{c.title}</p>
                     <p className="text-mini text-ink/55">{TYPES[c.type].label} · {formatDateCourte(c.created_at)} · {c.views} vue{c.views > 1 ? 's' : ''}{c.has_file ? ` · ${c.file_name}` : ''}</p>
                   </a>
-                  <div className="flex shrink-0 gap-1.5">{c.access === 'premium' ? <PremiumBadge small /> : <GratuitBadge small />}<Badge tone={c.is_published ? 'actif' : 'neutre'}>{c.is_published ? 'Publié' : 'Brouillon'}</Badge></div>
+                  <div className="flex shrink-0 gap-1.5"><AccesBadge c={{ ...c, locked: false }} small /><Badge tone={c.is_published ? 'actif' : 'neutre'}>{c.is_published ? 'Publié' : 'Brouillon'}</Badge></div>
                 </li>
               ))}
             </ul>

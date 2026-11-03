@@ -18,6 +18,8 @@ export interface Actor {
   /** Visiteur uniquement : abonnement courant et droit Premium (calculés côté serveur) */
   abonnement?: SubscriptionRow | null;
   premium?: boolean;
+  /** Visiteur : niveau de sa formule active (0 sans abonnement, 1 Essentiel, 2 Premium, 3 Premium Plus) */
+  niveau?: number;
   /** Visiteur : documents achetés à l'unité */
   achats?: Set<string>;
   /** Guide ouvert par l'administration : nom de l'administrateur */
@@ -77,7 +79,8 @@ export async function getActor(req: Req): Promise<Actor> {
   if (!data.is_active) throw new ApiError(403, 'Votre compte est désactivé. Contactez l’administration.', 'COMPTE_INACTIF');
   const abonnement = await abonnementCourant(data.id);
   const { is_active: _s, ...rest } = data;
-  return { ...rest, role: 'visiteur', name: `${data.prenom} ${data.nom}`, abonnement, premium: resume(abonnement).premium, achats: await achatsDe(data.id) };
+  const r = resume(abonnement);
+  return { ...rest, role: 'visiteur', name: `${data.prenom} ${data.nom}`, abonnement, premium: r.premium, niveau: r.niveau, achats: await achatsDe(data.id) };
 }
 
 /** Documents achetés par un visiteur (paiements crédités liés à un document). */

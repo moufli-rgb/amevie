@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Alert, type AlertMsg } from '@/components/ui/Alert';
 import { ConfirmDialog } from '@/components/ui/Modal';
 import { EmptyState, Skeleton } from '@/components/ui/Empty';
-import { GratuitBadge, PremiumBadge } from '@/components/Premium';
+import { AccesBadge } from '@/components/Premium';
 import { LoadError, SearchInput, Tabs } from './Widgets';
 import { useData } from './useData';
 
@@ -100,7 +100,7 @@ export function ContentsManager({ role, onEdit, onNew }: {
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="truncate text-[15px] font-bold">{c.title}</p>
-                        {c.access === 'premium' ? <PremiumBadge small /> : <GratuitBadge small />}
+                        <AccesBadge c={{ ...c, locked: c.access === 'payant' ? true : false }} small />
                         <Badge tone={c.is_published ? 'actif' : 'neutre'}>{c.is_published ? 'Publié' : 'Non publié'}</Badge>
                       </div>
                       <p className="mt-0.5 truncate text-[13px] text-ink/55">

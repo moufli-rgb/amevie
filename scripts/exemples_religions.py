@@ -430,6 +430,14 @@ if __name__ == '__main__':
     data['version'] = 2
     data['guides'] = GUIDES
     data['contenus'] = [c for c in data['contenus'] if c.get('v', 1) < 2] + ISLAM + UNIVERSEL
+    # Programmes vendus à l'unité ; documents compris dans les formules (Essentiel / Premium)
+    PROG = {'guide-de-priere-21-jours.pdf': (6, 21), 'meditation-21-jours.pdf': (6, 21), 'ramadan-30-jours.pdf': (8, 30)}
+    PREM = {'etude-biblique-beatitudes.pdf', '30-versets-a-memoriser.pdf', '99-noms-d-allah.pdf'}
+    for c in data['contenus']:
+        f = c.get('file')
+        if not f: continue
+        if f in PROG: c.update(type='programme', access='payant', price=PROG[f][0], duree_jours=PROG[f][1])
+        else: c['access'] = 'premium' if f in PREM else 'essentiel'
     data['_aide'] = ("Contenus d'exemple ajoutés automatiquement : Christianisme (Jean, textes Louis Segond 1910), Islam et Spiritualité universelle "
                      "(guides provisoires). Citations du Coran : traductions du sens à faire relire. Régénérer : scripts/exemples_religions.py.")
     json.dump(data, open(p, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)

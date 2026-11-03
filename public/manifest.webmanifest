@@ -1,0 +1,23 @@
+{
+  "name": "Ame & Vie · Guide spirituel",
+  "short_name": "Ame & Vie",
+  "description": "Paroles sacrées, prières, programmes spirituels et livres : chrétiens, musulmans et sagesses universelles.",
+  "lang": "fr",
+  "start_url": "/?source=app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fdf8f1",
+  "theme_color": "#9a3f1f",
+  "categories": ["lifestyle", "education", "books"],
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Ma communauté", "url": "/#espace/spirituelle", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Programmes spirituels", "url": "/#espace/programmes", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Mon carnet", "url": "/#espace/carnet", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

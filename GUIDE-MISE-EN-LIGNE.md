@@ -267,3 +267,38 @@ Vous pouvez toujours activer ou prolonger un abonnement à la main dans **Visite
 - Les citations du Coran sont des **traductions du sens** rédigées pour la plateforme. Faites-les relire par une personne qualifiée.
 - Les nouveaux contenus s'ajoutent tout seuls à la prochaine visite, même si le site est déjà en ligne. Ce que vous avez supprimé ne revient pas.
 - Les illustrations Islam et Universel sont des dessins originaux (`scripts/illustrations_religions.py`). Les contenus et les PDF se régénèrent avec `scripts/exemples_religions.py`.
+
+---
+
+## Formules d'abonnement, programmes et application
+
+### Trois formules (mensuelles)
+| Formule | Prix par défaut | Ouvre |
+|---|---|---|
+| Essentiel | 4 USD | les contenus et documents marqués « Essentiel » |
+| Premium | 9 USD | Essentiel + les contenus et documents « Premium » |
+| Premium Plus | 18 USD | tout, y compris les contenus « Premium Plus » |
+
+- **Règle principale :** un membre ne repaie jamais un document compris dans sa formule.
+- Les prix, les phrases de présentation et les avantages se changent dans **Administration → Paiements crypto → Formules & prix**. Vous y réglez aussi le taux d'affichage en F CFA, par exemple 1 USD = 600 F.
+- Payer la même formule prolonge l'abonnement d'un mois à la suite. Changer de formule démarre la nouvelle formule le jour même.
+
+### Programmes, packs et livres : un programme à part
+- Les types **Programme** (7, 14, 30, 40 jours…) et **Pack** (petit pack de prières, pack complet sur un problème, pack fête religieuse) s'ajoutent aux Paroles, enseignements, documents et contenus.
+- L'accès **« À l'unité »** est vendu séparément à tout le monde, abonné ou non, au **prix indiqué sur le produit**. S'il n'y en a pas, c'est le prix par défaut réglé dans Formules & prix.
+- Repères en F CFA : petit pack 1 000 F · pack complet 2 500 F · programme 7 jours 1 500 F · 14 jours 2 500 F · 30 jours 5 000 F · 40 jours 6 000 F · pack fête 2 500 F.
+
+### Espace membre
+- **Tableau de bord :** Mon abonnement (formule active, date d'expiration, renouvellement) et les 3 espaces.
+- **Les 3 espaces :**
+  - Chrétien : Prières, Bible, Méditations, Programmes ;
+  - Musulman : Douas, Coran, Rappels, Programmes ;
+  - Universel : Développement personnel, Gratitude, Motivation, Paix intérieure.
+- **Autres rubriques :** Bibliothèque de documents, Programmes spirituels, Audios et vidéos, Mes intentions et mon suivi, Mon carnet personnel (privé), Ma bibliothèque, Mes achats, Mon profil.
+- Pour qu'un contenu apparaisse dans la bonne rubrique, choisissez sa **religion** et sa **catégorie** en le publiant (Prière, Doua, Rappel, Gratitude, Motivation, Paix intérieure…).
+
+### Installer l'application (téléphone, PC, iPhone)
+- Le site s'installe comme une application, sans store. Le bouton **« Installer l'application »** se trouve sur l'accueil, dans le pied de page et dans l'espace membre.
+- Android, Chrome et Edge : la fenêtre d'installation s'ouvre directement.
+- iPhone et iPad : le site explique la marche à suivre (Safari → Partager → « Sur l'écran d'accueil »).
+- Les icônes sont dans `public/icons/` et le manifeste dans `public/manifest.webmanifest`. Le fichier `public/sw.js` ne met jamais en cache l'API ni les fichiers payants.

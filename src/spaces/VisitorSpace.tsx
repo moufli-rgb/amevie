@@ -1,7 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import {
-  BookMarked, BookOpen, CreditCard, FileText, HandHeart, Library, LayoutDashboard, Bitcoin, PartyPopper, Send, Settings, Trash2,
+  BookMarked, BookOpen, CalendarDays, CreditCard, FileText, HandHeart, Headphones, LayoutDashboard, Bitcoin, NotebookPen, PartyPopper, Send,
+  ShoppingBag, Sparkles, Trash2, UserRound,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { go, hrefOf } from '@/lib/router';
@@ -13,8 +14,10 @@ import type { Contenu } from '@/lib/contenus';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { ContentCard } from '@/components/ContentCard';
 import { LibraryView } from '@/components/LibraryView';
-import { CryptosAcceptees, Paywall, PayButton, prixAffiche, useTarif } from '@/components/Premium';
+import { CryptosAcceptees, FormulesCartes, Paywall, PayButton } from '@/components/Premium';
 import { STATUTS_PAIEMENT } from '@/lib/paiements';
+import { BandeauInstaller } from '@/components/Installer';
+import { AudiosVideosPage, BibliothequeSpirituelle, CarnetPage, DocumentsPage, EspacesCommunautes, MesAchatsPage, ProgrammesPage } from './visitor/MemberPages';
 import { SubscriptionStatus } from '@/components/SubscriptionStatus';
 import { Field, TextArea } from '@/components/ui/Field';
 import { Button } from '@/components/ui/Button';
@@ -32,17 +35,24 @@ import { LoginPage } from '@/pages/VisitorAuthPages';
 function Accueil({ user }: { user: SessionUser }) {
   const { data, loading } = useData<{ parole: { id: string; content: string; bible_ref: string } | null; derniers: Contenu[] }>(`contents?scope=accueil&u=${user.id}`, 'visiteur');
   const raccourcis = [
-    { label: 'Paroles de Dieu', icon: BookOpen, href: hrefOf('bibliotheque', 'parole') },
-    { label: 'Documents', icon: FileText, href: hrefOf('bibliotheque', 'document') },
-    { label: 'Demander une prière', icon: HandHeart, href: hrefOf('espace', 'prieres') },
-    { label: 'Ma bibliothèque', icon: BookMarked, href: hrefOf('espace', 'favoris') },
+    { label: 'Bibliothèque de documents', icon: FileText, href: hrefOf('espace', 'documents') },
+    { label: 'Programmes spirituels', icon: CalendarDays, href: hrefOf('espace', 'programmes') },
+    { label: 'Audios et vidéos', icon: Headphones, href: hrefOf('espace', 'medias') },
+    { label: 'Mes intentions et mon suivi', icon: HandHeart, href: hrefOf('espace', 'prieres') },
+    { label: 'Mon carnet personnel', icon: NotebookPen, href: hrefOf('espace', 'carnet') },
+    { label: 'Mon profil', icon: UserRound, href: hrefOf('espace', 'profil') },
   ];
   return (
     <div className="space-y-6">
       <WelcomeBanner photo="bible_mains" surtitre="Mon espace" titre={<>Bonjour, {user.prenom ?? user.name}</>}
-        texte={data?.parole ? <>« {data.parole.content.slice(0, 160)}{data.parole.content.length > 160 ? '…' : ''} » — <strong>{data.parole.bible_ref}</strong></> : SITE.slogan} />
+        texte={data?.parole ? <>« {data.parole.content.replace(/^[«"\s]+/, '').split(/[»\n]/)[0].slice(0, 160)} » — <strong>{data.parole.bible_ref}</strong></> : SITE.slogan} />
       <SubscriptionStatus a={user.abonnement} />
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div>
+        <p className="surtitre mb-3 text-ink/50">Bibliothèque spirituelle · choisir sa communauté</p>
+        <EspacesCommunautes compact />
+      </div>
+      <p className="surtitre text-ink/50">Mes autres rubriques</p>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {raccourcis.map((r, i) => (
           <motion.a key={r.label} href={r.href} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} whileHover={{ y: -3 }}
             className="flex flex-col gap-3 rounded-3xl bg-fond p-4 shadow-doux ring-1 ring-ligne sm:p-5">
@@ -51,7 +61,8 @@ function Accueil({ user }: { user: SessionUser }) {
           </motion.a>
         ))}
       </div>
-      <Card title="Nouveautés" action={<a className="text-[13px] font-bold text-primary" href={hrefOf('espace', 'contenus')}>Tout voir</a>}>
+      <BandeauInstaller />
+      <Card title="Nouveautés" action={<a className="text-[13px] font-bold text-primary" href={hrefOf('bibliotheque')}>Tout voir</a>}>
         {loading && !data ? <Skeleton className="h-40" /> : data?.derniers.length ? (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{data.derniers.slice(0, 3).map((c, i) => <ContentCard key={c.id} c={c} i={i} />)}</div>
         ) : <p className="text-[14px] text-ink/55">Aucune publication pour le moment.</p>}
@@ -114,7 +125,7 @@ function Prieres() {
 
   return (
     <div className="space-y-6">
-      <PageHeader titre="Demandes de prière" texte="Gratuit. Vos demandes sont lues par les guides spirituels de la plateforme." />
+      <PageHeader titre="Mes intentions et mon suivi" texte="Confiez vos intentions de prière et suivez leur avancement : reçue, en prière, exaucée. Lues par les guides spirituels." />
       <Card title="Nouvelle demande">
         <form onSubmit={envoyer} className="space-y-4">
           <Field label="Sujet" value={f.subject} onChange={(e) => setF({ ...f, subject: e.target.value })} maxLength={120} placeholder="Ex. Santé de ma mère" />
@@ -159,11 +170,10 @@ function Prieres() {
 
 /* ---------------------------------------------------------------- Abonnement */
 interface Historique { id: string; type: string; duration_months: number; start_date: string; end_date: string; statut_reel: 'actif' | 'expire' | 'desactive' }
-interface PaiementVisiteur { id: string; content_id?: string | null; contents?: { title: string } | null; price_amount: number; price_currency: string; pay_currency: string | null; status: string; credited: boolean; created_at: string }
+interface PaiementVisiteur { id: string; formule?: string | null; content_id?: string | null; contents?: { title: string } | null; price_amount: number; price_currency: string; pay_currency: string | null; status: string; credited: boolean; created_at: string }
 function Abonnement({ user, merci }: { user: SessionUser; merci: boolean }) {
   const { data } = useData<{ historique: Historique[] }>('subscriptions?scope=me', 'visiteur');
   const paiements = useData<{ payments: PaiementVisiteur[] }>('payments', 'visiteur');
-  const tarif = useTarif();
   // Après le paiement : on relit les paiements toutes les 15 s jusqu'à la confirmation
   const enAttente = merci && !user.premium;
   useEffect(() => {
@@ -175,7 +185,7 @@ function Abonnement({ user, merci }: { user: SessionUser; merci: boolean }) {
   const lib = { actif: 'Actif', expire: 'Expiré', desactive: 'Désactivé' } as const;
   return (
     <div className="space-y-6">
-      <PageHeader titre="Mon abonnement" texte={`Durée : ${SITE.dureeAbonnement}${prixAffiche(tarif) ? ` · ${prixAffiche(tarif)}` : ''}, payé en cryptomonnaie et activé automatiquement.`} />
+      <PageHeader titre="Mon abonnement" texte={`Formule active, date d’expiration et renouvellement. Durée : ${SITE.dureeAbonnement}, payée en cryptomonnaie.`} />
       {merci && (
         <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
           className="flex items-start gap-4 rounded-2xl bg-[color-mix(in_oklab,var(--couleur-succes)_12%,var(--couleur-fond))] p-5 ring-1 ring-[color-mix(in_oklab,var(--couleur-succes)_35%,transparent)]">
@@ -187,6 +197,7 @@ function Abonnement({ user, merci }: { user: SessionUser; merci: boolean }) {
         </motion.div>
       )}
       <SubscriptionStatus a={user.abonnement} />
+      <div><p className="surtitre mb-4 text-ink/50">Les formules</p><FormulesCartes formuleActive={user.abonnement?.formule ?? null} /></div>
       <div className="grid gap-6 lg:grid-cols-2">
         <Card title="Comment s’abonner ou renouveler">
           <ol className="space-y-3 text-[14.5px] text-ink/75">
@@ -221,7 +232,7 @@ function Abonnement({ user, merci }: { user: SessionUser; merci: boolean }) {
                     <div className="flex items-center gap-3">
                       <span className="grid h-9 w-9 place-items-center rounded-xl bg-accent/15 text-ink"><Bitcoin className="h-4 w-4" /></span>
                       <div>
-                        <p className="text-[14px] font-semibold">{p.content_id ? <a href={hrefOf('contenu', p.content_id)} className="hover:text-primary">Document « {p.contents?.title ?? '—'} »</a> : 'Abonnement Premium'}</p>
+                        <p className="text-[14px] font-semibold">{p.content_id ? <a href={hrefOf('contenu', p.content_id)} className="hover:text-primary">Document « {p.contents?.title ?? '—'} »</a> : `Formule ${p.formule ?? 'Premium'}`}</p>
                         <p className="text-mini text-ink/60">{Number(p.price_amount)} {p.price_currency.toUpperCase()}{p.pay_currency ? ` · en ${p.pay_currency.toUpperCase()}` : ''}</p>
                         <p className="text-mini text-ink/55">{formatDate(p.created_at)}</p>
                       </div>
@@ -263,6 +274,7 @@ function Parametres({ user, onUpdate }: { user: SessionUser; onUpdate: (u: Parti
 
 /* ================================================================ Espace visiteur */
 export default function VisitorSpace({ page, id = '' }: { page: string; id?: string }) {
+  useEffect(() => { window.scrollTo({ top: 0 }); }, [page, id]);
   const { user, checking, logout, updateUser } = useVisitor();
   if (checking) return <LoadingScreen label="Vérification de votre session…" />;
   if (!user) return <LoginPage />;
@@ -270,20 +282,29 @@ export default function VisitorSpace({ page, id = '' }: { page: string; id?: str
   const sections: NavSection[] = [
     { titre: 'Mon espace', items: [{ id: '', label: 'Tableau de bord', icon: LayoutDashboard }] },
     {
-      titre: 'Contenus', items: [
-        { id: 'contenus', label: 'Contenus', icon: Library },
+      titre: 'Bibliothèque spirituelle', items: [
+        { id: 'spirituelle', label: 'Ma communauté', icon: Sparkles },
+        { id: 'documents', label: 'Bibliothèque de documents', icon: FileText },
+        { id: 'programmes', label: 'Programmes spirituels', icon: CalendarDays },
+        { id: 'medias', label: 'Audios et vidéos', icon: Headphones },
+      ],
+    },
+    {
+      titre: 'Mon suivi', items: [
+        { id: 'prieres', label: 'Mes intentions et mon suivi', icon: HandHeart },
+        { id: 'carnet', label: 'Mon carnet', icon: NotebookPen },
         { id: 'favoris', label: 'Ma bibliothèque', icon: BookMarked, lock: !user.premium },
-        { id: 'prieres', label: 'Demandes de prière', icon: HandHeart },
+        { id: 'achats', label: 'Mes achats', icon: ShoppingBag },
       ],
     },
     {
       titre: 'Compte', items: [
-        { id: 'abonnement', label: 'Abonnement', icon: CreditCard },
-        { id: 'profil', label: 'Paramètres', icon: Settings },
+        { id: 'abonnement', label: 'Mon abonnement', icon: CreditCard },
+        { id: 'profil', label: 'Mon profil', icon: UserRound },
       ],
     },
   ];
-  const active = page && sections.some((s) => s.items.some((i) => i.id === page)) ? page : '';
+  const active = page && (page === 'contenus' || sections.some((s) => s.items.some((i) => i.id === page))) ? page : '';
   const quick: QuickAction[] = [
     { label: 'Payer mon abonnement', icon: Bitcoin, onClick: () => go('espace', 'abonnement') },
     { label: 'Demander une prière', icon: HandHeart, onClick: () => go('espace', 'prieres') },
@@ -293,7 +314,13 @@ export default function VisitorSpace({ page, id = '' }: { page: string; id?: str
 
   let content;
   switch (active) {
-    case 'contenus': content = <div><PageHeader titre="Contenus" texte="Les contenus Premium sont signalés par un cadenas." /><LibraryView /></div>; break;
+    case 'contenus': content = <div><PageHeader titre="Contenus" texte="Les contenus compris dans une formule sont signalés par un cadenas." /><LibraryView /></div>; break;
+    case 'spirituelle': content = <BibliothequeSpirituelle religion={id} />; break;
+    case 'documents': content = <DocumentsPage />; break;
+    case 'programmes': content = <ProgrammesPage />; break;
+    case 'medias': content = <AudiosVideosPage />; break;
+    case 'carnet': content = <CarnetPage />; break;
+    case 'achats': content = <MesAchatsPage />; break;
     case 'favoris': content = <Favoris user={user} />; break;
     case 'prieres': content = <Prieres />; break;
     case 'abonnement': content = <Abonnement user={user} merci={id === 'merci'} />; break;
@@ -303,7 +330,7 @@ export default function VisitorSpace({ page, id = '' }: { page: string; id?: str
 
   return (
     <Shell espace="espace" user={{ ...user, site_name: user.premium ? 'Premium' : 'Gratuit' }} roleLabel="Visiteur" sections={sections} active={active}
-      bottom={['', 'contenus', 'abonnement']} quickActions={quick} onLogout={() => { logout(); go('accueil'); }}>
+      bottom={['', 'spirituelle', 'carnet']} quickActions={quick} onLogout={() => { logout(); go('accueil'); }}>
       {content}
     </Shell>
   );

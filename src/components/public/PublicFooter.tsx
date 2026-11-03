@@ -1,6 +1,7 @@
 import { Bitcoin } from 'lucide-react';
 import { Logo } from '../Logo';
 import { SITE } from '@/config/site';
+import { BoutonInstaller } from '../Installer';
 
 export function PublicFooter() {
   return (
@@ -12,6 +13,7 @@ export function PublicFooter() {
           <a href="/#abonnement" className="mt-5 inline-flex items-center gap-2 text-[14px] font-semibold text-primary hover:underline">
             <Bitcoin className="h-4 w-4" /> Abonnement payable en cryptomonnaie
           </a>
+          <div className="mt-5"><BoutonInstaller label="Installer sur téléphone, PC ou iPhone" /></div>
         </div>
         <div>
           <p className="surtitre text-ink/45">Découvrir</p>

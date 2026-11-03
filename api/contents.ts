@@ -18,7 +18,7 @@ import { logActivite } from './_lib/activity.js';
 import { importerSiPremiereFois } from './_lib/exemples.js';
 import { COLONNES_LISTE, RELIGIONS, TYPES, proteger, valider, verifierType, type ContentRow, type TypeContenu } from './_lib/contenus.js';
 
-const LIBELLES: Record<TypeContenu, string> = { parole: 'Parole de Dieu', enseignement: 'Enseignement', document: 'Document', contenu: 'Contenu spirituel' };
+const LIBELLES: Record<TypeContenu, string> = { parole: 'Parole de Dieu', enseignement: 'Enseignement', document: 'Document', contenu: 'Contenu spirituel', programme: 'Programme', pack: 'Pack' };
 
 async function charger(id: string): Promise<ContentRow> {
   const { data, error } = await db().from('contents').select('*, pastors(prenom, nom, eglise)').eq('id', id).maybeSingle();

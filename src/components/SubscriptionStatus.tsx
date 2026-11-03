@@ -20,7 +20,7 @@ export function SubscriptionStatus({ a }: { a?: Abonnement }) {
           <div>
             <p className={`surtitre ${actif ? 'text-white/65' : 'text-ink/50'}`}>Mon abonnement</p>
             <p className={`mt-1 font-serif text-2xl ${actif ? 'text-white' : ''}`}>
-              {actif ? `Premium ${a?.type ? `· ${a.type}` : ''}` : LIBELLE[statut]}
+              {actif ? `Formule ${a?.type ?? 'Premium'}` : LIBELLE[statut]}
             </p>
             {actif ? (
               <p className="mt-1 flex items-center gap-1.5 text-[14px] text-white/80"><CalendarClock className="h-4 w-4" />

@@ -8,7 +8,7 @@ import { Modal } from './ui/Modal';
 import { Field } from './ui/Field';
 import { Button } from './ui/Button';
 import { Alert, type AlertMsg } from './ui/Alert';
-import { prixAffiche, type Tarif } from './Premium';
+import { enFcfa, prixAffiche, prixProduit, type Formule, type Tarif } from './Premium';
 
 type Etape = 'choix' | 'manuel' | 'envoye' | 'aucun';
 
@@ -34,7 +34,7 @@ function BoutonCopier({ texte }: { texte: string }) {
 }
 
 /** Fenêtre de paiement : automatique (NOWPayments) ou envoi direct validé par l'administration. */
-export default function PaiementModal({ tarif, onClose, document: doc }: { tarif: Tarif | null; onClose: () => void; document?: { id: string; title: string } }) {
+export default function PaiementModal({ tarif, onClose, document: doc, formule }: { tarif: Tarif | null; onClose: () => void; document?: { id: string; title: string; price?: number | null }; formule?: Formule }) {
   const auto = !!tarif?.auto;
   const manuel = tarif?.manuel.actif ? tarif.manuel.portefeuilles : [];
   const [etape, setEtape] = useState<Etape>(() => (auto ? 'choix' : manuel.length ? 'manuel' : 'aucun'));
@@ -43,8 +43,9 @@ export default function PaiementModal({ tarif, onClose, document: doc }: { tarif
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<AlertMsg | null>(null);
   const w = manuel.find((x) => x.id === wid) ?? manuel[0];
-  const prix = prixAffiche(doc ? (tarif ? { prix: tarif.prix_document ?? 0, devise: tarif.devise } : null) : tarif);
-  const cible = doc ? { content_id: doc.id } : {};
+  const montant = doc ? prixProduit(doc, tarif) : formule?.prix ?? tarif?.prix ?? 0;
+  const prix = tarif ? `${prixAffiche({ prix: montant, devise: tarif.devise })} ${enFcfa(montant, tarif) ? `(${enFcfa(montant, tarif)})` : ''}`.trim() : '';
+  const cible = doc ? { content_id: doc.id } : { formule: formule?.id ?? 'premium' };
 
   useEffect(() => { if (tarif && etape === 'aucun' && (auto || manuel.length)) setEtape(auto ? 'choix' : 'manuel'); }, [tarif]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -68,14 +69,14 @@ export default function PaiementModal({ tarif, onClose, document: doc }: { tarif
   }
 
   return (
-    <Modal open onClose={onClose} title={doc ? "Acheter ce document" : "Payer mon abonnement"} wide>
+    <Modal open onClose={onClose} title={doc ? "Acheter" : `Formule ${formule?.nom ?? "Premium"}`} wide>
       {!tarif ? (
         <div className="grid place-items-center py-12"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
       ) : etape === 'aucun' ? (
         <p className="py-6 text-center text-[15px] text-ink/70">Le paiement en ligne n’est pas encore ouvert. Revenez dans quelques jours ou contactez l’administration.</p>
       ) : etape === 'choix' ? (
         <div className="space-y-4">
-          <p className="text-[14.5px] text-ink/70">{doc ? <>Document « <strong className="text-ink">{doc.title}</strong> »</> : 'Abonnement Premium · 1 mois'}{prix ? <> · <strong className="text-ink">{prix}</strong></> : ''}. Choisissez comment payer :</p>
+          <p className="text-[14.5px] text-ink/70">{doc ? <>« <strong className="text-ink">{doc.title}</strong> »</> : <>Formule <strong className="text-ink">{formule?.nom ?? 'Premium'}</strong> · 1 mois</>}{prix ? <> · <strong className="text-ink">{prix}</strong></> : ''}. Choisissez comment payer :</p>
           <motion.button type="button" whileHover={{ y: -2 }} onClick={payerAuto} disabled={busy}
             className="flex w-full items-start gap-4 rounded-2xl bg-fond p-5 text-left ring-2 ring-primary/50 transition hover:ring-primary">
             <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-primary text-on-primary">{busy ? <Loader2 className="h-5 w-5 animate-spin" /> : <Zap className="h-5 w-5" />}</span>
@@ -130,7 +131,7 @@ export default function PaiementModal({ tarif, onClose, document: doc }: { tarif
           <motion.span initial={{ scale: 0.6 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 260, damping: 14 }}
             className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-[color-mix(in_oklab,var(--couleur-succes)_15%,var(--couleur-fond))] text-succes"><CheckCircle2 className="h-8 w-8" /></motion.span>
           <h3 className="mt-4 text-2xl">Merci !</h3>
-          <p className="mx-auto mt-2 max-w-md text-[14.5px] text-ink/70">{doc ? <>Votre paiement pour « {doc.title} » est enregistré. Le téléchargement s’ouvre sur cette page dès que l’administration l’a validé.</> : 'Votre paiement est enregistré. L’administration vérifie la transaction et active votre accès Premium dès validation. Vous pouvez suivre l’état dans « Mon abonnement ».'}</p>
+          <p className="mx-auto mt-2 max-w-md text-[14.5px] text-ink/70">{doc ? <>Votre paiement pour « {doc.title} » est enregistré. Le téléchargement s’ouvre sur cette page dès que l’administration l’a validé.</> : `Votre paiement est enregistré. L’administration vérifie la transaction et active votre formule ${formule?.nom ?? 'Premium'} dès validation. Vous pouvez suivre l’état dans « Mon abonnement ».`}</p>
           <Button className="mt-6" onClick={() => { onClose(); if (!doc) go('espace', 'abonnement'); }}>{doc ? 'Fermer' : 'Voir mon abonnement'}</Button>
         </div>
       )}

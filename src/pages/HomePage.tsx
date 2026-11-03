@@ -8,6 +8,7 @@ import { PublicFooter } from '@/components/public/PublicFooter';
 import { Img } from '@/components/Img';
 import { HeroSlides, Mosaique, Thematiques, Traditions } from '@/components/public/HomeExtras';
 import { BandeVersets, Compteurs, Lucioles, MotTournant } from '@/components/public/Dynamique';
+import { BandeauInstaller } from '@/components/Installer';
 import { ContentCard } from '@/components/ContentCard';
 import { CryptosAcceptees, PayButton } from '@/components/Premium';
 import { Reveal, SectionTitle } from '@/components/ui/Reveal';
@@ -146,7 +147,7 @@ export function HomePage({ ancre }: { ancre: string }) {
 
         {/* ====================== Gratuit / Premium ====================== */}
         <section id="offres" className="gutter mx-auto max-w-6xl scroll-mt-20 py-20 sm:py-28">
-          <SectionTitle centre surtitre="Gratuit & Premium" titre={<>Commencez librement, <em className="italic text-primary">allez plus loin</em></>}
+          <SectionTitle centre surtitre="Gratuit & formules" titre={<>Commencez librement, <em className="italic text-primary">allez plus loin</em></>}
             texte="Les fonctionnalités Premium sont signalées par une couronne ou un cadenas partout sur le site." />
           <div className="mt-12 grid gap-6 md:grid-cols-2">
             <Reveal className="rounded-[28px] bg-fond p-7 shadow-doux ring-1 ring-ligne sm:p-9">
@@ -264,8 +265,11 @@ export function HomePage({ ancre }: { ancre: string }) {
               );
             })}
           </ol>
-          <Reveal className="mt-12 flex flex-col items-center gap-5"><PayButton size="lg" /><CryptosAcceptees /></Reveal>
+          <Reveal className="mt-12 flex flex-col items-center gap-5"><a href={hrefOf('abonnement')} className="inline-flex h-13 items-center gap-2 rounded-xl bg-primary px-7 text-[15px] font-semibold text-on-primary shadow-doux">Voir les 3 formules <ArrowRight className="h-4 w-4" /></a><CryptosAcceptees /></Reveal>
         </div></section>
+
+        {/* ====================== Installer l'application ====================== */}
+        <section className="gutter mx-auto max-w-6xl py-14"><BandeauInstaller /></section>
 
         {/* ====================== Pasteurs ====================== */}
         {!!pasteurs.length && (

@@ -6,8 +6,10 @@
  *    puis enregistré « expire » en base (fonction expire_subscriptions()).
  */
 import { db, check } from './supabase.js';
+import { formuleDe } from './formules.js';
 
-export const TYPES_ABONNEMENT = ['Mensuel', 'Trimestriel', 'Semestriel', 'Annuel', 'Famille', 'Offert'] as const;
+/** Types proposés à l'administrateur : le type est aussi la formule (Essentiel, Premium, Premium Plus). */
+export const TYPES_ABONNEMENT = ['Essentiel', 'Premium', 'Premium Plus'] as const;
 export type StatutAbonnement = 'actif' | 'expire' | 'desactive' | 'aucun';
 
 export interface SubscriptionRow {
@@ -75,6 +77,8 @@ export function resume(a: SubscriptionRow | null) {
     statut,
     premium: statut === 'actif',
     type: a?.type ?? null,
+    formule: statut === 'actif' ? formuleDe(a?.type).id : null,
+    niveau: statut === 'actif' ? formuleDe(a?.type).niveau : 0,
     duree_mois: a?.duration_months ?? null,
     date_debut: a?.start_date ?? null,
     date_expiration: a?.end_date ?? null,

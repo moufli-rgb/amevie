@@ -258,17 +258,51 @@ create index if not exists contents_religion_idx on public.contents (religion, i
 -- Documents vendus à l'unité : accès « payant » (prix : variable PRIX_DOCUMENT, 10 USD par défaut).
 -- Un achat = un paiement crédité lié au document (payments.content_id). Il n'est pas inclus dans le Premium.
 -- ---------------------------------------------------------------------------
-alter table public.contents drop constraint if exists contents_access_check;
-alter table public.contents add constraint contents_access_check check (access in ('gratuit', 'premium', 'payant'));
 alter table public.payments add column if not exists content_id uuid references public.contents(id) on delete set null;
 create index if not exists payments_achats_idx on public.payments (user_id, content_id) where content_id is not null and credited;
--- Tous les documents deviennent payants à l'unité
-update public.contents set access = 'payant' where type = 'document' and access <> 'payant';
 
 -- Adresse de paiement manuel par défaut (modifiable : Administration → Paiements crypto → Mes adresses)
 insert into public.settings (key, value)
 values ('portefeuilles', '{"liste":[{"id":"w-usdt-trc20","label":"USDT · TRC20","adresse":"TQ99wYe8799nGyygkruytN74LodxoTv1gf","note":"Réseau TRON (TRC20) uniquement"}]}'::jsonb)
 on conflict (key) do nothing;
+
+-- ---------------------------------------------------------------------------
+-- Formules d'abonnement : Essentiel < Premium < Premium Plus
+--  (le nom de la formule est enregistré dans subscriptions.type ; prix réglés dans l'administration)
+-- Niveaux d'accès d'un contenu : gratuit | essentiel | premium | premium_plus | payant (vendu à l'unité)
+-- Types : parole | enseignement | document | contenu | programme (7, 14, 30, 40 jours…) | pack
+-- ---------------------------------------------------------------------------
+alter table public.contents drop constraint if exists contents_access_check;
+alter table public.contents add constraint contents_access_check check (access in ('gratuit', 'essentiel', 'premium', 'premium_plus', 'payant'));
+alter table public.contents drop constraint if exists contents_type_check;
+alter table public.contents add constraint contents_type_check check (type in ('parole', 'enseignement', 'document', 'contenu', 'programme', 'pack'));
+alter table public.contents add column if not exists price numeric(10,2) check (price is null or price > 0);
+alter table public.contents add column if not exists duree_jours integer check (duree_jours is null or duree_jours between 1 and 365);
+alter table public.payments add column if not exists formule text;
+
+-- Contenus d'exemple : programmes vendus à l'unité, documents compris dans les formules
+update public.contents set type = 'programme', access = 'payant', price = 6, duree_jours = 21
+  where file_name in ('guide-de-priere-21-jours.pdf', 'meditation-21-jours.pdf') and type = 'document';
+update public.contents set type = 'programme', access = 'payant', price = 8, duree_jours = 30
+  where file_name = 'ramadan-30-jours.pdf' and type = 'document';
+update public.contents set access = 'essentiel' where access in ('payant', 'gratuit') and type = 'document' and file_name in
+  ('plan-de-lecture-bible-1-an.pdf', 'premiers-pas-dans-la-foi.pdf', 'carnet-de-meditation.pdf', 'guide-priere-salat-debutants.pdf', 'carnet-de-gratitude.pdf', 'sagesses-du-monde-40-pensees.pdf');
+update public.contents set access = 'premium' where access = 'payant' and type = 'document' and file_name in
+  ('etude-biblique-beatitudes.pdf', '30-versets-a-memoriser.pdf', '99-noms-d-allah.pdf');
+
+-- ---------------------------------------------------------------------------
+-- notes : carnet personnel du membre (privé : visible par lui seul)
+-- ---------------------------------------------------------------------------
+create table if not exists public.notes (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid not null references public.users(id) on delete cascade,
+  titre       text not null check (char_length(titre) between 1 and 160),
+  texte       text not null default '' check (char_length(texte) <= 20000),
+  humeur      text,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now()
+);
+create index if not exists notes_user_idx on public.notes (user_id, created_at desc);
 
 -- ---------------------------------------------------------------------------
 -- Stockage des documents : bucket PRIVÉ (50 Mo max par fichier).
@@ -297,7 +331,7 @@ declare t text;
 begin
   foreach t in array array[
     'users', 'subscriptions', 'pastors', 'admin_users', 'contents',
-    'favorites', 'prayer_requests', 'activity_logs', 'login_attempts', 'site_visits', 'payments', 'settings'
+    'favorites', 'prayer_requests', 'activity_logs', 'login_attempts', 'site_visits', 'payments', 'settings', 'notes'
   ] loop
     execute format('alter table public.%I enable row level security', t);
     execute format('alter table public.%I force row level security', t);

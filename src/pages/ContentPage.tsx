@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { ArrowLeft, Bookmark, BookmarkCheck, Calendar, Download, Eye, FileText, Lock, PlayCircle } from 'lucide-react';
 import { PublicHeader } from '@/components/public/PublicHeader';
 import { PublicFooter } from '@/components/public/PublicFooter';
-import { GratuitBadge, PayButton, PayantBadge, Paywall, PremiumBadge } from '@/components/Premium';
+import { AccesBadge, PayButton, Paywall, enFcfa, prixProduit, useTarif } from '@/components/Premium';
 import { Button } from '@/components/ui/Button';
 import { Alert, type AlertMsg } from '@/components/ui/Alert';
 import { Skeleton } from '@/components/ui/Empty';
@@ -24,6 +24,7 @@ export function ContentPage({ id }: { id: string }) {
   useEffect(() => { window.scrollTo({ top: 0 }); }, [id]);
 
   const c = data?.content;
+  const tarif = useTarif();
 
   async function telecharger() {
     if (!c) return;
@@ -67,7 +68,7 @@ export function ContentPage({ id }: { id: string }) {
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-bold ${TYPE_COULEURS[c.type].soft} ${TYPE_COULEURS[c.type].text}`}><T.icon className="h-3.5 w-3.5" />{c.category ?? T.label}</span>
-              {c.access === 'premium' ? <PremiumBadge verrouille={c.locked} /> : c.access === 'payant' ? <PayantBadge achete={!c.locked} /> : <GratuitBadge />}
+              <AccesBadge c={c} />
               {c.religion && (
                 <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-bold ${RELIGIONS[c.religion].soft} ${RELIGIONS[c.religion].text}`}>
                   <span aria-hidden>{RELIGIONS[c.religion].symbole}</span>{RELIGIONS[c.religion].label}
@@ -99,18 +100,19 @@ export function ContentPage({ id }: { id: string }) {
                   <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center">
                     <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-primary text-on-primary"><FileText className="h-6 w-6" /></span>
                     <div className="min-w-0 flex-1">
-                      <p className="text-[17px] font-bold">Document vendu à l’unité</p>
-                      <p className="mt-1 text-[14px] text-ink/65">{c.file_name ? <>{c.file_name} · {tailleFichier(c.file_size)}. </> : ''}Payez une fois en cryptomonnaie et téléchargez-le autant de fois que vous voulez. Non inclus dans l’abonnement Premium.</p>
+                      <p className="text-[17px] font-bold">{c.type === 'programme' ? `Programme${c.duree_jours ? ` de ${c.duree_jours} jours` : ''} · vendu à l’unité` : c.type === 'pack' ? 'Pack vendu à l’unité' : 'Livre vendu à l’unité'}</p>
+                      <p className="mt-1 text-[14px] text-ink/65">{c.file_name ? <>{c.file_name} · {tailleFichier(c.file_size)}. </> : ''}Payez une fois en cryptomonnaie et gardez-le pour toujours. Programme à part : non compris dans les formules d’abonnement.</p>
+                      <p className="mt-2 font-serif text-3xl">{prixProduit(c, tarif).toLocaleString('fr-FR')} {(tarif?.devise ?? 'usd').toUpperCase()} <span className="font-sans text-[13px] text-ink/50">{enFcfa(prixProduit(c, tarif), tarif)}</span></p>
                     </div>
                   </div>
-                  <div className="relative mt-6 flex justify-center sm:justify-start"><PayButton size="lg" label="Acheter ce document" document={{ id: c.id, title: c.title }} /></div>
+                  <div className="relative mt-6 flex justify-center sm:justify-start"><PayButton size="lg" label="Acheter maintenant" document={{ id: c.id, title: c.title, price: c.price }} /></div>
                   {!user && <p className="relative mt-3 text-mini text-ink/55">Créez d’abord votre compte gratuit (1 minute), puis achetez le document.</p>}
                 </div>
               </div>
             ) : c.locked ? (
               <div className="mt-8">
                 {c.has_file && <p className="mb-4 flex items-center gap-2 text-[14px] text-ink/60"><FileText className="h-4 w-4" />Document joint : {c.file_name} {tailleFichier(c.file_size)}</p>}
-                <Paywall />
+                <Paywall acces={c.access} />
               </div>
             ) : (
               <div className="mt-8 space-y-8">

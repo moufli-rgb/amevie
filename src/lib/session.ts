@@ -9,6 +9,9 @@ export interface Abonnement {
   statut: 'actif' | 'expire' | 'desactive' | 'aucun';
   premium: boolean;
   type: string | null;
+  /** Formule active : essentiel | premium | premium_plus (null sans abonnement actif) */
+  formule?: 'essentiel' | 'premium' | 'premium_plus' | null;
+  niveau?: number;
   duree_mois: number | null;
   date_debut: string | null;
   date_expiration: string | null;

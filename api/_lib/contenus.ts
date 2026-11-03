@@ -1,10 +1,13 @@
 import { ApiError } from './errors.js';
+import { NIVEAU_ACCES } from './formules.js';
 import * as v from './validate.js';
 import type { Actor } from './auth.js';
 
-export const TYPES = ['parole', 'enseignement', 'document', 'contenu'] as const;
+export const TYPES = ['parole', 'enseignement', 'document', 'contenu', 'programme', 'pack'] as const;
+/** Niveaux d'accès d'un contenu (« payant » = vendu à l'unité). */
+export const ACCES = ['gratuit', 'essentiel', 'premium', 'premium_plus', 'payant'] as const;
 export type TypeContenu = (typeof TYPES)[number];
-export const CATEGORIES = ['Méditation', 'Prière', 'Louange', 'Témoignage', 'Exhortation', 'Étude biblique', 'Étude coranique', 'Sagesse', 'Pleine conscience', 'Famille', 'Jeunesse', 'Autre'] as const;
+export const CATEGORIES = ['Méditation', 'Prière', 'Doua', 'Rappel', 'Louange', 'Témoignage', 'Exhortation', 'Étude biblique', 'Étude coranique', 'Sagesse', 'Pleine conscience', 'Développement personnel', 'Gratitude', 'Motivation', 'Paix intérieure', 'Fête religieuse', 'Famille', 'Jeunesse', 'Autre'] as const;
 /** Religion / tradition de chaque publication (filtre de la bibliothèque). */
 export const RELIGIONS = ['chretien', 'musulman', 'universel'] as const;
 export type Religion = (typeof RELIGIONS)[number];
@@ -22,10 +25,10 @@ export const TAILLE_MAX = 50 * 1024 * 1024;
 
 /** Colonnes d'une liste (sans le texte complet). */
 export const COLONNES_LISTE =
-  'id, pastor_id, type, religion, category, title, description, bible_ref, access, is_published, views, file_name, file_type, file_size, file_url, video_url, created_at, updated_at, pastors(prenom, nom, eglise)';
+  'id, pastor_id, type, religion, category, title, description, bible_ref, access, price, duree_jours, is_published, views, file_name, file_type, file_size, file_url, video_url, created_at, updated_at, pastors(prenom, nom, eglise)';
 
 export interface ContentRow {
-  id: string; pastor_id: string; type: TypeContenu; title: string; access: 'gratuit' | 'premium' | 'payant'; is_published: boolean;
+  id: string; pastor_id: string; type: TypeContenu; title: string; access: (typeof ACCES)[number]; is_published: boolean;
   content?: string | null; video_url?: string | null; file_url?: string | null; [k: string]: unknown;
 }
 
@@ -36,7 +39,8 @@ export function peutVoir(actor: Actor | null, c: Pick<ContentRow, 'access' | 'id
   if (actor.role === 'admin' || actor.role === 'pasteur') return true;
   // Document vendu à l'unité : seulement s'il a été acheté (pas inclus dans le Premium)
   if (c.access === 'payant') return !!actor.achats?.has(c.id);
-  return !!actor.premium;
+  // Formules : Essentiel (1) < Premium (2) < Premium Plus (3) — un membre ne repaie pas ce qui est compris dans sa formule
+  return (actor.niveau ?? (actor.premium ? 2 : 0)) >= (NIVEAU_ACCES[c.access] ?? 2);
 }
 
 /**
@@ -49,7 +53,10 @@ export function proteger<T extends ContentRow>(actor: Actor | null, c: T) {
   const base = { ...rest, has_file: !!file_url, has_video: !!c.video_url };
   if (autorise) return { ...base, locked: false, ...(c.access === 'payant' ? { achete: true } : {}) };
   // Document payant : la présentation reste visible, seul le fichier est verrouillé
-  if (c.access === 'payant') return { ...base, locked: true, achete: false };
+  if (c.access === 'payant') {
+    // Livre / document : la présentation reste visible. Programme / pack : le texte est le produit, il est masqué.
+    return c.type === 'document' ? { ...base, locked: true, achete: false } : { ...base, content: null, video_url: null, locked: true, achete: false };
+  }
   return { ...base, content: null, video_url: null, locked: true };
 }
 
@@ -64,7 +71,17 @@ export function valider(b: Record<string, unknown>, opts: { partiel: boolean; ty
   if (has('bible_ref')) out.bible_ref = v.text(b.bible_ref, 'Référence', { max: 120 });
   if (has('category')) out.category = v.oneOf(b.category, 'Catégorie', CATEGORIES);
   if (has('religion')) out.religion = v.oneOf(b.religion ?? 'chretien', 'Religion', RELIGIONS, true);
-  if (has('access')) out.access = v.oneOf(b.access, 'Accès', ['gratuit', 'premium', 'payant'] as const, true);
+  if (has('access')) out.access = v.oneOf(b.access, 'Accès', ACCES, true);
+  if (has('price')) {
+    const n = b.price === null || b.price === '' || b.price === undefined ? null : Number(String(b.price).replace(',', '.'));
+    if (n !== null && !(n > 0 && n <= 10000)) throw new ApiError(400, 'Prix : indiquez un montant entre 0,01 et 10 000 (ou laissez vide pour le prix par défaut).');
+    out.price = n === null ? null : Math.round(n * 100) / 100;
+  }
+  if (has('duree_jours')) {
+    const d = b.duree_jours === null || b.duree_jours === '' || b.duree_jours === undefined ? null : Number(b.duree_jours);
+    if (d !== null && !(Number.isInteger(d) && d >= 1 && d <= 365)) throw new ApiError(400, 'Durée du programme : entre 1 et 365 jours.');
+    out.duree_jours = d;
+  }
   if (has('is_published')) out.is_published = b.is_published === undefined ? true : v.bool(b.is_published, 'Publication');
   if (has('video_url')) {
     const url = v.text(b.video_url, 'Lien vidéo', { max: 300 });
@@ -92,4 +109,5 @@ export function verifierType(type: TypeContenu, c: Record<string, unknown>) {
   if (type === 'document' && !c.file_url) throw new ApiError(400, 'Ajoutez le fichier du document.');
   if (type === 'enseignement' && !c.content && !c.video_url) throw new ApiError(400, 'Un enseignement doit contenir un texte ou un lien vidéo.');
   if (type === 'contenu' && !c.content) throw new ApiError(400, 'Le texte du contenu est obligatoire.');
+  if ((type === 'programme' || type === 'pack') && !c.content && !c.file_url) throw new ApiError(400, 'Ajoutez le texte du programme ou un fichier (PDF…).');
 }

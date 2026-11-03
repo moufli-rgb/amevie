@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { CheckCircle2, Crown, FileUp, Globe, Lock, Save, Send, ShoppingBag, Trash2, UploadCloud } from 'lucide-react';
+import { CheckCircle2, Crown, FileUp, Gem, Globe, Save, Send, ShoppingBag, Sparkles, Trash2, UploadCloud } from 'lucide-react';
 import { api } from '@/lib/api';
 import type { Role } from '@/lib/session';
-import { CATEGORIES, RELIGIONS, TYPES, tailleFichier, type Contenu, type Religion, type TypeContenu } from '@/lib/contenus';
+import { CATEGORIES, RELIGIONS, TYPES, tailleFichier, type Acces, type Contenu, type Religion, type TypeContenu } from '@/lib/contenus';
+
+const VENDU: TypeContenu[] = ['document', 'programme', 'pack'];
 import { Field, SelectField, TextArea } from '@/components/ui/Field';
 import { Button } from '@/components/ui/Button';
 import { Alert, type AlertMsg } from '@/components/ui/Alert';
@@ -55,7 +57,7 @@ export function ContentEditor({ role, contentId, initialType = 'parole', pastorI
   role: Role; contentId?: string; initialType?: TypeContenu; pastorId?: string; onDone: (c: Contenu, message: string) => void;
 }) {
   const [type, setType] = useState<TypeContenu>(initialType);
-  const [f, setF] = useState({ title: '', description: '', content: '', bible_ref: '', category: '', religion: 'chretien' as Religion, video_url: '', access: (initialType === 'document' ? 'payant' : 'gratuit') as 'gratuit' | 'premium' | 'payant', is_published: true });
+  const [f, setF] = useState({ title: '', description: '', content: '', bible_ref: '', category: '', religion: 'chretien' as Religion, video_url: '', access: (VENDU.includes(initialType) ? 'payant' : 'gratuit') as Acces, price: '', duree_jours: '', is_published: true });
   const [fichier, setFichier] = useState<Fichier | null>(null);
   const [aFichierExistant, setAFichierExistant] = useState(false);
   const [progress, setProgress] = useState<number | null>(null);
@@ -73,7 +75,7 @@ export function ContentEditor({ role, contentId, initialType = 'parole', pastorI
       setOwner(c.pastor_id);
       setF({
         title: c.title, description: c.description ?? '', content: c.content ?? '', bible_ref: c.bible_ref ?? '', category: c.category ?? '', religion: c.religion ?? 'chretien',
-        video_url: c.video_url ?? '', access: c.access, is_published: c.is_published,
+        video_url: c.video_url ?? '', access: c.access, price: c.price != null ? String(c.price) : '', duree_jours: c.duree_jours != null ? String(c.duree_jours) : '', is_published: c.is_published,
       });
       setAFichierExistant(c.has_file);
       if (c.has_file) setFichier({ file_url: '', file_name: c.file_name ?? 'Fichier', file_type: c.file_type ?? '', file_size: c.file_size ?? 0 });
@@ -108,6 +110,7 @@ export function ContentEditor({ role, contentId, initialType = 'parole', pastorI
     const body: Record<string, unknown> = {
       title: f.title, description: f.description || null, content: f.content || null, bible_ref: f.bible_ref || null,
       category: f.category || null, religion: f.religion, video_url: f.video_url || null, access: f.access, is_published: publier,
+      price: f.access === 'payant' && f.price.trim() ? f.price.trim() : null, duree_jours: type === 'programme' && f.duree_jours.trim() ? Number(f.duree_jours) : null,
     };
     // Fichier : nouveau → envoyé ; retiré → null ; inchangé → non envoyé
     if (fichier?.file_url) Object.assign(body, fichier);
@@ -137,7 +140,7 @@ export function ContentEditor({ role, contentId, initialType = 'parole', pastorI
             {(Object.keys(TYPES) as TypeContenu[]).map((t) => {
               const T = TYPES[t]; const on = t === type;
               return (
-                <motion.button type="button" key={t} onClick={() => { setType(t); if (!contentId) setF((s) => ({ ...s, access: t === 'document' ? 'payant' : s.access === 'payant' ? 'gratuit' : s.access })); }} whileTap={{ scale: 0.97 }}
+                <motion.button type="button" key={t} onClick={() => { setType(t); if (!contentId) setF((s) => ({ ...s, access: VENDU.includes(t) ? 'payant' : s.access === 'payant' ? 'gratuit' : s.access })); }} whileTap={{ scale: 0.97 }}
                   className={`relative rounded-2xl p-4 text-left transition ${on ? 'bg-primary text-on-primary shadow-doux' : 'bg-fond ring-1 ring-ligne hover:ring-primary/40'}`}>
                   <T.icon className="h-5 w-5" />
                   <p className="mt-3 text-[14px] font-bold">{T.label}</p>
@@ -218,15 +221,22 @@ export function ContentEditor({ role, contentId, initialType = 'parole', pastorI
       <div className="space-y-4 lg:sticky lg:top-6 lg:self-start">
         <Card title="Accès">
           <div className="grid grid-cols-2 gap-2">
-            {([['gratuit', 'Gratuit', Globe, 'Visible par tous'], ['premium', 'Premium', Crown, 'Abonnés uniquement'], ['payant', 'Payant', ShoppingBag, 'Vendu à l’unité']] as const).map(([v, l, I, d]) => (
+            {([['gratuit', 'Gratuit', Globe, 'Visible par tous'], ['essentiel', 'Essentiel', Sparkles, 'Dès la formule Essentiel'], ['premium', 'Premium', Crown, 'Dès la formule Premium'],
+               ['premium_plus', 'Premium Plus', Gem, 'Formule Premium Plus'], ['payant', 'À l’unité', ShoppingBag, 'Acheté séparément']] as const).map(([v, l, I, d]) => (
               <button type="button" key={v} onClick={() => setF((s) => ({ ...s, access: v }))}
                 className={`rounded-2xl p-3 text-left transition ${f.access === v ? 'bg-primary text-on-primary' : 'bg-surface hover:bg-ligne/60'}`}>
                 <I className="h-4 w-4" /><p className="mt-2 text-[14px] font-bold">{l}</p><p className="text-mini opacity-75">{d}</p>
               </button>
             ))}
           </div>
-          {f.access === 'payant' && <p className="mt-3 flex items-center gap-1.5 text-mini text-ink/60"><ShoppingBag className="h-3.5 w-3.5" /> Chacun l’achète à l’unité (prix fixé dans Vercel : PRIX_DOCUMENT, 10 USD par défaut). Non inclus dans le Premium.</p>}
-          {f.access === 'premium' && <p className="mt-3 flex items-center gap-1.5 text-mini text-ink/60"><Lock className="h-3.5 w-3.5" /> Texte, vidéo et fichier réservés aux abonnés (contrôle serveur).</p>}
+          {f.access === 'payant' && (
+            <div className="mt-4 space-y-3">
+              <Field label="Prix (USD)" inputMode="decimal" value={f.price} onChange={set('price')} placeholder="Vide = prix par défaut"
+                hint="Vendu à part : non compris dans les formules. Le prix par défaut se règle dans Paiements → Formules & prix." />
+              {type === 'programme' && <Field label="Durée du programme (jours)" inputMode="numeric" value={f.duree_jours} onChange={set('duree_jours')} placeholder="7, 14, 30, 40…" />}
+            </div>
+          )}
+          {['essentiel', 'premium', 'premium_plus'].includes(f.access) && <p className="mt-3 flex items-center gap-1.5 text-mini text-ink/60"><Crown className="h-3.5 w-3.5" /> Compris dans la formule choisie et les formules supérieures : les abonnés ne repaient pas.</p>}
         </Card>
         <Card>
           <div className="space-y-3">

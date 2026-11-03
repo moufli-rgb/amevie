@@ -18,6 +18,7 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { db, check } from './supabase.js';
 import { ApiError } from './errors.js';
 import { abonnementCourant, ajouterMois, statutReel, type SubscriptionRow } from './abonnement.js';
+import { formuleDe } from './formules.js';
 
 export function configPaiement() {
   const lire = (n: string) => (process.env[n] ?? '').trim();
@@ -101,10 +102,13 @@ export function statutPaiement(s: string): string {
  * Active ou prolonge l'abonnement après un paiement confirmé.
  * Abonnement en cours → prolongé à partir de sa date de fin ; sinon nouvel abonnement d'un mois.
  */
-export async function crediterAbonnement(userId: string, mois: number): Promise<SubscriptionRow> {
+export async function crediterAbonnement(userId: string, mois: number, formule = 'Premium'): Promise<SubscriptionRow> {
   const now = new Date();
   const courant = await abonnementCourant(userId);
-  if (courant && statutReel(courant) === 'actif') {
+  // Même formule encore active → prolongée à la suite ; autre formule → la nouvelle commence aujourd'hui
+  if (courant && statutReel(courant) === 'actif' && formuleDe(courant.type).id !== formuleDe(formule).id) {
+    await db().from('subscriptions').update({ status: 'desactive', note: `Remplacé par la formule ${formule}`, updated_at: now.toISOString() }).eq('id', courant.id);
+  } else if (courant && statutReel(courant) === 'actif') {
     const base = Math.max(Date.parse(courant.end_date), now.getTime());
     const { data, error } = await db().from('subscriptions').update({
       end_date: ajouterMois(new Date(base), mois).toISOString(),
@@ -115,7 +119,7 @@ export async function crediterAbonnement(userId: string, mois: number): Promise<
     return data as SubscriptionRow;
   }
   const { data, error } = await db().from('subscriptions').insert({
-    user_id: userId, type: 'Mensuel', duration_months: mois, start_date: now.toISOString(),
+    user_id: userId, type: formule, duration_months: mois, start_date: now.toISOString(),
     end_date: ajouterMois(now, mois).toISOString(), status: 'actif', note: 'Payé en cryptomonnaie', activated_by: 'Paiement crypto',
   }).select('*').single();
   check(error, 'subscriptions');
