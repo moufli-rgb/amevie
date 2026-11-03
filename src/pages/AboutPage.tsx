@@ -24,7 +24,7 @@ export function AboutPage() {
       <main>
         <section className="relative overflow-hidden bg-nuit pb-20 pt-32 text-white sm:pb-28 sm:pt-40">
           <motion.div className="absolute inset-0 opacity-60" initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 2 }}>
-            <Img name="croix_colline" className="h-full w-full" decorative priority />
+            <Img name="af_savane_aube" className="h-full w-full" decorative priority />
           </motion.div>
           <div className="absolute inset-0 bg-gradient-to-t from-nuit via-nuit/70 to-nuit/40" />
           <div className="gutter relative mx-auto max-w-4xl text-center">
@@ -51,8 +51,8 @@ export function AboutPage() {
             </Reveal>
           </div>
           <Reveal delay={0.1} className="relative pb-10 pr-10">
-            <Img name="community_fellowship" className="aspect-[4/3] rounded-[28px] shadow-haut" sizes="(min-width:768px) 50vw, 100vw" />
-            <Img name="louange" className="absolute bottom-0 right-0 aspect-square w-[42%] rounded-3xl shadow-haut ring-8 ring-fond" sizes="(min-width:768px) 22vw, 45vw" />
+            <Img name="af_famille_herbe" className="aspect-[4/3] rounded-[28px] shadow-haut" sizes="(min-width:768px) 50vw, 100vw" />
+            <Img name="af_louange" className="absolute bottom-0 right-0 aspect-square w-[42%] rounded-3xl shadow-haut ring-8 ring-fond" sizes="(min-width:768px) 22vw, 45vw" />
             <span className="absolute -left-3 top-6 rotate-[-6deg] rounded-2xl bg-accent px-4 py-2 font-script text-2xl text-secondary shadow-doux">Une seule famille</span>
           </Reveal>
         </section>
@@ -77,7 +77,7 @@ export function AboutPage() {
           <div className="mt-12 grid gap-5 md:grid-cols-3">
             {[
               { icon: Compass, titre: 'Visiteurs', texte: 'Lisent, téléchargent, demandent une prière. Premium pour tout débloquer.', href: hrefOf('inscription'), cta: 'Créer un compte' },
-              { icon: BookOpen, titre: 'Pasteurs', texte: 'Publient Paroles, enseignements et documents depuis leur espace.', href: hrefOf('pasteur'), cta: 'Espace guide spirituel' },
+              { icon: BookOpen, titre: 'Guides spirituels', texte: 'Publient Paroles, enseignements et documents pour la communauté.', href: '', cta: '' },
               { icon: HandHeart, titre: 'Administration', texte: 'Valide les guides spirituels, gère les abonnements et veille sur la plateforme.', href: '', cta: '' },
             ].map((e, i) => (
               <Reveal key={e.titre} delay={i * 0.1} className="flex flex-col rounded-3xl bg-fond p-7 shadow-doux ring-1 ring-ligne">

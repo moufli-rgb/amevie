@@ -28,7 +28,7 @@ export function LoginPage() {
   }
 
   return (
-    <AuthLayout photo="daily_prayer_verse" surtitre="Bon retour" titre="Connexion" texte="Accédez à votre espace, à vos favoris et à votre abonnement."
+    <AuthLayout photo="af_priere_femme" surtitre="Bon retour" titre="Connexion" texte="Accédez à votre espace, à vos favoris et à votre abonnement."
       msg={msg} loading={loading} submitLabel="Se connecter" onSubmit={submit}
       footer={<>Pas encore de compte ? <a className="font-semibold text-primary" href={hrefOf('inscription')}>Créer un compte</a> · Vous êtes pasteur ? <a className="font-semibold text-primary" href={hrefOf('pasteur')}>Espace guide spirituel</a></>}>
       <Field label="Email" icon={<Mail className="h-4 w-4" />} type="email" autoComplete="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} maxLength={160} />
@@ -62,7 +62,7 @@ export function RegisterPage() {
   }
 
   return (
-    <AuthLayout photo="community_fellowship" surtitre="Bienvenue" titre="Créer mon compte" texte="Gratuit et sans engagement. Vous pourrez passer Premium à tout moment."
+    <AuthLayout photo="af_famille_joie" surtitre="Bienvenue" titre="Créer mon compte" texte="Gratuit et sans engagement. Vous pourrez passer Premium à tout moment."
       msg={msg} loading={loading} submitLabel="Créer mon compte" onSubmit={submit}
       footer={<>Déjà inscrit ? <a className="font-semibold text-primary" href={hrefOf('connexion')}>Se connecter</a></>}>
       <div className="grid grid-cols-2 gap-3">

@@ -72,6 +72,110 @@
     },
     "universel_mandala": {
       "alt": "Un mandala lumineux sur fond indigo"
+    },
+    "af_priere_femme": {
+      "alt": "Une jeune femme africaine en prière près d’une fenêtre",
+      "unsplash": "photo-1740761027004-d607726d6636"
+    },
+    "af_priere_mains": {
+      "alt": "Une femme africaine en prière, les mains jointes",
+      "unsplash": "photo-1709026437503-c3a96f621119"
+    },
+    "af_eglise_femmes": {
+      "alt": "Des femmes africaines en tenue de fête à l’église",
+      "unsplash": "photo-1725245997915-f9ef3912267f"
+    },
+    "af_louange": {
+      "alt": "Une femme africaine en louange au milieu de l’assemblée",
+      "unsplash": "photo-1725245943265-87f48e6c3ce3"
+    },
+    "af_homme_priere": {
+      "alt": "Un homme africain en prière, les mains jointes",
+      "unsplash": "photo-1605602517387-ec78b947335e"
+    },
+    "af_homme_fleurs": {
+      "alt": "Un homme africain en prière au milieu des fleurs",
+      "unsplash": "photo-1659774752492-e92fa95172e5"
+    },
+    "af_chorale": {
+      "alt": "Un choriste africain chante pendant le culte",
+      "unsplash": "photo-1583114448050-908e044efb3e"
+    },
+    "af_eglise_bleue": {
+      "alt": "Une petite église bleue surmontée d’une croix",
+      "unsplash": "photo-1560253226-26f367c49ae2"
+    },
+    "af_danse": {
+      "alt": "Une fillette danse pendant une célébration",
+      "unsplash": "photo-1507427254987-7be33d0321d3"
+    },
+    "af_musulmans": {
+      "alt": "Femmes et enfants en tenue traditionnelle réunis en plein air",
+      "unsplash": "photo-1780847614752-4b7c4d7f6c9d"
+    },
+    "af_femme_voile": {
+      "alt": "Une femme africaine voilée, souriante",
+      "unsplash": "photo-1721713809682-38f6935d5a48"
+    },
+    "af_mosquee": {
+      "alt": "Le minaret d’une grande mosquée au crépuscule",
+      "unsplash": "photo-1726404165637-5eeee9a50109"
+    },
+    "af_mosquee_aube": {
+      "alt": "Un minaret dans la lumière du matin",
+      "unsplash": "photo-1675165308845-ede5cfd9c121"
+    },
+    "af_coupole": {
+      "alt": "La coupole verte d’une mosquée",
+      "unsplash": "photo-1681395526498-f87c88509cba"
+    },
+    "af_famille_jeu": {
+      "alt": "Une famille africaine réunie autour d’un jeu",
+      "unsplash": "photo-1577896849786-738ed6c78bd3"
+    },
+    "af_famille_herbe": {
+      "alt": "Une famille africaine assise dans l’herbe",
+      "unsplash": "photo-1628517290972-74a92219db50"
+    },
+    "af_famille_joie": {
+      "alt": "Une famille africaine dans la joie, un enfant sur les épaules",
+      "unsplash": "photo-1643818657367-491080baeece"
+    },
+    "af_savane_aube": {
+      "alt": "Un acacia dans la savane à l’aube",
+      "unsplash": "photo-1547471080-7cc2caa01a7e"
+    },
+    "af_savane_or": {
+      "alt": "La savane africaine dans une lumière dorée",
+      "unsplash": "photo-1489493887464-892be6d1daae"
+    },
+    "af_soleil_arbre": {
+      "alt": "Le soleil se lève derrière un acacia",
+      "unsplash": "photo-1655981650217-c091cd205970"
+    },
+    "af_ancienne": {
+      "alt": "Une femme âgée africaine dans un moment de recueillement",
+      "unsplash": "photo-1678225894160-9773315a6f44"
+    },
+    "af_bible": {
+      "alt": "Une personne tient sa Bible",
+      "unsplash": "photo-1661860859738-64ebcd33320f"
+    },
+    "af_sourire_foulard": {
+      "alt": "Une jeune femme africaine souriante, un foulard sur la tête",
+      "unsplash": "photo-1743871698163-a2e470d8eac7"
+    },
+    "af_hijab_groupe": {
+      "alt": "Des femmes souriantes en hijab réunies",
+      "unsplash": "photo-1779950658150-ad09947dd6c2"
+    },
+    "af_meditation": {
+      "alt": "Une femme africaine, les yeux fermés, dans la nature",
+      "unsplash": "photo-1511945863317-d60e146e9016"
+    },
+    "af_meditation_maison": {
+      "alt": "Une femme assise en méditation chez elle",
+      "unsplash": "photo-1731461298531-9568f2351862"
     }
   }
 }

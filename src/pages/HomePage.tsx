@@ -1,23 +1,21 @@
 import { useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
-import {
-  ArrowRight, BadgeCheck, BookOpen, Check, Crown, Download, HandHeart, Lock, Bitcoin, Sparkles, UserPlus, Wallet,
-} from 'lucide-react';
+import { ArrowRight, BookOpen, Crown, Gem, HandHeart, Heart, Sparkles } from 'lucide-react';
 import { PublicHeader } from '@/components/public/PublicHeader';
 import { PublicFooter } from '@/components/public/PublicFooter';
 import { Img } from '@/components/Img';
-import { HeroSlides, Mosaique, Thematiques, Traditions } from '@/components/public/HomeExtras';
-import { BandeVersets, Compteurs, Lucioles, MotTournant } from '@/components/public/Dynamique';
-import { BandeauInstaller } from '@/components/Installer';
+import { HeroSlides, Traditions } from '@/components/public/HomeExtras';
+import { BandeVersets, Lucioles, MotTournant } from '@/components/public/Dynamique';
+import { BoutonInstaller } from '@/components/Installer';
 import { ContentCard } from '@/components/ContentCard';
-import { CryptosAcceptees, PayButton } from '@/components/Premium';
+import { useTarif } from '@/components/Premium';
 import { Reveal, SectionTitle } from '@/components/ui/Reveal';
 import { Skeleton } from '@/components/ui/Empty';
 import { useData } from '@/dashboard/useData';
 import { SITE } from '@/config/site';
 import { hrefOf } from '@/lib/router';
 import { useVisitor } from '@/lib/visitor';
-import { TYPES, type Contenu } from '@/lib/contenus';
+import { type Contenu } from '@/lib/contenus';
 
 interface Accueil {
   parole: { id: string; title: string; content: string; bible_ref: string; pastors: { prenom: string; nom: string } | null } | null;
@@ -26,32 +24,11 @@ interface Accueil {
   total: number;
   total_documents?: number;
 }
-interface PasteurPublic { id: string; prenom: string; nom: string; eglise: string | null; publications: number }
-
-const GRATUIT = [
-  'La Parole du jour et les Paroles de Dieu gratuites',
-  'Les enseignements et contenus marqués « Gratuit »',
-  'Les documents gratuits à télécharger',
-  'Vos demandes de prière, lues par les guides spirituels',
-];
-const PREMIUM = [
-  'Tous les enseignements et contenus Premium',
-  'Messages et méditations Premium de toutes les traditions',
-  'Ma bibliothèque : vos favoris toujours sous la main',
-  'Les nouveautés Premium dès leur publication',
-];
-
-const ETAPES = [
-  { icon: UserPlus, titre: 'Créez votre compte', texte: 'Gratuit, en une minute.' },
-  { icon: Bitcoin, titre: 'Choisissez votre crypto', texte: 'Bitcoin, USDT, Ethereum… celle que vous voulez.' },
-  { icon: Wallet, titre: 'Payez en quelques clics', texte: 'Page de paiement sécurisée, montant calculé pour vous.' },
-  { icon: BadgeCheck, titre: 'Accès activé tout seul', texte: `Premium pendant ${SITE.dureeAbonnement}, sans attendre.` },
-];
 
 export function HomePage({ ancre }: { ancre: string }) {
   const { user } = useVisitor();
   const { data, loading } = useData<Accueil>(`contents?scope=accueil&u=${user?.id ?? ''}`, 'visiteur');
-  const pasteurs = useData<{ pastors: PasteurPublic[] }>('pastors?scope=public', 'visiteur').data?.pastors ?? [];
+  const tarif = useTarif();
   const hero = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: hero, offset: ['start start', 'end start'] });
   const y = useTransform(scrollYProgress, [0, 1], ['0%', '25%']);
@@ -94,7 +71,7 @@ export function HomePage({ ancre }: { ancre: string }) {
             </h1>
             <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}
               className="mt-5 max-w-xl text-[16px] text-white/80 sm:text-lg paysage:mt-3 paysage:text-sm">
-              {SITE.description} Commencez gratuitement, passez Premium quand vous le souhaitez.
+              Prières, Paroles et enseignements chrétiens, musulmans et universels. Gratuit pour commencer.
             </motion.p>
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1 }}
               className="mt-4 flex flex-wrap items-baseline gap-x-2 font-serif text-[clamp(1.25rem,2.6vw,1.75rem)] text-white/90 paysage:hidden">
@@ -124,7 +101,7 @@ export function HomePage({ ancre }: { ancre: string }) {
             <div aria-hidden className="absolute -right-10 -top-10 font-serif text-[12rem] leading-none text-accent/15">“</div>
             <p className="surtitre text-accent">Parole du jour</p>
             <blockquote className="relative mt-3 font-serif text-[clamp(1.35rem,3vw,2rem)] italic leading-snug text-ink">
-              « {parole?.content?.slice(0, 320) ?? SITE.versetSecours.texte} »
+              « {(parole?.content ? (parole.content.length > 240 ? `${parole.content.slice(0, 240).replace(/\s+\S*$/, '')}…` : parole.content) : SITE.versetSecours.texte).replace(/^[\s«“"]+|[\s»”"]+$/g, '')} »
             </blockquote>
             <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
               <p className="text-[14px] font-bold tracking-wide text-primary">
@@ -136,178 +113,69 @@ export function HomePage({ ancre }: { ancre: string }) {
           </Reveal>
         </section>
 
-        {/* ====================== Thématiques illustrées ====================== */}
-        <Compteurs contenus={data?.total ?? 0} documents={data?.total_documents ?? 0} guides={pasteurs.length || 1} />
-
         <Traditions />
-
-        <Thematiques />
 
         <BandeVersets />
 
-        {/* ====================== Gratuit / Premium ====================== */}
-        <section id="offres" className="gutter mx-auto max-w-6xl scroll-mt-20 py-20 sm:py-28">
-          <SectionTitle centre surtitre="Gratuit & formules" titre={<>Commencez librement, <em className="italic text-primary">allez plus loin</em></>}
-            texte="Les fonctionnalités Premium sont signalées par une couronne ou un cadenas partout sur le site." />
-          <div className="mt-12 grid gap-6 md:grid-cols-2">
-            <Reveal className="rounded-[28px] bg-fond p-7 shadow-doux ring-1 ring-ligne sm:p-9">
-              <div className="flex items-center justify-between">
-                <h3 className="text-2xl">Gratuit</h3>
-                <span className="rounded-full bg-surface px-3 py-1 text-[12px] font-bold text-ink/70">0 FCFA</span>
-              </div>
-              <p className="mt-2 text-[14.5px] text-ink/60">Avec un simple compte.</p>
-              <ul className="mt-6 space-y-3">
-                {GRATUIT.map((t) => (
-                  <li key={t} className="flex gap-3 text-[14.5px]"><span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-primary/10 text-primary"><Check className="h-3 w-3" strokeWidth={3} /></span>{t}</li>
-                ))}
-              </ul>
-              {!user && <a href={hrefOf('inscription')} className="mt-8 inline-flex h-11 items-center rounded-xl px-5 text-sm font-semibold ring-1 ring-ligne hover:bg-surface">Créer mon compte</a>}
-            </Reveal>
-            <Reveal delay={0.1} className="relative overflow-hidden rounded-[28px] bg-secondary p-7 text-white shadow-haut sm:p-9">
-              <div aria-hidden className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-accent/30 blur-3xl" />
-              <div className="relative flex items-center justify-between">
-                <h3 className="flex items-center gap-2 text-2xl text-white"><Crown className="h-6 w-6 text-accent" /> Premium</h3>
-                <span className="rounded-full bg-accent px-3 py-1 text-[12px] font-bold text-ink">{SITE.dureeAbonnement}</span>
-              </div>
-              <p className="relative mt-2 text-[14.5px] text-white/70">Tout le Gratuit, plus :</p>
-              <ul className="relative mt-6 space-y-3">
-                {PREMIUM.map((t) => (
-                  <li key={t} className="flex gap-3 text-[14.5px] text-white/90"><span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-accent text-ink"><Lock className="h-3 w-3" /></span>{t}</li>
-                ))}
-              </ul>
-              <div className="relative mt-8 flex flex-wrap items-center gap-3">
-                <PayButton />
-                <a href={hrefOf('abonnement')} className="text-[13.5px] font-semibold text-white/80 underline-offset-4 hover:underline">Comment ça marche ?</a>
-              </div>
-            </Reveal>
+        {/* ====================== Formules (aperçu) ====================== */}
+        <section id="offres" className="gutter mx-auto max-w-6xl scroll-mt-20 py-20 sm:py-24">
+          <SectionTitle centre surtitre="Formules" titre={<>Commencez à <em className="italic text-primary">0 $</em>, allez plus loin quand vous voulez</>} />
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+            {[
+              { id: 'gratuit', nom: 'Gratuit', prix: 0, icone: Heart },
+              ...((tarif?.formules ?? []).map((f) => ({ id: f.id, nom: f.nom, prix: f.prix, icone: f.id === 'essentiel' ? Sparkles : f.id === 'premium' ? Crown : Gem }))),
+            ].map((f, i) => {
+              const vedette = f.id === 'premium';
+              const I = f.icone;
+              return (
+                <motion.a key={f.id} href={f.id === 'gratuit' && !user ? hrefOf('inscription') : hrefOf('abonnement')}
+                  initial={{ opacity: 0, y: 24, scale: 0.96 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true }}
+                  transition={{ delay: i * 0.09, duration: 0.55, ease: [0.22, 1, 0.36, 1] }} whileHover={{ y: -6 }}
+                  className={`group relative overflow-hidden rounded-[24px] p-5 shadow-doux sm:p-6 ${vedette ? 'bg-secondary text-white ring-2 ring-accent' : 'bg-fond ring-1 ring-ligne'}`}>
+                  {vedette && <span className="absolute right-3 top-3 rounded-full bg-accent px-2 py-0.5 text-[11px] font-bold text-ink">Populaire</span>}
+                  <span className={`grid h-10 w-10 place-items-center rounded-xl ${vedette ? 'bg-accent text-ink' : 'bg-primary/10 text-primary'}`}><I className="h-[18px] w-[18px]" /></span>
+                  <p className={`mt-4 text-[15px] font-bold ${vedette ? 'text-white' : ''}`}>{f.nom}</p>
+                  <p className="mt-1 font-serif text-4xl leading-none">{f.prix} <span className="text-xl">$</span><span className={`ml-1 font-sans text-[12px] ${vedette ? 'text-white/60' : 'text-ink/50'}`}>{f.prix ? '/ mois' : ''}</span></p>
+                  <span className={`mt-4 inline-flex items-center gap-1 text-[13px] font-semibold ${vedette ? 'text-accent' : 'text-primary'}`}>{f.prix ? 'Choisir' : user ? 'Inclus' : 'Commencer'} <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /></span>
+                </motion.a>
+              );
+            })}
           </div>
+          <Reveal className="mt-6 text-center"><a href={hrefOf('abonnement')} className="text-[14px] font-semibold text-primary hover:underline">Comparer les formules en détail →</a></Reveal>
         </section>
 
         {/* ====================== Derniers contenus ====================== */}
-        <section className="bg-surface/70 py-20 sm:py-28">
+        <section className="bg-surface/70 py-20 sm:py-24">
           <div className="gutter mx-auto max-w-7xl">
             <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
-              <SectionTitle surtitre="Bibliothèque" titre="Publié récemment par nos guides spirituels" />
-              <Reveal><a href={hrefOf('bibliotheque')} className="inline-flex items-center gap-2 text-[14px] font-semibold text-primary hover:underline">Tout voir <ArrowRight className="h-4 w-4" /></a></Reveal>
+              <SectionTitle surtitre="Nouveautés" titre="Publié récemment" />
+              <Reveal><a href={hrefOf('bibliotheque')} className="inline-flex items-center gap-2 text-[14px] font-semibold text-primary hover:underline">Toute la bibliothèque <ArrowRight className="h-4 w-4" /></a></Reveal>
             </div>
             <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {loading && !data ? [0, 1, 2].map((i) => <Skeleton key={i} className="h-56" />) :
-                data?.derniers.length ? data.derniers.map((c, i) => <ContentCard key={c.id} c={c} i={i} />) : (
+                data?.derniers.length ? data.derniers.slice(0, 3).map((c, i) => <ContentCard key={c.id} c={c} i={i} />) : (
                   <p className="col-span-full rounded-3xl border border-dashed border-ligne p-10 text-center text-ink/55">Les premiers contenus arrivent bientôt.</p>
                 )}
             </div>
-            <div className="mt-10 flex flex-wrap justify-center gap-2">
-              {(Object.keys(TYPES) as (keyof typeof TYPES)[]).map((t) => {
-                const I = TYPES[t].icon;
-                return (
-                  <a key={t} href={hrefOf('bibliotheque', t)} className="inline-flex items-center gap-2 rounded-full bg-fond px-4 py-2 text-[13px] font-semibold ring-1 ring-ligne transition hover:ring-primary/40">
-                    <I className="h-4 w-4 text-primary" /> {TYPES[t].pluriel}
-                  </a>
-                );
-              })}
-            </div>
           </div>
         </section>
 
-        {/* ====================== Documents ====================== */}
-        {!!data?.documents.length && (
-          <section className="gutter mx-auto max-w-6xl pt-20 sm:pt-28">
-            <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
-              <SectionTitle surtitre="Documents" titre="À lire, à écouter, à garder" texte="Livrets, études, audios : téléchargez les documents partagés par les guides spirituels." />
-              <Reveal><a href={hrefOf('bibliotheque', 'document')} className="inline-flex items-center gap-2 text-[14px] font-semibold text-primary hover:underline">Tous les documents <ArrowRight className="h-4 w-4" /></a></Reveal>
-            </div>
-            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {data.documents.map((c, i) => <ContentCard key={c.id} c={c} i={i} />)}
-            </div>
-          </section>
-        )}
-
-        {/* ====================== Espace guide spirituel ====================== */}
-        <section className="gutter mx-auto max-w-6xl py-20 sm:py-28">
-          <div className="grid items-center gap-10 md:grid-cols-2 md:gap-16">
-            <Reveal className="relative">
-              <Img name="spiritual_bible_study" className="aspect-[4/3] rounded-[28px] shadow-haut" sizes="(min-width:768px) 50vw, 100vw" />
-              <div className="absolute -bottom-5 right-5 rounded-2xl bg-fond px-5 py-3 shadow-haut ring-1 ring-ligne">
-                <p className="font-script text-2xl leading-none text-primary">Partager la Parole</p>
-              </div>
-            </Reveal>
-            <div>
-              <SectionTitle surtitre="Espace guide spirituel" titre="Un espace simple pour publier" texte="Les guides spirituels disposent de leur propre tableau de bord pour nourrir la communauté." />
-              <ul className="mt-6 space-y-3">
-                {['Publier une Parole de Dieu en quelques secondes', 'Partager enseignements, méditations et prières', 'Ajouter des documents (PDF, audio, présentations…)', 'Choisir pour chaque publication : Gratuit ou Premium'].map((t) => (
-                  <li key={t} className="flex gap-3 text-[14.5px]"><span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-primary/10 text-primary"><Check className="h-3 w-3" strokeWidth={3} /></span>{t}</li>
-                ))}
-              </ul>
-              <a href={hrefOf('pasteur')} className="mt-8 inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-semibold ring-1 ring-ligne hover:bg-surface">
-                Accéder à l’espace guide spirituel <ArrowRight className="h-4 w-4" />
-              </a>
-            </div>
-          </div>
-        </section>
-
-        {/* ====================== Comment s'abonner ====================== */}
-        <section className="bg-surface/70 py-20 sm:py-28"><div className="gutter mx-auto max-w-6xl">
-          <SectionTitle centre surtitre="Abonnement" titre="Devenir Premium en 4 étapes" texte="Payez dans la cryptomonnaie de votre choix : votre accès Premium s’active automatiquement dès la confirmation." />
-          <ol className="relative mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <motion.div aria-hidden className="absolute left-[12%] right-[12%] top-7 hidden h-px origin-left bg-ligne lg:block"
-              initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }} transition={{ duration: 1.2 }} />
-            {ETAPES.map((e, i) => {
-              const I = e.icon;
-              return (
-                <Reveal as="li" key={e.titre} delay={i * 0.12} className="relative text-center">
-                  <span className="relative mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-primary text-on-primary shadow-doux ring-8 ring-fond">
-                    <I className="h-6 w-6" />
-                    <span className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-accent text-mini font-bold text-ink">{i + 1}</span>
-                  </span>
-                  <h3 className="mt-5 text-lg">{e.titre}</h3>
-                  <p className="mt-1 text-[14px] text-ink/60">{e.texte}</p>
-                </Reveal>
-              );
-            })}
-          </ol>
-          <Reveal className="mt-12 flex flex-col items-center gap-5"><a href={hrefOf('abonnement')} className="inline-flex h-13 items-center gap-2 rounded-xl bg-primary px-7 text-[15px] font-semibold text-on-primary shadow-doux">Voir les 3 formules <ArrowRight className="h-4 w-4" /></a><CryptosAcceptees /></Reveal>
-        </div></section>
-
-        {/* ====================== Installer l'application ====================== */}
-        <section className="gutter mx-auto max-w-6xl py-14"><BandeauInstaller /></section>
-
-        {/* ====================== Pasteurs ====================== */}
-        {!!pasteurs.length && (
-          <section className="gutter mx-auto max-w-6xl py-20">
-            <SectionTitle centre surtitre="Nos guides spirituels" titre="Ils partagent la Parole" />
-            <div className="mt-10 flex flex-wrap justify-center gap-4">
-              {pasteurs.slice(0, 8).map((p, i) => (
-                <Reveal key={p.id} delay={i * 0.05} className="flex items-center gap-3 rounded-2xl bg-fond px-4 py-3 shadow-doux ring-1 ring-ligne">
-                  <span className="grid h-11 w-11 place-items-center rounded-full bg-primary/10 font-serif text-primary">{p.prenom[0]}{p.nom[0]}</span>
-                  <span>
-                    <a href={hrefOf('bibliotheque', 'pasteur', p.id)} className="block text-[14px] font-bold">{`${p.prenom} ${p.nom}`.trim()}</a>
-                    <span className="block text-mini text-ink/55">{[p.eglise, `${p.publications} publication${p.publications > 1 ? 's' : ''}`].filter(Boolean).join(' · ')}</span>
-                  </span>
-                </Reveal>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ====================== Mosaïque de photos ====================== */}
-        <Mosaique />
-
-        {/* ====================== Appel final ====================== */}
-        <section className="gutter mx-auto max-w-7xl pb-20 sm:pb-28">
-          <Reveal className="relative overflow-hidden rounded-[32px]">
-            <Img name="community_fellowship" className="absolute inset-0 h-full w-full" decorative />
-            <div className="absolute inset-0 bg-gradient-to-r from-nuit/90 via-nuit/70 to-nuit/30" />
+        {/* ====================== Appel final + installation ====================== */}
+        <section className="gutter mx-auto max-w-7xl py-20 sm:py-24">
+          <Reveal className="group relative overflow-hidden rounded-[32px]">
+            <motion.div className="absolute inset-0" initial={{ scale: 1.1 }} whileInView={{ scale: 1 }} viewport={{ once: true }} transition={{ duration: 2.4, ease: 'easeOut' }}>
+              <Img name="af_famille_joie" className="h-full w-full" decorative />
+            </motion.div>
+            <div className="absolute inset-0 bg-gradient-to-r from-nuit/90 via-nuit/70 to-nuit/20" />
             <div className="relative max-w-xl p-8 text-white sm:p-14">
-              <p className="surtitre text-accent">Une communauté de foi</p>
-              <h2 className="mt-3 text-[clamp(1.8rem,4vw,2.8rem)] text-white">Vous n’êtes pas seul sur le chemin</h2>
-              <p className="mt-3 text-[15px] text-white/80">Déposez une demande de prière : nos guides spirituels la portent avec vous. C’est gratuit.</p>
+              <p className="surtitre text-accent">Vous n’êtes pas seul</p>
+              <h2 className="mt-3 text-[clamp(1.8rem,4vw,2.8rem)] text-white">Une communauté qui prie avec vous</h2>
+              <p className="mt-3 text-[15px] text-white/80">Déposez une demande de prière, c’est gratuit. Et gardez Ame & Vie sur votre téléphone, PC ou iPhone.</p>
               <div className="mt-7 flex flex-wrap gap-3">
-                <a href={user ? hrefOf('espace', 'prieres') : hrefOf('inscription')} className="inline-flex h-12 items-center gap-2 rounded-xl bg-white px-6 text-sm font-semibold text-ink">
+                <a href={user ? hrefOf('espace', 'prieres') : hrefOf('inscription')} className="inline-flex h-11 items-center gap-2 rounded-xl bg-white px-5 text-sm font-semibold text-ink hover:bg-white/90">
                   <HandHeart className="h-4 w-4" /> Demander une prière
                 </a>
-                <a href={hrefOf('bibliotheque', 'document')} className="inline-flex h-12 items-center gap-2 rounded-xl px-6 text-sm font-semibold ring-1 ring-white/40 hover:bg-white/10">
-                  <Download className="h-4 w-4" /> Documents
-                </a>
+                <BoutonInstaller clair={false} className="!bg-white/15 !text-white ring-1 ring-white/40 backdrop-blur hover:!bg-white/25" label="Installer l’application" />
               </div>
             </div>
           </Reveal>

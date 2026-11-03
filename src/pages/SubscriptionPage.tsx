@@ -28,17 +28,17 @@ export function SubscriptionPage() {
   return (
     <>
       <PublicHeader actif="/#abonnement" transparent />
-      <PageBanner image="lumiere" surtitre="Abonnement" teinte="bg-accent"
-        titre={<>Essentiel, Premium <em className="italic text-accent">ou Premium Plus</em></>}
-        texte={<>{tarif?.formules?.length ? `De ${Math.min(...tarif.formules.map((f) => f.prix))} à ${Math.max(...tarif.formules.map((f) => f.prix))} ${(tarif.devise).toUpperCase()} par mois` : 'Trois formules mensuelles'}, payées dans la cryptomonnaie de votre choix.</>} />
+      <PageBanner image="af_louange" surtitre="Abonnement" teinte="bg-accent"
+        titre={<>Gratuit pour commencer, <em className="italic text-accent">Premium pour aller loin</em></>}
+        texte={<>0 $ avec un simple compte{tarif?.formules?.length ? `, puis de ${Math.min(...tarif.formules.map((f) => f.prix))} à ${Math.max(...tarif.formules.map((f) => f.prix))} $ par mois` : ''}, payés dans la cryptomonnaie de votre choix.</>} />
       <main className="pb-24 pt-10">
         <div className="gutter mx-auto max-w-5xl">
 
           {user && <div className="mt-10"><SubscriptionStatus a={user.abonnement} /></div>}
 
           <section className="mt-14">
-            <SectionTitle centre surtitre="Trois formules" titre="Choisissez votre accompagnement" texte="Chaque formule ouvre les contenus de son niveau et des niveaux inférieurs. Un document compris dans votre formule ne se paie jamais deux fois." />
-            <div className="mt-12"><FormulesCartes formuleActive={user?.abonnement?.formule ?? null} /></div>
+            <SectionTitle centre surtitre="Nos formules" titre="Choisissez votre accompagnement" texte="Chaque formule ouvre les contenus de son niveau et des niveaux inférieurs. Un document compris dans votre formule ne se paie jamais deux fois." />
+            <div className="mx-auto mt-12 xl:-mx-24"><FormulesCartes formuleActive={user?.abonnement?.formule ?? null} /></div>
             <p className="mt-6 flex items-center justify-center gap-2 text-mini text-ink/55"><ShieldCheck className="h-4 w-4" /> Paiement sécurisé en cryptomonnaie · aucune donnée bancaire demandée</p>
           </section>
 
@@ -51,7 +51,7 @@ export function SubscriptionPage() {
             <a href={hrefOf('bibliotheque', 'programme')} className="inline-flex h-11 items-center rounded-xl bg-primary px-5 text-sm font-semibold text-on-primary">Voir les programmes</a>
           </Reveal>
 
-          <div className="mt-12 grid gap-6 md:grid-cols-2">
+          <div className="mx-auto mt-12 max-w-2xl">
             <Reveal delay={0.1} className="rounded-[28px] bg-fond p-8 shadow-doux ring-1 ring-ligne sm:p-10">
               <h2 className="text-2xl">Comment ça marche</h2>
               <ol className="mt-6 space-y-5">

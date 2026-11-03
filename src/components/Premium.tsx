@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
-import { Bitcoin, Check, Crown, Gem, Lock, ShoppingBag, Sparkles } from 'lucide-react';
+import { Bitcoin, Check, Crown, Gem, Heart, Lock, ShoppingBag, Sparkles } from 'lucide-react';
+import { Img, type ImgName } from './Img';
 import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
 import { api } from '@/lib/api';
 import { go, hrefOf } from '@/lib/router';
@@ -73,8 +74,8 @@ export function PayantBadge({ achete = false, small = false }: { achete?: boolea
  *  - formule  : un mois d'abonnement Essentiel, Premium ou Premium Plus (Premium par défaut).
  * Sans compte : renvoie vers la création de compte.
  */
-export function PayButton({ className = '', label, size = 'md', document, formule = 'premium', variante = 'plein' }: {
-  className?: string; label?: string; size?: 'md' | 'lg'; document?: { id: string; title: string; price?: number | null }; formule?: FormuleId; variante?: 'plein' | 'clair';
+export function PayButton({ className = '', label, size = 'md', document, formule = 'premium', variante = 'plein', sansPrix = false }: {
+  sansPrix?: boolean; className?: string; label?: string; size?: 'md' | 'lg'; document?: { id: string; title: string; price?: number | null }; formule?: FormuleId; variante?: 'plein' | 'clair';
 }) {
   const { user } = useVisitor();
   const tarif = useTarif();
@@ -90,7 +91,7 @@ export function PayButton({ className = '', label, size = 'md', document, formul
         {variante === 'plein' && <span aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-1/3 animate-reflet bg-gradient-to-r from-transparent via-white/35 to-transparent" />}
         <Bitcoin className="h-4.5 w-4.5 shrink-0 transition group-hover:rotate-12" />
         <span className="whitespace-nowrap">{texte}</span>
-        {prix && <span className={`rounded-md px-1.5 py-0.5 text-mini font-bold ${variante === 'clair' ? 'bg-surface' : 'bg-white/20'}`}>{prix}</span>}
+        {prix && !sansPrix && <span className={`rounded-md px-1.5 py-0.5 text-mini font-bold ${variante === 'clair' ? 'bg-surface' : 'bg-white/20'}`}>{prix}</span>}
       </motion.button>
       {ouvert && (
         <Suspense fallback={null}>
@@ -102,38 +103,72 @@ export function PayButton({ className = '', label, size = 'md', document, formul
 }
 const PaiementModal = lazy(() => import('./PaiementModal'));
 
-/* ------------------------------------------------------------------ Les trois formules */
-const ICONES: Record<FormuleId, typeof Crown> = { essentiel: Sparkles, premium: Crown, premium_plus: Gem };
-export function FormulesCartes({ formuleActive }: { formuleActive?: string | null }) {
-  const tarif = useTarif();
-  const formules = tarif?.formules ?? [];
-  if (!formules.length) return <div className="grid gap-5 md:grid-cols-3">{[0, 1, 2].map((i) => <div key={i} className="h-96 animate-pulse rounded-[28px] bg-surface" />)}</div>;
+/* ------------------------------------------------------------------ Les formules (Gratuit + 3 payantes) */
+const ICONES: Record<FormuleId | 'gratuit', typeof Crown> = { gratuit: Heart, essentiel: Sparkles, premium: Crown, premium_plus: Gem };
+const PHOTOS: Record<FormuleId | 'gratuit', ImgName> = { gratuit: 'af_meditation', essentiel: 'af_priere_femme', premium: 'af_louange', premium_plus: 'af_famille_joie' };
+const GRATUIT_AVANTAGES = ['La Parole du jour', 'Les prières et contenus gratuits', 'Les documents gratuits', 'Vos demandes de prière'];
+
+function CarteFormule({ id, nom, prix, devise, fcfa, description, avantages, vedette, active, i, action }: {
+  id: FormuleId | 'gratuit'; nom: string; prix: number; devise: string; fcfa: string; description: string; avantages: string[]; vedette: boolean; active: boolean; i: number; action: ReactNode;
+}) {
+  const I = ICONES[id];
   return (
-    <div className="grid gap-5 md:grid-cols-3">
-      {formules.map((f, i) => {
-        const I = ICONES[f.id];
+    <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -6 }}
+      className={`group relative flex flex-col overflow-hidden rounded-[28px] shadow-doux transition-shadow hover:shadow-haut ${vedette ? 'bg-secondary text-white ring-2 ring-accent' : 'bg-fond ring-1 ring-ligne'}`}>
+      <div className="relative h-36 overflow-hidden">
+        <Img name={PHOTOS[id]} className="h-full w-full transition-transform duration-[1.2s] group-hover:scale-110" sizes="(min-width:1280px) 25vw, (min-width:640px) 50vw, 100vw" decorative />
+        <div className={`absolute inset-0 bg-gradient-to-t ${vedette ? 'from-secondary' : 'from-fond'} via-transparent to-black/10`} />
+        {vedette && !active && <span className="absolute right-4 top-4 rounded-full bg-accent px-3 py-1 text-mini font-bold text-ink shadow-doux">Le plus choisi</span>}
+        {active && <span className="absolute right-4 top-4 rounded-full bg-succes px-3 py-1 text-mini font-bold text-white shadow-doux">Votre formule</span>}
+        <span className={`absolute -bottom-0 left-6 grid h-12 w-12 place-items-center rounded-2xl shadow-doux ${vedette ? 'bg-accent text-ink' : id === 'gratuit' ? 'bg-surface text-primary ring-1 ring-ligne' : 'bg-primary text-on-primary'}`}><I className="h-5 w-5" /></span>
+      </div>
+      <div className="flex flex-1 flex-col p-6 pt-4">
+        <h3 className={`text-2xl ${vedette ? 'text-white' : ''}`}>{nom}</h3>
+        <p className={`mt-1 min-h-[2.6em] text-[13.5px] ${vedette ? 'text-white/70' : 'text-ink/60'}`}>{description}</p>
+        <p className={`mt-4 flex items-baseline gap-1.5 font-serif ${vedette ? 'text-white' : ''}`}>
+          <span className="text-5xl leading-none">{prix.toLocaleString('fr-FR')}</span><span className="text-xl">{devise === 'USD' ? '$' : devise}</span>
+          <span className={`ml-1 font-sans text-[13px] ${vedette ? 'text-white/60' : 'text-ink/50'}`}>{prix ? '/ mois' : 'pour toujours'}</span>
+        </p>
+        <p className={`mt-1 h-5 text-[12.5px] ${vedette ? 'text-white/55' : 'text-ink/45'}`}>{prix ? fcfa : '0 F CFA · sans carte, sans crypto'}</p>
+        <ul className="mt-5 flex-1 space-y-2.5">
+          {avantages.map((a) => (
+            <li key={a} className={`flex gap-2.5 text-[14px] ${vedette ? 'text-white/90' : 'text-ink/80'}`}>
+              <span className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full ${vedette ? 'bg-accent text-ink' : 'bg-primary/12 text-primary'}`}><Check className="h-3 w-3" strokeWidth={3} /></span>{a}
+            </li>
+          ))}
+        </ul>
+        <div className="mt-6">{action}</div>
+      </div>
+    </motion.div>
+  );
+}
+
+/** Les quatre cartes : Gratuit (0 $) puis Essentiel, Premium, Premium Plus avec leur prix. */
+export function FormulesCartes({ formuleActive, gratuit = true }: { formuleActive?: string | null; gratuit?: boolean }) {
+  const tarif = useTarif();
+  const { user } = useVisitor();
+  const formules = tarif?.formules ?? [];
+  const devise = (tarif?.devise ?? 'usd').toUpperCase();
+  const grille = `grid gap-5 sm:grid-cols-2 ${gratuit ? 'xl:grid-cols-4' : 'lg:grid-cols-3'}`;
+  if (!formules.length) return <div className={grille}>{[0, 1, 2, 3].slice(0, gratuit ? 4 : 3).map((i) => <div key={i} className="h-[30rem] animate-pulse rounded-[28px] bg-surface" />)}</div>;
+  const gratuitActif = !!user && !formuleActive;
+  return (
+    <div className={grille}>
+      {gratuit && (
+        <CarteFormule id="gratuit" nom="Gratuit" prix={0} devise={devise} fcfa="" description="Pour découvrir, avec un simple compte." avantages={GRATUIT_AVANTAGES}
+          vedette={false} active={gratuitActif} i={0}
+          action={user
+            ? <span className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-surface text-sm font-semibold text-ink/60 ring-1 ring-ligne">{gratuitActif ? 'Votre accès actuel' : 'Toujours inclus'}</span>
+            : <a href={hrefOf('inscription')} className="inline-flex h-11 w-full items-center justify-center rounded-xl text-sm font-semibold ring-1 ring-ligne transition hover:bg-surface">Créer mon compte gratuit</a>} />
+      )}
+      {formules.map((f, k) => {
         const vedette = f.id === 'premium';
         const active = formuleActive === f.id;
         return (
-          <motion.div key={f.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
-            className={`relative flex flex-col overflow-hidden rounded-[28px] p-7 shadow-doux ${vedette ? 'bg-secondary text-white shadow-haut md:-translate-y-3' : 'bg-fond ring-1 ring-ligne'}`}>
-            {vedette && <div aria-hidden className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-accent/30 blur-3xl" />}
-            {vedette && <span className="absolute right-5 top-5 rounded-full bg-accent px-3 py-1 text-mini font-bold text-ink">Le plus choisi</span>}
-            {active && <span className="absolute right-5 top-5 rounded-full bg-succes px-3 py-1 text-mini font-bold text-white">Votre formule</span>}
-            <span className={`relative grid h-12 w-12 place-items-center rounded-2xl ${vedette ? 'bg-accent text-ink' : 'bg-primary/10 text-primary'}`}><I className="h-5 w-5" /></span>
-            <h3 className={`relative mt-4 text-2xl ${vedette ? 'text-white' : ''}`}>{f.nom}</h3>
-            <p className={`relative mt-1 text-[14px] ${vedette ? 'text-white/70' : 'text-ink/60'}`}>{f.description}</p>
-            <p className={`relative mt-5 font-serif text-5xl ${vedette ? 'text-white' : ''}`}>{f.prix.toLocaleString('fr-FR')} <span className="text-2xl">{(tarif?.devise ?? 'usd').toUpperCase()}</span></p>
-            <p className={`relative text-[13px] ${vedette ? 'text-white/60' : 'text-ink/50'}`}>par mois · {enFcfa(f.prix, tarif)}</p>
-            <ul className="relative mt-6 flex-1 space-y-2.5">
-              {f.avantages.map((a) => (
-                <li key={a} className={`flex gap-2.5 text-[14.5px] ${vedette ? 'text-white/90' : 'text-ink/80'}`}>
-                  <span className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full ${vedette ? 'bg-accent text-ink' : 'bg-primary/12 text-primary'}`}><Check className="h-3 w-3" strokeWidth={3} /></span>{a}
-                </li>
-              ))}
-            </ul>
-            <PayButton className="relative mt-7 w-full" formule={f.id} label={active ? 'Prolonger d’un mois' : `Choisir ${f.nom}`} variante={vedette ? 'plein' : 'clair'} />
-          </motion.div>
+          <CarteFormule key={f.id} id={f.id} nom={f.nom} prix={f.prix} devise={devise} fcfa={enFcfa(f.prix, tarif)} description={f.description} avantages={f.avantages}
+            vedette={vedette} active={active} i={k + (gratuit ? 1 : 0)}
+            action={<PayButton className="w-full" formule={f.id} label={active ? 'Prolonger d’un mois' : `Choisir ${f.nom}`} variante={vedette ? 'plein' : 'clair'} sansPrix />} />
         );
       })}
     </div>

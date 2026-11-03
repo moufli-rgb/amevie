@@ -59,7 +59,7 @@ function PasteurAuth({ onLogin, notice }: { onLogin: (t: string, u: SessionUser)
   }
 
   return (
-    <AuthLayout photo="spiritual_bible_study" surtitre="Espace" titre="Guide spirituel"
+    <AuthLayout photo="af_bible" surtitre="Espace" titre="Guide spirituel"
       texte={mode === 'connexion' ? 'Connectez-vous pour publier et gérer vos contenus.' : 'Créez votre compte : il sera actif après validation par l’administration.'}
       msg={msg} loading={loading} submitLabel={mode === 'connexion' ? 'Se connecter' : 'Créer mon compte de guide'} onSubmit={submit}>
       <Tabs id="pasteur-auth" value={mode} onChange={(m) => { setMode(m); setMsg(null); }} options={[{ value: 'connexion', label: 'Se connecter' }, { value: 'inscription', label: 'Créer un compte' }]} />
@@ -89,7 +89,7 @@ function Accueil({ user }: { user: SessionUser }) {
   const publier = (t: TypeContenu) => go('pasteur', 'nouveau', t);
   return (
     <div className="space-y-6">
-      <WelcomeBanner photo="chorale" surtitre="Espace guide spirituel" titre={<>Bienvenue, {user.prenom || user.name}</>}
+      <WelcomeBanner photo="af_chorale" surtitre="Espace guide spirituel" titre={<>Bienvenue, {user.prenom || user.name}</>}
         texte="Partagez la Parole : vos publications sont visibles par les visiteurs selon l’accès choisi (Gratuit ou Premium)." />
       <StatGrid cols="sm:grid-cols-4" stats={[
         { label: 'Paroles de Dieu', value: loading && !data ? null : n('parole'), icon: BookOpen, onClick: () => go('pasteur', 'publications') },

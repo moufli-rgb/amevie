@@ -22,12 +22,12 @@ export const TYPE_COULEURS: Record<TypeContenu, { bg: string; text: string; soft
 
 /** Images d'illustration par type (voir src/config/images.json). */
 export const TYPE_IMAGES = {
-  parole: ['croix_aube', 'bible_mains', 'croix_colline', 'daily_prayer_verse', 'coucher_soleil'],
-  enseignement: ['bible_cafe', 'chorale', 'spiritual_bible_study', 'louange', 'celebration'],
-  document: ['bible_nature', 'spiritual_bible_study', 'bible_cafe', 'enfant_bible'],
-  contenu: ['priere_femme', 'lumiere', 'hero_prayer_light', 'louange', 'community_fellowship'],
-  programme: ['lumiere', 'coucher_soleil', 'croix_colline'],
-  pack: ['priere_femme', 'hero_prayer_light', 'daily_prayer_verse'],
+  parole: ['af_priere_femme', 'af_bible', 'af_eglise_bleue', 'af_soleil_arbre', 'af_priere_mains'],
+  enseignement: ['af_chorale', 'af_eglise_femmes', 'af_louange', 'af_homme_priere', 'af_ancienne'],
+  document: ['af_bible', 'af_ancienne', 'af_famille_jeu', 'af_priere_mains'],
+  contenu: ['af_priere_femme', 'af_louange', 'af_homme_fleurs', 'af_eglise_femmes', 'af_danse'],
+  programme: ['af_savane_aube', 'af_homme_fleurs', 'af_soleil_arbre'],
+  pack: ['af_priere_mains', 'af_famille_joie', 'af_louange'],
 } as const;
 
 export const CATEGORIES = ['Méditation', 'Prière', 'Doua', 'Rappel', 'Louange', 'Témoignage', 'Exhortation', 'Étude biblique', 'Étude coranique', 'Sagesse', 'Pleine conscience',
@@ -52,8 +52,8 @@ export const RELIGIONS: Record<Religion, { label: string; court: string; symbole
 };
 /** Illustrations propres à chaque tradition (les photos chrétiennes ne sont utilisées que pour le Christianisme). */
 export const RELIGION_IMAGES = {
-  musulman: ['islam_motif', 'islam_nuit'],
-  universel: ['universel_aube', 'universel_mandala'],
+  musulman: ['af_mosquee', 'af_hijab_groupe', 'af_coupole', 'af_sourire_foulard', 'af_mosquee_aube'],
+  universel: ['af_savane_aube', 'af_meditation', 'af_soleil_arbre', 'af_meditation_maison', 'af_savane_or'],
 } as const;
 /** Rubriques de chaque communauté (Bibliothèque spirituelle de l'espace membre). */
 export interface Theme { id: string; label: string; test: (c: Pick<Contenu, 'type' | 'category'>) => boolean }

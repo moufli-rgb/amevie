@@ -7,7 +7,7 @@ import { RELIGIONS, TYPES, TYPE_COULEURS, type TypeContenu } from '@/lib/contenu
 import { hrefOf } from '@/lib/router';
 
 /** Fond du héros : fondu enchaîné entre plusieurs photos, avec zoom lent. */
-const HERO: ImgName[] = ['hero_prayer_light', 'croix_aube', 'louange', 'bible_mains'];
+const HERO: ImgName[] = ['af_louange', 'af_priere_femme', 'af_hijab_groupe', 'af_savane_aube', 'af_famille_joie'];
 export function HeroSlides() {
   const [i, setI] = useState(0);
   useEffect(() => {
@@ -96,9 +96,9 @@ export function Mosaique() {
 
 /* ------------------------------------------------------------------ Trois traditions */
 const TRADITIONS = [
-  { r: 'chretien', image: 'croix_aube', texte: 'La Bible, les Évangiles, la prière et la louange.' },
-  { r: 'musulman', image: 'islam_nuit', texte: 'Le Coran, les beaux noms d’Allah, la prière et le jeûne.' },
-  { r: 'universel', image: 'universel_aube', texte: 'Sagesses du monde, méditation, gratitude et paix intérieure.' },
+  { r: 'chretien', image: 'af_eglise_femmes', texte: 'La Bible, les Évangiles, la prière et la louange.' },
+  { r: 'musulman', image: 'af_hijab_groupe', texte: 'Le Coran, les beaux noms d’Allah, la prière et le jeûne.' },
+  { r: 'universel', image: 'af_meditation', texte: 'Sagesses du monde, méditation, gratitude et paix intérieure.' },
 ] as const;
 export function Traditions() {
   return (

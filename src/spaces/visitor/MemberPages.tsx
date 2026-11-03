@@ -22,9 +22,9 @@ import { useData } from '@/dashboard/useData';
 
 /* ------------------------------------------------------------------ Les trois espaces */
 const ESPACES: { r: Religion; titre: string; image: ImgName; rubriques: string }[] = [
-  { r: 'chretien', titre: 'Espace chrétien', image: 'croix_aube', rubriques: 'Prières · Bible · Méditations · Programmes' },
-  { r: 'musulman', titre: 'Espace musulman', image: 'islam_nuit', rubriques: 'Douas · Coran · Rappels · Programmes' },
-  { r: 'universel', titre: 'Espace universel', image: 'universel_aube', rubriques: 'Développement personnel · Gratitude · Motivation · Paix intérieure' },
+  { r: 'chretien', titre: 'Espace chrétien', image: 'af_eglise_femmes', rubriques: 'Prières · Bible · Méditations · Programmes' },
+  { r: 'musulman', titre: 'Espace musulman', image: 'af_hijab_groupe', rubriques: 'Douas · Coran · Rappels · Programmes' },
+  { r: 'universel', titre: 'Espace universel', image: 'af_meditation', rubriques: 'Développement personnel · Gratitude · Motivation · Paix intérieure' },
 ];
 
 export function EspacesCommunautes({ compact = false }: { compact?: boolean }) {

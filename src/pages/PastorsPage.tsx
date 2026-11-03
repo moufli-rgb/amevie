@@ -18,7 +18,7 @@ export function PastorsPage() {
   return (
     <>
       <PublicHeader actif="/#guides" transparent />
-      <PageBanner image="chorale" surtitre="Guides spirituels" titre="Ceux qui partagent la Parole" teinte="bg-enseignement"
+      <PageBanner image="af_chorale" surtitre="Guides spirituels" titre="Ceux qui partagent la Parole" teinte="bg-enseignement"
         texte="Chaque guide spirituel est vérifié par l’administration avant de pouvoir publier." />
       <main className="gutter mx-auto min-h-[50svh] max-w-6xl pb-24 pt-10">
         <div className="mt-10">

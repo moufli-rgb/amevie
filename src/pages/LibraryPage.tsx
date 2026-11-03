@@ -7,7 +7,7 @@ import type { ImgName } from '@/components/Img';
 import { RELIGIONS, TYPES, TYPE_COULEURS, estReligion, type TypeContenu } from '@/lib/contenus';
 
 const BANNIERES: Record<TypeContenu | 'tous', ImgName> = {
-  tous: 'bible_mains', parole: 'croix_aube', enseignement: 'bible_cafe', document: 'bible_nature', contenu: 'priere_femme', programme: 'lumiere', pack: 'priere_femme',
+  tous: 'af_ancienne', parole: 'af_priere_femme', enseignement: 'af_chorale', document: 'af_bible', contenu: 'af_louange', programme: 'af_savane_aube', pack: 'af_priere_mains',
 };
 
 export function LibraryPage({ page, id }: { page: string; id: string }) {

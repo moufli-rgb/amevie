@@ -5,7 +5,7 @@ import { Img, type ImgName } from '@/components/Img';
 import { formatNombre } from '@/lib/format';
 
 /** Bannière d'accueil avec photo et zoom lent. */
-export function WelcomeBanner({ photo = 'daily_prayer_verse', surtitre, titre, texte, children }: {
+export function WelcomeBanner({ photo = 'af_savane_or', surtitre, titre, texte, children }: {
   photo?: ImgName; surtitre: string; titre: ReactNode; texte?: ReactNode; children?: ReactNode;
 }) {
   return (

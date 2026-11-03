@@ -44,7 +44,7 @@ function Accueil({ user }: { user: SessionUser }) {
   ];
   return (
     <div className="space-y-6">
-      <WelcomeBanner photo="bible_mains" surtitre="Mon espace" titre={<>Bonjour, {user.prenom ?? user.name}</>}
+      <WelcomeBanner photo="af_sourire_foulard" surtitre="Mon espace" titre={<>Bonjour, {user.prenom ?? user.name}</>}
         texte={data?.parole ? <>« {data.parole.content.replace(/^[«"\s]+/, '').split(/[»\n]/)[0].slice(0, 160)} » — <strong>{data.parole.bible_ref}</strong></> : SITE.slogan} />
       <SubscriptionStatus a={user.abonnement} />
       <div>
